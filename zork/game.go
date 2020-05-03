@@ -1,315 +1,252 @@
 package zork
 
-func SetLastObject(o *Object) *Object {
-	LastNoun = o
-	LastNounPlace = Location
-	return LastNounPlace
-}
+var (
+	ParserOk bool
+	Player   *Object
+)
 
-func IsRoom(o *Object) bool {
-	for _, r := range Rooms {
-		if o.Name == r.Name {
-			return true
-		}
-	}
-	return false
-}
+type PerfRet int
 
-func DescribeRoom(look bool) bool {
-	if Location == nil {
-		return false
-	}
-	v := Verbose
-	if look {
-		v = look
-	}
-	if !Lit {
-		Print("It is pitch black.")
-		if !GrueRepellent {
-			Print(" You are likely to be eaten by a grue.")
-		}
-		NewLine()
-		return false
-	}
-	if !Location.Has(Visited) {
-		Location.Give(Visited)
-		v = true
-	}
-	if Location.Has(MazeRoom) {
-		Location.Take(Visited)
-	}
-	environment := Player.Parent
-	if IsRoom(Location) {
-		PrintObj(Location)
-		if environment != nil && environment.Has(Vehicle) {
-			Print(", in the ")
-			PrintObj(environment)
-		}
-		NewLine()
-	}
-	if !look && Superbrief {
-		return true
-	}
-	if v {
-		if Location.Action != nil && Location.Action(MLook) {
-			return true
-		}
-		if Location.Description != NoDescription {
-			Print(Location.Description)
-			NewLine()
-		}
-	} else if Location.Action != nil {
-		Location.Action(MWake)
-	}
-	if environment != nil {
-		if environment.Name == Location.Name {
-			return true
-		}
-		if !environment.Has(Vehicle) {
-			return true
-		}
-	}
-	if Location.Action != nil {
-		Location.Action(MLook)
-	}
-	return true
-}
+const (
+	PerfNotHndld PerfRet = iota
+	PerfHndld
+	PerfFatal
+)
 
-func DescribeObjects(vrb bool) bool {
-	if Location == nil {
-		return false
-	}
-	if !Lit {
-		Print("Only bats can see in the dark. And you're not one.")
-		return true
-	}
-	if Location.Contains == nil || len(Location.Contains) == 0 {
-		return false
-	}
-	v := Verbose
-	if vrb {
-		v = vrb
-	}
-	return PrintCont(Location, v, -1)
-}
-
-func CanSeeContents(obj *Object) bool {
-	if obj.Has(Concealed) {
-		return false
-	}
-	if obj.Has(Transparent) || obj.Has(Open) {
-		return true
-	}
-	return false
-}
-
-func Firster(obj *Object, level int) bool {
-	if Player == nil {
-		return false
-	}
-	if obj == nil {
-		return false
-	}
-	if obj.Name == TrophyCase.Name {
-		Print("Your collection of treasures consists of:")
-		return true
-	}
-	if obj.Name == Player.Name {
-		Print("You are carrying:")
-		return true
-	}
-	if IsRoom(obj) {
-		return false
-	}
-	if level > 0 {
-		Print(Indents[level])
-	}
-	if obj.Has(Supporter) {
-		Print("Sitting on the ")
-		PrintObj(obj)
-		Print(" is: ")
-		return true
-	}
-	if obj.Has(Animate) {
-		Print("The ")
-		PrintObj(obj)
-		Print(" is holding: ")
-		return true
-	}
-	Print("The ")
-	PrintObj(obj)
-	Print(" contains:")
-	return true
-}
-
-func DescribeOb(obj *Object, v bool, level int) bool {
-	LastObLongdesc = obj
-	if level == 0 {
-		if obj.Initial2 != nil && obj.Initial2(MFight) {
-			return true
-		}
-		if !obj.Has(Visited) && obj.Initial != NoInitial {
-			Print(obj.Initial)
-		} else if obj.Description != NoDescription {
-			Print(obj.Description)
-		} else {
-			Print("There is a ")
-			PrintObj(obj)
-			Print(" here")
-			if obj.Has(Light) {
-				Print(" (providing light)")
-			}
-			Print(".")
-		}
-	} else {
-		Print(Indents[level])
-		Print("A ")
-		PrintObj(obj)
-		if obj.Has(Light) {
-			Print(" (providing light)")
-		} else if obj.Has(Clothing) {
-			Print(" (being worn)")
-		}
-	}
-	if level == 0 {
-		av := Player.Parent
-		if av != nil && av.Has(Vehicle) {
-			Print(" (outside the ")
-			PrintObj(av)
-			Print(")")
-		}
-	}
-	NewLine()
-	if !CanSeeContents(obj) {
-		return false
-	}
-	if obj.Contains == nil || len(obj.Contains) == 0 {
-		return false
-	}
-	return PrintCont(obj, v, level)
-}
-
-func PrintCont(obj *Object, v bool, level int) bool {
-	if Player == nil {
-		return false
-	}
-	if obj == nil {
-		return false
-	}
-	if obj.Contains == nil || len(obj.Contains) == 0 {
-		return true
-	}
-	environment := Player.Parent
-	if environment != nil && !environment.Has(Vehicle) {
-		environment = nil
-	}
-	pv := false
-	av := true
-	first := true
-	inv := false
-	if Player.Name != obj.Name && obj.Parent != nil && obj.Parent.Name != Player.Name {
-		for _, itm := range obj.Contains {
-			if itm.Name == environment.Name {
-				pv = true
-				continue
-			}
-			if itm.Name == Player.Name {
-				continue
-			}
-			if itm.Has(Concealed) || itm.Has(Visited) {
-				continue
-			}
-			if itm.Initial == NoInitial {
-				continue
-			}
-			if !itm.Has(Scenery) {
-				Print(itm.Initial)
-				NewLine()
-				av = false
-			}
-			if !CanSeeContents(itm) || (itm.Parent != nil && itm.Parent.Initial2 != nil) || itm.Contains == nil || len(itm.Contains) == 0 || !PrintCont(itm, v, 0) {
-				continue
-			}
-			first = false
-		}
-	} else {
-		inv = true
-	}
-	for _, itm := range obj.Contains {
-		if environment != nil && itm.Name == environment.Name {
-			continue
-		}
-		if Item4 != nil && itm.Name == Item4.Name {
-			continue
-		}
-		if itm.Has(Concealed) {
-			continue
-		}
-		if !inv && !itm.Has(Visited) && itm.Initial != NoInitial {
-			continue
-		}
-		if itm.Has(Scenery) {
-			if itm.Contains != nil && len(itm.Contains) > 0 && CanSeeContents(itm) {
-				level++
-				PrintCont(itm, v, level)
-			}
-			continue
-		}
-		if first {
-			if Firster(obj, level) && level < 0 {
-				level = 0
-			}
-			level++
-			first = false
-		}
-		if level < 0 {
-			level = 0
-		}
-		DescribeOb(itm, v, level)
-	}
-	if pv && environment != nil && environment.Contains != nil && len(environment.Contains) > 0 {
-		level++
-		PrintCont(environment, v, level)
-	}
-	if !first {
-		return true
-	}
-	if !av {
-		return true
-	}
-	return false
-}
-
-func CommandLoop() {
-
-}
-
-func StartGame() {
+func Run() {
+	BuildObjectTree()
+	BuildVocabulary()
 	for {
-		Queue("FightDaemon", FightDaemon, -1).Enabled = true
-		Queue("SwordDaemon", SwordDaemon, -1)
-		Queue("ThiefDaemon", ThiefDaemon, -1).Enabled = true
-		Queue("CandleDaemon", CandleDaemon, 40)
-		Queue("LampDaemon", LampDaemon, 200)
-		MagicBoat.VType = 8
+		Queue(IFight, -1).Run = true
+		Queue(ISword, -1)
+		Queue(IThief, -1).Run = true
+		Queue(ICandles, 40)
+		Queue(ILantern, 200)
+		InflatedBoat.VehType = FlgNonLand
 		Def1Res[1] = Def1[2]
 		Def1Res[2] = Def1[4]
 		Def2Res[2] = Def2B[2]
 		Def2Res[3] = Def2B[4]
 		Def3Res[1] = Def3A[2]
 		Def3Res[3] = Def3B[2]
-		Location = WestOfHouse
-		SetLastObject(SmallMailbox)
-		if !Location.Has(Visited) {
-			VersionSub()
+		Here = &WestOfHouse
+		ThisIsIt(&Mailbox)
+		if !Here.Has(FlgTouch) {
+			VVersion(ActUnk)
 			NewLine()
 		}
 		Lit = true
-		Player = Cretin
-		Actor = Player
-		Player.MoveTo(Location)
-		LookSub()
-		CommandLoop()
-		break
+		Winner = &Adventurer
+		Player = Winner
+		Winner.MoveTo(Here)
+		VLook(ActUnk)
+		MainLoop()
 	}
+}
+
+func MainLoop() {
+	for {
+		ParserOk = Parse()
+		if !ParserOk {
+			Params.Continue = ContEmpty
+			continue
+		}
+		if Params.ItObj != nil && IsAccessible(Params.ItObj) {
+			found := false
+			for idx, obj := range IndirObjPossibles {
+				if obj == &It {
+					IndirObjPossibles[idx] = Params.ItObj
+					found = true
+				}
+			}
+			if !found {
+				for idx, obj := range DirObjPossibles {
+					if obj == &It {
+						DirObjPossibles[idx] = Params.ItObj
+					}
+				}
+			}
+		}
+		numObj := 1
+		var obj *Object
+		isDir := true
+		if len(DirObjPossibles) == 0 {
+			numObj = 0
+		} else if len(DirObjPossibles) > 1 {
+			if len(IndirObjPossibles) == 0 {
+				obj = nil
+			} else {
+				obj = IndirObjPossibles[0]
+			}
+			numObj = len(DirObjPossibles)
+		} else if len(IndirObjPossibles) > 1 {
+			isDir = false
+			obj = DirObjPossibles[0]
+			numObj = len(IndirObjPossibles)
+		}
+		if obj == nil && len(IndirObjPossibles) == 1 {
+			obj = IndirObjPossibles[0]
+		}
+		var res PerfRet
+		if ActVerb == "walk" && len(Params.WalkDir) != 0 {
+			res = Perform(ActVerb, DirObj, nil)
+		} else if numObj == 0 {
+			if DetectedSyntx.NumObjects() == 0 {
+				res = Perform(ActVerb, nil, nil)
+				DirObj = nil
+			} else if !Lit {
+				Print("It's not clear what you're referring to.", Newline)
+				res = PerfNotHndld
+			}
+		} else {
+			tmp := false
+			notHere := 0
+			var obj1 *Object
+			var indir, dir *Object
+			for i := 0; i < numObj; i++ {
+				if isDir {
+					obj1 = DirObjPossibles[i]
+					dir, indir = obj1, obj
+				} else {
+					obj1 = IndirObjPossibles[i]
+					dir, indir = obj, obj1
+				}
+				if numObj > 1 || (len(ParsedSyntx.ObjOrClause1) > 0 && ParsedSyntx.ObjOrClause1[0].Is("all")) {
+					if dir == &NotHereObject {
+						notHere++
+						continue
+					}
+					if ActVerb == "take" &&
+						indir != nil &&
+						len(ParsedSyntx.ObjOrClause1) > 0 &&
+						ParsedSyntx.ObjOrClause1[0].Is("all") &&
+						dir != nil &&
+						!dir.IsIn(indir) {
+						continue
+					}
+					if l := dir.Location(); Params.GetType == GetAll &&
+						ActVerb == "take" &&
+						((l != Winner &&
+							l != Here &&
+							l != Winner.Location() &&
+							l != indir &&
+							!l.Has(FlgSurf)) ||
+							!(dir.Has(FlgTake) || dir.Has(FlgTryTake))) {
+						continue
+					}
+					if obj1 == &It {
+						PrintObject(Params.ItObj)
+					} else {
+						PrintObject(obj1)
+					}
+					Print(": ", NoNewline)
+				}
+				DirObj, IndirObj = dir, indir
+				tmp = true
+				res = Perform(ActVerb, DirObj, IndirObj)
+				if res == PerfFatal {
+					break
+				}
+			}
+			if notHere > 0 {
+				Print("The ", NoNewline)
+				if notHere != numObj {
+					Print("other ", NoNewline)
+				}
+				Print("object", NoNewline)
+				if notHere != 1 {
+					Print("s", NoNewline)
+				}
+				Print(" that you mentioned ", NoNewline)
+				if notHere != 1 {
+					Print("are", NoNewline)
+				} else {
+					Print("is", NoNewline)
+				}
+				Print("n't here.", Newline)
+			} else if !tmp {
+				Print("There's nothing here you can take.", Newline)
+			}
+		}
+		if l := Winner.Location(); res != PerfFatal && l != nil && l.Action != nil {
+			if l.Action(ActEnd) {
+				res = PerfHndld
+			} else {
+				res = PerfNotHndld
+			}
+		}
+		if res == PerfFatal {
+			Params.Continue = -1
+		}
+		if ActVerb == "tell" || ActVerb == "brief" || ActVerb == "superbrief" || ActVerb == "verbose" || ActVerb == "save" || ActVerb == "version" || ActVerb == "quit" || ActVerb == "restart" || ActVerb == "score" || ActVerb == "script" || ActVerb == "unscript" || ActVerb == "restore" {
+			continue
+		} else {
+			Clocker()
+		}
+	}
+}
+
+func Perform(a string, o, i *Object) PerfRet {
+	if (o == &It || i == &It) && IsAccessible(Params.ItObj) {
+		Print("I don't see what you are referring to.", Newline)
+		return PerfFatal
+	}
+	if o == &It {
+		o = Params.ItObj
+	}
+	if i == &It {
+		i = Params.ItObj
+	}
+	if o != nil && IndirObj != &It && a == "walk" {
+		Params.ItObj = o
+	}
+	if o == &NotHereObject || i == &NotHereObject {
+		if NotHereObjectFcn(ActUnk) {
+			return PerfHndld
+		}
+		return PerfNotHndld
+	}
+	if Winner != nil && Winner.Action != nil {
+		if Winner.Action(ActUnk) {
+			return PerfHndld
+		}
+		return PerfNotHndld
+	}
+	if l := Winner.Location(); l != nil && l.Action != nil {
+		if l.Action(ActBegin) {
+			return PerfHndld
+		}
+		return PerfNotHndld
+	}
+	if act, ok := PreActions[a]; ok && act != nil {
+		if act(ActUnk) {
+			return PerfHndld
+		}
+		return PerfNotHndld
+	}
+	if i != nil && i.Action != nil {
+		if i.Action(ActUnk) {
+			return PerfHndld
+		}
+		return PerfNotHndld
+	}
+	if l := o.Location(); o != nil && a != "walk" && l != nil && l.ContFcn != nil {
+		if l.ContFcn(ActUnk) {
+			return PerfHndld
+		}
+		return PerfNotHndld
+	}
+	if o != nil && a != "walk" && o.Action != nil {
+		if o.Action(ActUnk) {
+			return PerfHndld
+		}
+		return PerfNotHndld
+	}
+	if act, ok := Actions[a]; ok && act != nil {
+		if act(ActUnk) {
+			return PerfHndld
+		}
+		return PerfNotHndld
+	}
+	return PerfNotHndld
 }

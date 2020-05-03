@@ -2,22 +2,29 @@ package zork
 
 import "fmt"
 
+type EndType int
+
+const (
+	Newline EndType = iota
+	NoNewline
+)
+
 func NewLine() {
-	fmt.Printf("\n")
+	fmt.Println("")
 }
 
-func Print(msg string) {
-	fmt.Printf(msg)
+func PrintObject(obj *Object) {
+	fmt.Printf("%v", obj.Desc)
 }
 
-func PrintNumber(n uint32) {
-	fmt.Printf("%v", n)
+func PrintNumber(num int) {
+	fmt.Printf("%v", num)
 }
 
-func PrintChar(n byte) {
-	fmt.Printf("%v", string(n))
-}
-
-func PrintObj(o *Object) {
-	fmt.Printf(o.Name)
+func Print(msg string, end EndType) {
+	if end == NoNewline {
+		fmt.Printf(msg)
+	} else {
+		fmt.Println(msg)
+	}
 }
