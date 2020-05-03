@@ -37,46 +37,41 @@ type VrbAction func(ActArg) bool
 type ObjProp struct {
 	ObjFlags []Flag
 	LocFlags LocFlags
+	HasObj   bool
 }
 
 type Syntx struct {
 	Verb      string
-	VrbPrep   *string
-	Obj1      *ObjProp
-	ObjPrep   *string
-	Obj2      *ObjProp
+	VrbPrep   string
+	Obj1      ObjProp
+	ObjPrep   string
+	Obj2      ObjProp
 	Action    VrbAction
 	PreAction VrbAction
 }
 
 func (s *Syntx) NumObjects() int {
-	if s.Obj1 == nil {
+	if !s.Obj1.HasObj {
 		return 0
 	}
-	if s.Obj2 == nil {
+	if !s.Obj2.HasObj {
 		return 1
 	}
 	return 2
 }
 
 func (s *Syntx) IsVrbPrep(prep string) bool {
-	if s.VrbPrep == nil {
-		return false
-	}
-	return *s.VrbPrep == prep
+	return s.VrbPrep == prep
 }
 
 func (s *Syntx) IsObjPrep(prep string) bool {
-	if s.ObjPrep == nil {
-		return false
-	}
-	return *s.ObjPrep == prep
+	return s.ObjPrep == prep
 }
 
 func (s *Syntx) GetActionVerb() string {
 	av := s.Verb
-	if s.VrbPrep != nil && len(*s.VrbPrep) > 0 {
-		av += " " + *s.VrbPrep
+	if len(s.VrbPrep) > 0 {
+		av += " " + s.VrbPrep
 	}
 	return av
 }
@@ -148,11 +143,11 @@ func BuildVocabulary() {
 	// Add verbs
 	for _, cmd := range Commands {
 		addToVocab(cmd.Verb, WordVerb)
-		if cmd.VrbPrep != nil {
-			addToVocab(*cmd.VrbPrep, WordPrep)
+		if len(cmd.VrbPrep) > 0 {
+			addToVocab(cmd.VrbPrep, WordPrep)
 		}
-		if cmd.ObjPrep != nil {
-			addToVocab(*cmd.ObjPrep, WordPrep)
+		if len(cmd.ObjPrep) > 0 {
+			addToVocab(cmd.ObjPrep, WordPrep)
 		}
 		Actions[cmd.GetActionVerb()] = cmd.Action
 		if cmd.PreAction != nil {

@@ -919,7 +919,7 @@ func SyntaxCheck() bool {
 	}
 	found := false
 	if findFirst != nil {
-		obj := FindWhatIMean(findFirst.Obj1.ObjFlags, findFirst.Obj1.LocFlags, *findFirst.VrbPrep)
+		obj := FindWhatIMean(findFirst.Obj1.ObjFlags, findFirst.Obj1.LocFlags, findFirst.VrbPrep)
 		if obj != nil {
 			DirObjPossibles = []*Object{obj}
 			DetectedSyntx = findFirst
@@ -928,7 +928,7 @@ func SyntaxCheck() bool {
 		}
 	}
 	if findSecond != nil && !found {
-		obj := FindWhatIMean(findSecond.Obj2.ObjFlags, findSecond.Obj2.LocFlags, *findSecond.ObjPrep)
+		obj := FindWhatIMean(findSecond.Obj2.ObjFlags, findSecond.Obj2.LocFlags, findSecond.ObjPrep)
 		if obj != nil {
 			IndirObjPossibles = []*Object{obj}
 			DetectedSyntx = findSecond
@@ -957,13 +957,9 @@ func SyntaxCheck() bool {
 			ThingPrint(true, true)
 		}
 		if findFirst != nil {
-			if findFirst.VrbPrep != nil {
-				Print(" "+(*findFirst.VrbPrep), NoNewline)
-			}
+			Print(" "+findFirst.VrbPrep, NoNewline)
 		} else if findSecond != nil {
-			if findSecond.ObjPrep != nil {
-				Print(" "+(*findSecond.ObjPrep), NoNewline)
-			}
+			Print(" "+findSecond.ObjPrep, NoNewline)
 		}
 		Print("?", Newline)
 		return false
@@ -980,13 +976,13 @@ func Orphan(first, second *Syntx) {
 		OrphanedSyntx.ObjOrClause1 = []LexItm{}
 	}
 	if first != nil {
-		OrphanedSyntx.Prep1.Norm = *first.VrbPrep
-		OrphanedSyntx.Prep1.Orig = *first.VrbPrep
+		OrphanedSyntx.Prep1.Norm = first.VrbPrep
+		OrphanedSyntx.Prep1.Orig = first.VrbPrep
 		OrphanedSyntx.Prep1.Type = WordPrep
 		OrphanedSyntx.ObjOrClause1 = []LexItm{}
 	} else if second != nil {
-		OrphanedSyntx.Prep2.Norm = *second.ObjPrep
-		OrphanedSyntx.Prep2.Orig = *second.ObjPrep
+		OrphanedSyntx.Prep2.Norm = second.ObjPrep
+		OrphanedSyntx.Prep2.Orig = second.ObjPrep
 		OrphanedSyntx.Prep2.Type = WordPrep
 		OrphanedSyntx.ObjOrClause2 = []LexItm{}
 	}

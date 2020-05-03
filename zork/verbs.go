@@ -6,10 +6,11 @@ import (
 )
 
 var (
-	Moves      = 0
-	Lit        = false
-	SuperBrief = false
+	Moves      int
+	Lit        bool
+	SuperBrief bool
 	Version    = [24]byte{0, 0, 0, 0, 88, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 56, 52, 48, 55, 50, 54}
+	WonGame    bool
 )
 
 func VVersion(arg ActArg) bool {
@@ -39,7 +40,7 @@ func VWalk(arg ActArg) bool {
 
 func VQuit(arg ActArg) bool {
 	VScore(arg)
-	Print("Do you wish to restart? (Y is affirmative): ", NoNewline)
+	Print("Do you wish to leave the game? (Y is affirmative): ", NoNewline)
 	if IsYes() {
 		os.Exit(0)
 	} else {

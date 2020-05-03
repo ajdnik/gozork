@@ -45,6 +45,7 @@ func Run() {
 }
 
 func MainLoop() {
+	Params.Continue = ContEmpty
 	for {
 		ParserOk = Parse()
 		if !ParserOk {
@@ -204,49 +205,41 @@ func Perform(a string, o, i *Object) PerfRet {
 		if NotHereObjectFcn(ActUnk) {
 			return PerfHndld
 		}
-		return PerfNotHndld
 	}
 	if Winner != nil && Winner.Action != nil {
 		if Winner.Action(ActUnk) {
 			return PerfHndld
 		}
-		return PerfNotHndld
 	}
 	if l := Winner.Location(); l != nil && l.Action != nil {
 		if l.Action(ActBegin) {
 			return PerfHndld
 		}
-		return PerfNotHndld
 	}
 	if act, ok := PreActions[a]; ok && act != nil {
 		if act(ActUnk) {
 			return PerfHndld
 		}
-		return PerfNotHndld
 	}
 	if i != nil && i.Action != nil {
 		if i.Action(ActUnk) {
 			return PerfHndld
 		}
-		return PerfNotHndld
 	}
-	if l := o.Location(); o != nil && a != "walk" && l != nil && l.ContFcn != nil {
-		if l.ContFcn(ActUnk) {
+	if o != nil && a != "walk" && o.Location() != nil && o.Location().ContFcn != nil {
+		if o.Location().ContFcn(ActUnk) {
 			return PerfHndld
 		}
-		return PerfNotHndld
 	}
 	if o != nil && a != "walk" && o.Action != nil {
 		if o.Action(ActUnk) {
 			return PerfHndld
 		}
-		return PerfNotHndld
 	}
 	if act, ok := Actions[a]; ok && act != nil {
 		if act(ActUnk) {
 			return PerfHndld
 		}
-		return PerfNotHndld
 	}
 	return PerfNotHndld
 }

@@ -58,6 +58,14 @@ func MailboxFcn(arg ActArg) bool {
 }
 
 func WestHouseFcn(arg ActArg) bool {
+	if arg == ActLook {
+		Print("You are standing in an open field west of a white house, with a boarded front door.", NoNewline)
+		if WonGame {
+			Print(" A secret path leads southwest into the forest.", NoNewline)
+		}
+		NewLine()
+		return true
+	}
 	return false
 }
 
