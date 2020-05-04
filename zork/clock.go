@@ -50,7 +50,7 @@ func Clocker() bool {
 		end = QueueInts
 	}
 	flg := false
-	for i := len(QueueItms); i > end; i-- {
+	for i := len(QueueItms) - 1; i > end; i-- {
 		if !QueueItms[i].Run {
 			continue
 		}

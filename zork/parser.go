@@ -64,7 +64,6 @@ const (
 type ParseProps struct {
 	ObjOrClauseCnt int
 	EndOnPrep      bool
-	HasVerb        bool
 	Number         int
 	ShldOrphan     bool
 	HasMerged      bool
@@ -257,21 +256,22 @@ func Parse() bool {
 		var lw, nw LexItm
 		var vrb string
 		var isOf bool
-		for i := beg; Params.BufLen >= 1; i, Params.BufLen = i+1, Params.BufLen-1 {
+		Params.BufLen--
+		for i := beg; Params.BufLen > -1; i, Params.BufLen = i+1, Params.BufLen-1 {
 			HandleNumber(i)
 			wrd := LexRes[i]
 			if wrd.Type == WordUnk && !wrd.Is("intnum") {
 				UnknownWord(i)
 				return false
 			}
-			if Params.BufLen != 1 {
-				nw.Set(LexRes[i+1])
-			} else {
+			if Params.BufLen == 0 {
 				nw.Clear()
+			} else {
+				nw.Set(LexRes[i+1])
 			}
 			if wrd.Is("to") && vrb == "tell" {
 				wrd.Set(mkBuzz("\""))
-			} else if wrd.Is("then") && Params.BufLen > 1 && len(vrb) == 0 && !Params.InQuotes {
+			} else if wrd.Is("then") && Params.BufLen > 0 && len(vrb) == 0 && !Params.InQuotes {
 				if !lw.IsSet() || lw.Is(".") {
 					wrd.Set(mkBuzz("the"))
 				} else {
@@ -285,7 +285,7 @@ func Parse() bool {
 				if wrd.Is("\"") {
 					Params.InQuotes = !Params.InQuotes
 				}
-				if Params.BufLen != 1 {
+				if Params.BufLen != 0 {
 					Params.Continue = i + 1
 				}
 				break
@@ -308,9 +308,9 @@ func Parse() bool {
 				vrb = wrd.Norm
 				ParsedSyntx.Verb.Set(wrd)
 			} else if wrd.Type == WordPrep || wrd.IsAny("all", "one") || wrd.Type == WordAdj || wrd.Type == WordObj {
-				if Params.BufLen > 2 && nw.Is("of") && wrd.Type != WordPrep && !wrd.IsAny("all", "one", "a") {
+				if Params.BufLen > 1 && nw.Is("of") && wrd.Type != WordPrep && !wrd.IsAny("all", "one", "a") {
 					isOf = true
-				} else if wrd.Type == WordPrep && (Params.BufLen == 1 || nw.IsAny("then", ".")) {
+				} else if wrd.Type == WordPrep && (Params.BufLen == 0 || nw.IsAny("then", ".")) {
 					Params.EndOnPrep = true
 					if Params.ObjOrClauseCnt < 2 {
 						ParsedSyntx.Prep1.Set(wrd)
@@ -399,7 +399,7 @@ func Clause(idx int, wrd LexItm) (bool, int) {
 	} else {
 		Params.BufLen++
 	}
-	if Params.BufLen == 1 {
+	if Params.BufLen == 0 {
 		Params.ObjOrClauseCnt--
 		return true, -1
 	}
@@ -411,17 +411,18 @@ func Clause(idx int, wrd LexItm) (bool, int) {
 	isFirst := true
 	var isAnd bool
 	var i int
-	for i = idx; Params.BufLen >= 1; i, Params.BufLen = i+1, Params.BufLen-1 {
+	Params.BufLen--
+	for i = idx; Params.BufLen > -1; i, Params.BufLen = i+1, Params.BufLen-1 {
 		HandleNumber(i)
 		cw := LexRes[i]
 		if cw.Type == WordUnk && !cw.Is("intnum") {
 			UnknownWord(i)
 			return false, -1
 		}
-		if Params.BufLen != 1 {
-			nw.Set(LexRes[i+1])
-		} else {
+		if Params.BufLen == 0 {
 			nw.Clear()
+		} else {
+			nw.Set(LexRes[i+1])
 		}
 		if cw.IsAny("and", ",") {
 			isAnd = true
@@ -439,7 +440,7 @@ func Clause(idx int, wrd LexItm) (bool, int) {
 			}
 			return true, i - 1
 		} else if cw.Type == WordObj {
-			if Params.BufLen > 1 && nw.Is("of") && !cw.IsAny("all", "one") {
+			if Params.BufLen > 0 && nw.Is("of") && !cw.IsAny("all", "one") {
 				lw.Set(cw)
 				isFirst = false
 				continue
@@ -812,7 +813,7 @@ func Snarfem(isDirect bool, wrds []LexItm) []*Object {
 				continue
 			}
 		} else if wrd.IsAny("but", "except") {
-			out := GetObject(isDirect)
+			out := GetObject(isDirect, true)
 			if out == nil {
 				return nil
 			}
@@ -831,7 +832,7 @@ func Snarfem(isDirect bool, wrds []LexItm) []*Object {
 				}
 			} else {
 				Search.Syn.Set(Params.OneObj)
-				out := GetObject(isDirect)
+				out := GetObject(isDirect, true)
 				if out == nil {
 					return nil
 				}
@@ -846,7 +847,7 @@ func Snarfem(isDirect bool, wrds []LexItm) []*Object {
 			}
 		} else if wrd.IsAny("and", ",") && !nw.IsAny("and", ",") {
 			Params.HasAnd = true
-			out := GetObject(isDirect)
+			out := GetObject(isDirect, true)
 			if out == nil {
 				return nil
 			}
@@ -871,7 +872,7 @@ func Snarfem(isDirect bool, wrds []LexItm) []*Object {
 			Params.OneObj.Set(wrd)
 		}
 	}
-	out := GetObject(isDirect)
+	out := GetObject(isDirect, true)
 	if wasall {
 		Params.GetType = GetAll
 	}
@@ -998,7 +999,7 @@ func FindWhatIMean(objFlags []Flag, locFlags LocFlags, prep string) *Object {
 	}
 	Search.ObjFlags = objFlags
 	Search.LocFlags = locFlags
-	res := GetObject(false)
+	res := GetObject(false, false)
 	Search.ObjFlags = nil
 	if len(res) != 1 {
 		return nil
@@ -1023,7 +1024,7 @@ func FindWhatIMean(objFlags []Flag, locFlags LocFlags, prep string) *Object {
 	return res[0]
 }
 
-func GetObject(isDirect bool) []*Object {
+func GetObject(isDirect, vrb bool) []*Object {
 	if Params.GetType == GetInhibit {
 		return []*Object{}
 	}
@@ -1032,7 +1033,7 @@ func GetObject(isDirect bool) []*Object {
 		Search.Adj.Clear()
 	}
 	if !Search.Syn.IsSet() && !Search.Adj.IsSet() && Params.GetType != GetAll && len(Search.ObjFlags) == 0 {
-		if Params.HasVerb {
+		if vrb {
 			Print("There seems to be a noun missing in that sentence!", Newline)
 		}
 		return nil
@@ -1083,7 +1084,7 @@ func GetObject(isDirect bool) []*Object {
 				CanNotOrphan()
 				return nil
 			}
-			if Params.HasVerb && Search.Syn.IsSet() {
+			if vrb && Search.Syn.IsSet() {
 				WhichPrint(isDirect, res)
 				if isDirect {
 					Params.AdjClause.Type = Clause1
@@ -1094,7 +1095,7 @@ func GetObject(isDirect bool) []*Object {
 				Params.AdjClause.Adj.Set(Search.Adj)
 				Orphan(nil, nil)
 				Params.ShldOrphan = true
-			} else if Params.HasVerb {
+			} else if vrb {
 				Print("There seems to be a noun missing in that sentence!", Newline)
 			}
 			Search.Syn.Clear()
@@ -1102,7 +1103,7 @@ func GetObject(isDirect bool) []*Object {
 			return nil
 		}
 		if ln == 0 && gcheck {
-			if Params.HasVerb {
+			if vrb {
 				Search.LocFlags = xbits
 				if Lit || ActVerb == "tell" {
 					res = append(res, &NotHereObject)
@@ -1293,7 +1294,7 @@ func DoSL(obj *Object, f1, f2 LocFlag) []*Object {
 // in the Search global variable.
 // It returns a list of all found game objects.
 func SearchList(obj *Object, typ FindTyp) []*Object {
-	if obj == nil || obj.Children == nil {
+	if obj == nil || !obj.HasChildren() {
 		return nil
 	}
 	found := []*Object{}
@@ -1301,7 +1302,9 @@ func SearchList(obj *Object, typ FindTyp) []*Object {
 		if typ != FindBottom && child.Synonyms != nil && IsThisIt(child) {
 			found = append(found, child)
 		}
-		if (typ != FindTop || child.Has(FlgSearch) || child.Has(FlgSurf)) && len(child.Children) > 0 && (child.Has(FlgOpen) || child.Has(FlgTrans)) {
+		if (typ != FindTop || child.Has(FlgSearch) || child.Has(FlgSurf)) &&
+			child.HasChildren() &&
+			(child.Has(FlgOpen) || child.Has(FlgTrans)) {
 			var res []*Object
 			if child.Has(FlgSurf) || child.Has(FlgSearch) {
 				res = SearchList(child, FindAll)

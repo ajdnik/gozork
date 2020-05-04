@@ -23,6 +23,7 @@ func Run() {
 		Queue(ICandles, 40)
 		Queue(ILantern, 200)
 		InflatedBoat.VehType = FlgNonLand
+		Mailbox.Action = MailboxFcn
 		Def1Res[1] = Def1[2]
 		Def1Res[2] = Def1[4]
 		Def2Res[2] = Def2B[2]

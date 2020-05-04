@@ -83,6 +83,9 @@ const (
 	// TODO: describe
 	FlgTool
 	FlgNonLand
+	// FlgMaze means the room is a maze
+	FlgMaze
+	FlgClimb
 )
 
 // In function checks if the current flag is in the flag slice.
@@ -100,6 +103,9 @@ func (f Flag) In(flgs []Flag) bool {
 // if any of the flags in the first slice are present in the
 // second slice.
 func AnyFlagIn(any, flgs []Flag) bool {
+	if len(any) == 0 {
+		return true
+	}
 	for _, af := range any {
 		for _, fl := range flgs {
 			if af == fl {
@@ -148,11 +154,14 @@ type Object struct {
 	Size       int
 	Value      int
 	Strength   int
-	Name       string
 	Text       string
 	Desc       string
-	SecondDesc string
+	LongDesc   string
 	FirstDesc  string
+}
+
+func (o *Object) HasChildren() bool {
+	return len(o.Children) > 0
 }
 
 // AddChild adds the game object as a child of the current
@@ -175,6 +184,7 @@ func (o *Object) AddChild(child *Object) {
 // its child.
 func (o *Object) MoveTo(dest *Object) {
 	o.In = dest
+	dest.AddChild(o)
 }
 
 // Has checks if the current game object has a certain

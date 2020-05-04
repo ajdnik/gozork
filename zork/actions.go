@@ -54,6 +54,10 @@ func RBoatFcn(arg ActArg) bool {
 }
 
 func MailboxFcn(arg ActArg) bool {
+	if ActVerb == "take" && DirObj == &Mailbox {
+		Print("It is securely anchored.", Newline)
+		return true
+	}
 	return false
 }
 
@@ -78,5 +82,21 @@ func ForestFcn(arg ActArg) bool {
 }
 
 func BoardFcn(arg ActArg) bool {
+	if ActVerb == "take" || ActVerb == "examine" {
+		Print("The boards are securely fastened.", Newline)
+		return true
+	}
+	return false
+}
+
+func TrophyCaseFcn(arg ActArg) bool {
+	return false
+}
+
+func LivingRoomFcn(arg ActArg) bool {
+	return false
+}
+
+func NailsPseudo(arg ActArg) bool {
 	return false
 }

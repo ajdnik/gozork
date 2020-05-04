@@ -106,6 +106,12 @@ var (
 		"superbrief": "super",
 		"i":          "inventory",
 		"q":          "quit",
+		"l":          "look",
+		"stare":      "look",
+		"gaze":       "look",
+		"describe":   "examine",
+		"what":       "examine",
+		"whats":      "examine",
 	}
 	Directions = []string{
 		"north", "east", "west", "south", "northeast",
@@ -120,6 +126,81 @@ var (
 		{
 			Verb:   "version",
 			Action: VVersion,
+		},
+		{
+			Verb:   "examine",
+			Obj1:   ObjProp{HasObj: true, LocFlags: LocFlags{LocMany}},
+			Action: VExamine,
+		},
+		{
+			Verb:    "examine",
+			VrbPrep: "in",
+			Obj1:    ObjProp{HasObj: true, LocFlags: LocFlags{LocHeld, LocCarried, LocInRoom, LocOnGrnd, LocMany}},
+			Action:  VLookInside,
+		},
+		{
+			Verb:    "examine",
+			VrbPrep: "on",
+			Obj1:    ObjProp{HasObj: true, LocFlags: LocFlags{LocHeld, LocCarried, LocInRoom, LocOnGrnd, LocMany}},
+			Action:  VLookInside,
+		},
+		{
+			Verb:   "look",
+			Action: VLook,
+		},
+		{
+			Verb:    "look",
+			VrbPrep: "around",
+			Obj1:    ObjProp{HasObj: true, ObjFlags: []Flag{FlgSearch, FlgKludge}},
+			Action:  VLook,
+		},
+		{
+			Verb:    "look",
+			VrbPrep: "up",
+			Obj1:    ObjProp{HasObj: true, ObjFlags: []Flag{FlgSearch, FlgKludge}},
+			Action:  VLook,
+		},
+		{
+			Verb:    "look",
+			VrbPrep: "down",
+			Obj1:    ObjProp{HasObj: true, ObjFlags: []Flag{FlgSearch, FlgKludge}},
+			Action:  VLook,
+		},
+		{
+			Verb:    "look",
+			VrbPrep: "at",
+			Obj1:    ObjProp{HasObj: true, LocFlags: LocFlags{LocHeld, LocCarried, LocInRoom, LocOnGrnd, LocMany}},
+			Action:  VExamine,
+		},
+		{
+			Verb:    "look",
+			VrbPrep: "on",
+			Obj1:    ObjProp{HasObj: true},
+			Action:  VLookOn,
+		},
+		{
+			Verb:    "look",
+			VrbPrep: "with",
+			Obj1:    ObjProp{HasObj: true, LocFlags: LocFlags{LocHeld, LocCarried, LocInRoom, LocOnGrnd, LocMany}},
+			Action:  VLookInside,
+		},
+		{
+			Verb:    "look",
+			VrbPrep: "under",
+			Obj1:    ObjProp{HasObj: true},
+			Action:  VLookUnder,
+		},
+		{
+			Verb:    "look",
+			VrbPrep: "behind",
+			Obj1:    ObjProp{HasObj: true},
+			Action:  VLookBehind,
+		},
+		{
+			Verb:    "look",
+			VrbPrep: "in",
+			Obj1:    ObjProp{HasObj: true, LocFlags: LocFlags{LocHeld, LocCarried, LocInRoom, LocOnGrnd, LocMany}},
+			Action:  VLookInside,
 		},
 	}
 	Actions    = make(map[string]VrbAction)

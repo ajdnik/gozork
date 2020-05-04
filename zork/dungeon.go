@@ -33,6 +33,26 @@ var (
 		Flags:    []Flag{FlgNoDesc},
 		Action:   ForestFcn,
 	}
+	LivingRoom = Object{
+		In:     &Rooms,
+		Desc:   "Living Room",
+		Action: LivingRoomFcn,
+		Flags:  []Flag{FlgLand, FlgOn, FlgSacred},
+		Global: []*Object{&Stairs},
+		Pseudo: []PseudoObj{
+			{Synonym: "nails", Action: NailsPseudo},
+			{Synonym: "nail", Action: NailsPseudo},
+		},
+	}
+	TrophyCase = Object{
+		In:         &LivingRoom,
+		Synonyms:   []string{"case"},
+		Adjectives: []string{"trophy"},
+		Desc:       "trophy case",
+		Flags:      []Flag{FlgTrans, FlgCont, FlgNoDesc, FlgTryTake, FlgSearch},
+		Action:     TrophyCaseFcn,
+		Capacity:   10000,
+	}
 	WestOfHouse = Object{
 		In:     &Rooms,
 		Desc:   "West of House",
@@ -47,7 +67,7 @@ var (
 		Desc:       "small mailbox",
 		Flags:      []Flag{FlgCont, FlgTryTake},
 		Capacity:   10,
-		Action:     MailboxFcn,
+		// Action:     MailboxFcn,
 	}
 	Objects = []*Object{
 		&Rooms,
@@ -65,5 +85,8 @@ var (
 		&WhiteHouse,
 		&Board,
 		&Forest,
+		&TrophyCase,
+		&LivingRoom,
+		&Stairs,
 	}
 )
