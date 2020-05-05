@@ -12,7 +12,7 @@ var (
 	Verbose    bool
 	// IsSprayed is a flag indicating if the player is wearing Grue repellent
 	IsSprayed bool
-	Version   = [24]byte{0, 0, 0, 0, 88, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 56, 52, 48, 55, 50, 54}
+	Version   = [24]byte{0, 0, 0, 0, 119, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 56, 56, 48, 52, 50, 57}
 	WonGame   bool
 	// DescObj stores the last object which was described
 	DescObj *Object
@@ -29,7 +29,7 @@ var (
 func VVersion(arg ActArg) bool {
 	Print("ZORK I: The Great Underground Empire", Newline)
 	Print("Infocom interactive fiction - a fantasy story", Newline)
-	Print("Copyright (c) 1981, 1982, 1983, 1984, 1985, 1986", Newline)
+	Print("Copyright (c) 1981, 1982, 1983, 1984, 1985, 1986", NoNewline)
 	Print(" Infocom, Inc. All rights reserved.", Newline)
 	Print("ZORK is a registered trademark of Infocom, Inc.", Newline)
 	Print("Release ", NoNewline)
