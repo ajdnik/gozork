@@ -2,6 +2,10 @@ package zork
 
 import "math/rand"
 
+const (
+	NumUndef int = -1
+)
+
 type ParseTbl struct {
 	Verb         LexItm
 	Prep1        LexItm
@@ -20,6 +24,16 @@ func (pt *ParseTbl) Set(tbl ParseTbl) {
 	pt.Obj1End = tbl.Obj1End
 	pt.Prep2.Set(tbl.Prep2)
 	pt.ObjOrClause2 = append([]LexItm{}, tbl.ObjOrClause2...)
+}
+
+func (pt *ParseTbl) Clear() {
+	pt.Verb.Clear()
+	pt.Prep1.Clear()
+	pt.ObjOrClause1 = nil
+	pt.Obj1Start = NumUndef
+	pt.Obj1End = NumUndef
+	pt.Prep2.Clear()
+	pt.ObjOrClause2 = nil
 }
 
 type NotHereProps struct {
@@ -79,10 +93,6 @@ type ParseProps struct {
 	WalkDir        string
 }
 
-const (
-	ContEmpty int = -1
-)
-
 type FindTyp int
 
 const (
@@ -133,6 +143,7 @@ func Parse() bool {
 	if Params.ShldOrphan {
 		OrphanedSyntx.Set(ParsedSyntx)
 	}
+	ParsedSyntx.Clear()
 	bakWin := Winner
 	bakMerg := Params.HasMerged
 	Params.HasMerged = false
@@ -154,13 +165,13 @@ func Parse() bool {
 		}
 		Reserv.IdxSet = false
 		Reserv.Buf = nil
-		Params.Continue = ContEmpty
-	} else if Params.Continue != ContEmpty {
+		Params.Continue = NumUndef
+	} else if Params.Continue != NumUndef {
 		beg = Params.Continue
 		if !SuperBrief && Player == Winner && ActVerb != "say" {
 			NewLine()
 		}
-		Params.Continue = ContEmpty
+		Params.Continue = NumUndef
 	} else {
 		Winner = Player
 		Params.InQuotes = false

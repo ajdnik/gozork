@@ -46,11 +46,11 @@ func Run() {
 }
 
 func MainLoop() {
-	Params.Continue = ContEmpty
+	Params.Continue = NumUndef
 	for {
 		ParserOk = Parse()
 		if !ParserOk {
-			Params.Continue = ContEmpty
+			Params.Continue = NumUndef
 			continue
 		}
 		if Params.ItObj != nil && IsAccessible(Params.ItObj) {
