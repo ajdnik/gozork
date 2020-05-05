@@ -124,6 +124,10 @@ var (
 			Action: VQuit,
 		},
 		{
+			Verb:   "score",
+			Action: VScore,
+		},
+		{
 			Verb:   "version",
 			Action: VVersion,
 		},

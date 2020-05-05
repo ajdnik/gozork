@@ -7,6 +7,7 @@ import (
 
 var (
 	Moves      int
+	Score      int
 	Lit        bool
 	SuperBrief bool
 	Verbose    bool
@@ -137,10 +138,6 @@ func VQuit(arg ActArg) bool {
 		Print("Ok.", Newline)
 	}
 	return true
-}
-
-func VScore(arg ActArg) bool {
-	return false
 }
 
 func IsYes() bool {

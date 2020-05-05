@@ -100,3 +100,37 @@ func LivingRoomFcn(arg ActArg) bool {
 func NailsPseudo(arg ActArg) bool {
 	return false
 }
+
+func VScore(arg ActArg) bool {
+	Print("Your score is ", NoNewline)
+	PrintNumber(Score)
+	Print(" (total of 350 points), in ", NoNewline)
+	PrintNumber(Moves)
+	if Moves == 1 {
+		Print(" move.", NoNewline)
+	} else {
+		Print(" moves.", NoNewline)
+	}
+	NewLine()
+	Print("This gives you the rank of ", NoNewline)
+	switch {
+	case Score == 350:
+		Print("Master Adventurer", NoNewline)
+	case Score > 330:
+		Print("Wizard", NoNewline)
+	case Score > 300:
+		Print("Master", NoNewline)
+	case Score > 200:
+		Print("Adventurer", NoNewline)
+	case Score > 100:
+		Print("Junior Adventurer", NoNewline)
+	case Score > 50:
+		Print("Novice Adventurer", NoNewline)
+	case Score > 25:
+		Print("Amateur Adventurer", NoNewline)
+	default:
+		Print("Beginner", NoNewline)
+	}
+	Print(".", Newline)
+	return true
+}
