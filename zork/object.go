@@ -137,6 +137,33 @@ type PseudoObj struct {
 	Action  Action
 }
 
+type FDir func() *Object
+type CDir func() bool
+
+type DirProps struct {
+	// NExit represents a non-exit direction where
+	// the game outputs NExit string and doesn't
+	// move in direction
+	NExit string
+	// UExit represents a flag which means the user moves to
+	// the room in RExit unconditionally
+	UExit bool
+	// RExit contains a room object where the user should move
+	RExit *Object
+	// FExit represents a function which executes and if it
+	// evaluates to a room object the player moves to that room
+	FExit FDir
+	// CExit represents a conditional direction where the player moves
+	// if it evaluates to true the player is moved to RExit
+	CExit CDir
+	// CExitStr represents a message printed if the CExit evaluates to false
+	CExitStr string
+	// DExit represents a game object which if it's open moves the player to RExit
+	DExit *Object
+	// DExitStr represents a message printed if the DExit is closed
+	DExitStr string
+}
+
 // Object represents a game object which can be a character, room, vehicle etc.
 type Object struct {
 	Flags      []Flag
@@ -158,6 +185,15 @@ type Object struct {
 	Desc       string
 	LongDesc   string
 	FirstDesc  string
+	Nw         DirProps
+	South      DirProps
+	Down       DirProps
+	Land       DirProps
+	Sw         DirProps
+	Ne         DirProps
+	Se         DirProps
+	North      DirProps
+	West       DirProps
 }
 
 func (o *Object) HasChildren() bool {

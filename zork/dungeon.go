@@ -90,3 +90,7 @@ var (
 		&Stairs,
 	}
 )
+
+func FinalizeGameObjects() {
+	Mailbox.Action = MailboxFcn
+}
