@@ -229,9 +229,9 @@ func PrintCont(obj *Object, v bool, lvl int) bool {
 				isPv = true
 			} else if Winner == child {
 				continue
-			} else if !child.Has(FlgInvis) && !child.Has(FlgTouch) && len(child.Desc) > 0 {
+			} else if !child.Has(FlgInvis) && !child.Has(FlgTouch) && len(child.FirstDesc) > 0 {
 				if !child.Has(FlgNoDesc) {
-					Print(child.Desc, Newline)
+					Print(child.FirstDesc, Newline)
 					shit = false
 				}
 				if CanSeeInside(child) && child.Location().DescFcn == nil && child.HasChildren() {
@@ -246,7 +246,7 @@ func PrintCont(obj *Object, v bool, lvl int) bool {
 		if child == av || child == &Adventurer {
 			continue
 		}
-		if child.Has(FlgInvis) || (!isInv && !child.Has(FlgTouch) && len(child.Desc) > 0) {
+		if child.Has(FlgInvis) || (!isInv && !child.Has(FlgTouch) && len(child.FirstDesc) > 0) {
 			continue
 		}
 		if !child.Has(FlgNoDesc) {
