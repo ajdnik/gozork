@@ -59,6 +59,8 @@ var (
 		Flags:      []Flag{FlgNoDesc, FlgClimb},
 		Action:     StairsFcn,
 	}
+	LoadAllowed = 100
+	LoadMax     = 100
 )
 
 func NotHereObjectFcn(arg ActArg) bool {

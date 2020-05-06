@@ -53,6 +53,16 @@ var (
 		Action:     TrophyCaseFcn,
 		Capacity:   10000,
 	}
+	Map = Object{
+		In:         &TrophyCase,
+		Synonyms:   []string{"parchment", "map"},
+		Adjectives: []string{"antique", "old", "ancient"},
+		Desc:       "ancient map",
+		Flags:      []Flag{FlgInvis, FlgRead, FlgTake},
+		FirstDesc:  "In the trophy case is an ancient parchment which appears to be a map.",
+		Size:       2,
+		Text:       "The map shows a forest with three clearings. The largest clearing contains a house. Three paths leave the large clearing. One of these paths, leading southwest, is marked \"To Stone Barrow\".",
+	}
 	WestOfHouse = Object{
 		In:     &Rooms,
 		Desc:   "West of House",
@@ -88,6 +98,7 @@ var (
 		&TrophyCase,
 		&LivingRoom,
 		&Stairs,
+		&Map,
 	}
 )
 

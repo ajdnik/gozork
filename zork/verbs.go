@@ -5,12 +5,19 @@ import (
 	"os"
 )
 
+type RndSelect struct {
+	Unselected []string
+	Selected   []string
+}
+
 var (
 	Moves      int
 	Score      int
+	BaseScore  int
 	Lit        bool
 	SuperBrief bool
 	Verbose    bool
+	Dead       bool
 	// IsSprayed is a flag indicating if the player is wearing Grue repellent
 	IsSprayed bool
 	Version   = [24]byte{0, 0, 0, 0, 119, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 56, 56, 48, 52, 50, 57}
@@ -25,6 +32,17 @@ var (
 		"        ",
 		"          ",
 	}
+	Yuks = RndSelect{
+		Unselected: []string{
+			"A valiant attempt.",
+			"You can't be serious.",
+			"An interesting idea...",
+			"What a concept!",
+		},
+	}
+	Lucky        = true
+	FumbleNumber = 7
+	FumbleProb   = 8
 )
 
 func VVersion(arg ActArg) bool {
@@ -389,9 +407,87 @@ func IsHeld(obj *Object) bool {
 	}
 }
 
+func ScoreUpd(num int) bool {
+	BaseScore += num
+	Score += num
+	if Score == 350 && !WonGame {
+		WonGame = true
+		Map.Take(FlgInvis)
+		WestOfHouse.Take(FlgTouch)
+		Print("An almost inaudible voice whispers in your ear, \"Look to your treasures for the final secret.\"", Newline)
+	}
+	return true
+}
+
+func ScoreObj(obj *Object) {
+	if obj.Value <= 0 {
+		return
+	}
+	ScoreUpd(obj.Value)
+	obj.Value = 0
+}
+
+func CCount(obj *Object) int {
+	cnt := 0
+	for _, child := range obj.Children {
+		if !child.Has(FlgWear) {
+			cnt++
+		}
+	}
+	return cnt
+}
+
+func Weight(obj *Object) int {
+	wt := 0
+	for _, child := range obj.Children {
+		if obj == Player && child.Has(FlgWear) {
+			wt++
+		} else {
+			wt += Weight(child)
+		}
+	}
+	return wt + obj.Size
+}
+
 func ITake(vb bool) bool {
-	// TODO: gverbs.zil:1900
-	return false
+	if Dead {
+		if vb {
+			Print("Your hand passes through its object.", Newline)
+		}
+		return false
+	}
+	if !DirObj.Has(FlgTake) {
+		if vb {
+			Print(PickOne(Yuks), Newline)
+		}
+		return false
+	}
+	if DirObj.Has(FlgCont) && !DirObj.Has(FlgOpen) {
+		return false
+	}
+	if !DirObj.Location().IsIn(Winner) && Weight(DirObj)+Weight(Winner) > LoadAllowed {
+		if vb {
+			Print("Your load is too heavy", NoNewline)
+			if LoadAllowed < LoadMax {
+				Print(", especially in light of your condition.", NoNewline)
+			} else {
+				Print(".", NoNewline)
+			}
+			NewLine()
+		}
+		// TODO: rfatal, not rfalse
+		return false
+	}
+	cnt := CCount(Winner)
+	if ActVerb == "tell" && cnt > FumbleNumber && Prob(cnt*FumbleProb, false) {
+		Print("You're holding too many things already!", Newline)
+		return false
+	}
+	DirObj.MoveTo(Winner)
+	DirObj.Take(FlgNoDesc)
+	DirObj.Give(FlgTouch)
+	ScoreObj(DirObj)
+	return true
 }
 
 func ToDirObj(dir string) *Object {
