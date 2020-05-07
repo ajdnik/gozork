@@ -4,8 +4,10 @@ package zork
 type Flag int
 
 const (
+	// FlgUnk is the default value for Flag and means the value is undefined
+	FlgUnk Flag = iota
 	// Take means the object can be picked up by the player
-	FlgTake Flag = iota
+	FlgTake
 	// TryTake means the object shouldn't be implicitly taken
 	FlgTryTake
 	// Container means the object can contain other objects
@@ -164,6 +166,14 @@ type DirProps struct {
 	DExitStr string
 }
 
+func (dp DirProps) IsSet() bool {
+	return len(dp.NExit) > 0 ||
+		(dp.UExit && dp.RExit != nil) ||
+		dp.FExit != nil ||
+		(dp.CExit != nil && dp.RExit != nil) ||
+		(dp.DExit != nil && len(dp.DExitStr) > 0 && dp.RExit != nil)
+}
+
 // Object represents a game object which can be a character, room, vehicle etc.
 type Object struct {
 	Flags      []Flag
@@ -180,24 +190,63 @@ type Object struct {
 	Capacity   int
 	Size       int
 	Value      int
+	TValue     int
 	Strength   int
 	Text       string
 	Desc       string
 	LongDesc   string
 	FirstDesc  string
-	Nw         DirProps
-	South      DirProps
-	Down       DirProps
-	Land       DirProps
-	Sw         DirProps
-	Ne         DirProps
-	Se         DirProps
 	North      DirProps
+	South      DirProps
 	West       DirProps
+	East       DirProps
+	NorthWest  DirProps
+	NorthEast  DirProps
+	SouthWest  DirProps
+	SouthEast  DirProps
+	Up         DirProps
+	Down       DirProps
+	Into       DirProps
+	Out        DirProps
+	Land       DirProps
 }
 
+// HasChildren checks if the game object has any children
 func (o *Object) HasChildren() bool {
 	return len(o.Children) > 0
+}
+
+// GetDir returns game object's direction properties if they are set
+func (o *Object) GetDir(dir string) *DirProps {
+	switch {
+	case dir == "north" && o.North.IsSet():
+		return &o.North
+	case dir == "east" && o.East.IsSet():
+		return &o.East
+	case dir == "west" && o.West.IsSet():
+		return &o.West
+	case dir == "south" && o.South.IsSet():
+		return &o.South
+	case dir == "northeast" && o.NorthEast.IsSet():
+		return &o.NorthEast
+	case dir == "northwest" && o.NorthWest.IsSet():
+		return &o.NorthWest
+	case dir == "southeast" && o.SouthEast.IsSet():
+		return &o.SouthEast
+	case dir == "southwest" && o.SouthWest.IsSet():
+		return &o.SouthWest
+	case dir == "up" && o.Up.IsSet():
+		return &o.Up
+	case dir == "down" && o.Down.IsSet():
+		return &o.Down
+	case dir == "in" && o.Into.IsSet():
+		return &o.Into
+	case dir == "out" && o.Out.IsSet():
+		return &o.Out
+	case dir == "land" && o.Land.IsSet():
+		return &o.Land
+	}
+	return nil
 }
 
 // AddChild adds the game object as a child of the current

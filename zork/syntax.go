@@ -112,6 +112,10 @@ var (
 		"describe":   "examine",
 		"what":       "examine",
 		"whats":      "examine",
+		"go":         "walk",
+		"run":        "walk",
+		"step":       "walk",
+		"proceed":    "walk",
 	}
 	Directions = []string{
 		"north", "east", "west", "south", "northeast",
@@ -205,6 +209,33 @@ var (
 			VrbPrep: "in",
 			Obj1:    ObjProp{HasObj: true, LocFlags: LocFlags{LocHeld, LocCarried, LocInRoom, LocOnGrnd, LocMany}},
 			Action:  VLookInside,
+		},
+		{
+			Verb:   "walk",
+			Action: VWalkAround,
+		},
+		{
+			Verb:   "walk",
+			Obj1:   ObjProp{HasObj: true},
+			Action: VWalk,
+		},
+		{
+			Verb:    "walk",
+			VrbPrep: "away",
+			Obj1:    ObjProp{HasObj: true},
+			Action:  VWalk,
+		},
+		{
+			Verb:    "walk",
+			VrbPrep: "to",
+			Obj1:    ObjProp{HasObj: true},
+			Action:  VWalkTo,
+		},
+		{
+			Verb:    "walk",
+			VrbPrep: "around",
+			Obj1:    ObjProp{HasObj: true},
+			Action:  VWalkAround,
 		},
 	}
 	Actions    = make(map[string]VrbAction)

@@ -23,6 +23,11 @@ func PickOne(data RndSelect) string {
 	return msg
 }
 
+func Random(tbl []*Object) *Object {
+	rand.Seed(time.Now().Unix())
+	return tbl[rand.Intn(len(tbl))]
+}
+
 func Prob(base int, isLooser bool) bool {
 	if isLooser {
 		return Zprob(base)

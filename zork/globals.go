@@ -11,10 +11,10 @@ var (
 		DescFcn:   PathObject,
 		FirstDesc: "F",
 		LongDesc:  "F",
-		Pseudo: []PseudoObj{PseudoObj{
+		/* Pseudo: []PseudoObj{PseudoObj{
 			Synonym: "foobar",
 			Action:  VWalk,
-		}},
+		}}, */
 	}
 	Rooms         = Object{}
 	NotHereObject = Object{

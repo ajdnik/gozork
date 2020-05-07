@@ -1,5 +1,7 @@
 package zork
 
+import "os"
+
 var (
 	ParserOk bool
 	Player   *Object
@@ -12,6 +14,20 @@ const (
 	PerfHndld
 	PerfFatal
 )
+
+func Restart() {
+	// TODO: Implement restart
+}
+
+func Restore() bool {
+	// TODO: Implement restore
+	return false
+}
+
+func Quit() {
+	// TODO: Implement quit
+	os.Exit(0)
+}
 
 func Run() {
 	FinalizeGameObjects()

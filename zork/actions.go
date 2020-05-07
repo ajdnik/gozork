@@ -49,6 +49,26 @@ func ILantern() bool {
 	return false
 }
 
+func IXb() bool {
+	return false
+}
+
+func IXc() bool {
+	return false
+}
+
+func ICyclops() bool {
+	return false
+}
+
+func IForestRandom() bool {
+	return false
+}
+
+func IMatch() bool {
+	return false
+}
+
 func RBoatFcn(arg ActArg) bool {
 	return false
 }
@@ -97,6 +117,10 @@ func LivingRoomFcn(arg ActArg) bool {
 	return false
 }
 
+func BoardedWindowFcn(arg ActArg) bool {
+	return false
+}
+
 func NailsPseudo(arg ActArg) bool {
 	return false
 }
@@ -132,5 +156,85 @@ func VScore(arg ActArg) bool {
 		Print("Beginner", NoNewline)
 	}
 	Print(".", Newline)
+	return true
+}
+
+func DeadFunction(arg ActArg) bool {
+	return false
+}
+
+func JigsUp(desc string, isPlyr bool) bool {
+	Winner = &Adventurer
+	if Dead {
+		NewLine()
+		Print("It takes a talented person to be killed while already dead. YOU are such a talent. Unfortunately, it takes a talented person to deal with it. I am not such a talent. Sorry.", Newline)
+		return Finish()
+	}
+	Print(desc, Newline)
+	if !Lucky {
+		Print("Bad luck, huh?", Newline)
+	}
+	ScoreUpd(-10)
+	NewLine()
+	Print("    ****  You have died  ****", Newline)
+	NewLine()
+	if Winner.Location().Has(FlgVeh) {
+		Winner.MoveTo(Here)
+	}
+	if Deaths >= 2 {
+		Print("You clearly are a suicidal maniac. We don't allow psychotics in the cave, since they may harm other adventurers. Your remains will be installed in the Land of the Living Dead, where your fellow adventurers may gloat over them.", Newline)
+		return Finish()
+	}
+	Deaths++
+	Winner.MoveTo(Here)
+	if SouthTemple.Has(FlgTouch) {
+		Print("As you take your last breath, you feel relieved of your burdens. The feeling passes as you find yourself before the gates of Hell, where the spirits jeer at you and deny you entry. Your senses are disturbed. The objects in the dungeon appear indistinct, bleached of color, even unreal.", Newline)
+		NewLine()
+		Dead = true
+		TrollFlag = true
+		AlwaysLit = true
+		Winner.Action = DeadFunction
+		Goto(&EnteranceToHades, true)
+	}
+	TrapDoor.Take(FlgTouch)
+	Params.Continue = NumUndef
+	RandomizeObjects()
+	KillInterrupts()
+	// TODO: return fatal
+	return false
+}
+
+func RandomizeObjects() {
+	if Lamp.IsIn(Winner) {
+		Lamp.MoveTo(&LivingRoom)
+	}
+	if Coffin.IsIn(Winner) {
+		Coffin.MoveTo(&EgyptRoom)
+	}
+	Sword.TValue = 0
+	for _, child := range Winner.Children {
+		if child.TValue <= 0 {
+			child.MoveTo(Random(AboveGround))
+			continue
+		}
+		for _, r := range Rooms.Children {
+			if r.Has(FlgLand) && !r.Has(FlgOn) && Prob(50, false) {
+				child.MoveTo(r)
+				break
+			}
+		}
+	}
+}
+
+func KillInterrupts() bool {
+	QueueInt(IXb, false).Run = false
+	QueueInt(IXc, false).Run = false
+	QueueInt(ICyclops, false).Run = false
+	QueueInt(ILantern, false).Run = false
+	QueueInt(ICandles, false).Run = false
+	QueueInt(ISword, false).Run = false
+	QueueInt(IForestRandom, false).Run = false
+	QueueInt(IMatch, false).Run = false
+	Match.Take(FlgOn)
 	return true
 }

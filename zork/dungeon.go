@@ -1,6 +1,10 @@
 package zork
 
 var (
+	TrollFlag bool
+)
+
+var (
 	InflatedBoat = Object{
 		Synonyms:   []string{"boat", "raft"},
 		Adjectives: []string{"magic", "plastic", "seaworthy", "inflated", "inflatable"},
@@ -69,6 +73,9 @@ var (
 		Action: WestHouseFcn,
 		Flags:  []Flag{FlgLand, FlgOn, FlgSacred},
 		Global: []*Object{&WhiteHouse, &Board, &Forest},
+		// North:     DirProps{UExit: true, RExit: &NorthOfHouse},
+		// NorthEast: DirProps{UExit: true, RExit: &NorthOfHouse},
+		East: DirProps{NExit: "The door is boarded and you can't remove the boards."},
 	}
 	Mailbox = Object{
 		In:         &WestOfHouse,
@@ -78,6 +85,54 @@ var (
 		Flags:      []Flag{FlgCont, FlgTryTake},
 		Capacity:   10,
 		// Action:     MailboxFcn,
+	}
+	EnteranceToHades = Object{}
+	SouthTemple      = Object{}
+	TrapDoor         = Object{}
+	Lamp             = Object{}
+	Coffin           = Object{}
+	EgyptRoom        = Object{}
+	Sword            = Object{}
+	BoardedWindow    = Object{
+		In:         &LocalGlobals,
+		Synonyms:   []string{"window"},
+		Adjectives: []string{"boarded"},
+		Desc:       "boarded window",
+		Flags:      []Flag{FlgNoDesc},
+		Action:     BoardedWindowFcn,
+	}
+	NorthOfHouse = Object{
+		In:        &Rooms,
+		LongDesc:  "You are facing the north side of a white house. There is no door here, and all the windows are boarded up. To the north a narrow path winds through the trees.",
+		Desc:      "North of House",
+		West:      DirProps{UExit: true, RExit: &WestOfHouse},
+		SouthWest: DirProps{UExit: true, RExit: &WestOfHouse},
+		South:     DirProps{NExit: "The windows are all boarded."},
+		Flags:     []Flag{FlgLand, FlgOn, FlgSacred},
+		Global:    []*Object{&WhiteHouse, &Board, &Forest, &BoardedWindow},
+	}
+	EastOfHouse     = Object{}
+	SouthOfHouse    = Object{}
+	Forest1         = Object{}
+	Forest2         = Object{}
+	Forest3         = Object{}
+	Path            = Object{}
+	Clearing        = Object{}
+	GratingClearing = Object{}
+	CanyonView      = Object{}
+	Match           = Object{}
+	AboveGround     = []*Object{
+		&WestOfHouse,
+		&NorthOfHouse,
+		&EastOfHouse,
+		&SouthOfHouse,
+		&Forest1,
+		&Forest2,
+		&Forest3,
+		&Path,
+		&Clearing,
+		&GratingClearing,
+		&CanyonView,
 	}
 	Objects = []*Object{
 		&Rooms,
@@ -99,9 +154,34 @@ var (
 		&LivingRoom,
 		&Stairs,
 		&Map,
+		&EnteranceToHades,
+		&SouthTemple,
+		&TrapDoor,
+		&Lamp,
+		&Coffin,
+		&EgyptRoom,
+		&Sword,
+		&NorthOfHouse,
+		&EastOfHouse,
+		&SouthOfHouse,
+		&Forest1,
+		&Forest2,
+		&Forest3,
+		&Path,
+		&Clearing,
+		&GratingClearing,
+		&CanyonView,
+		&Match,
+		&BoardedWindow,
 	}
 )
 
 func FinalizeGameObjects() {
 	Mailbox.Action = MailboxFcn
+	LocalGlobals.Pseudo = []PseudoObj{PseudoObj{
+		Synonym: "foobar",
+		Action:  VWalk,
+	}}
+	WestOfHouse.North = DirProps{UExit: true, RExit: &NorthOfHouse}
+	WestOfHouse.NorthEast = DirProps{UExit: true, RExit: &NorthOfHouse}
 }
