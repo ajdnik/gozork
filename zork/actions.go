@@ -94,7 +94,62 @@ func WestHouseFcn(arg ActArg) bool {
 }
 
 func WhiteHouseFcn(arg ActArg) bool {
+	if Here == &Kitchen || Here == &LivingRoom || Here == &Attic {
+		if ActVerb == "find" {
+			Print("Why not find your brains?", Newline)
+			return true
+		}
+		if ActVerb == "walk around" {
+			GoNext(InHouseAround)
+			return true
+		}
+	} else if Here != &WestOfHouse && Here != &NorthOfHouse && Here != &EastOfHouse && Here != &SouthOfHouse {
+		if ActVerb == "find" {
+			if Here == &Clearing {
+				Print("It seems to be to the west.", Newline)
+				return true
+			}
+			Print("It was here just a minute ago....", Newline)
+			return true
+		}
+		Print("You're not at the house.", Newline)
+		return true
+	} else if ActVerb == "find" {
+		Print("It's right here! Are you blind or something?", Newline)
+		return true
+	} else if ActVerb == "walk around" {
+		GoNext(HouseAround)
+		return true
+	} else if ActVerb == "examine" {
+		Print("The house is a beautiful colonial house which is painted white. It is clear that the owners must have been extremely wealthy.", Newline)
+		return true
+	} else if ActVerb == "through" || ActVerb == "open" {
+		if Here == &EastOfHouse {
+			if KitchenWindow.Has(FlgOpen) {
+				return Goto(&Kitchen, true)
+			}
+			Print("The window is closed.", Newline)
+			ThisIsIt(&KitchenWindow)
+			return true
+		}
+		Print("I can't see how to get in from here.", Newline)
+		return true
+	} else if ActVerb == "burn" {
+		Print("You must be joking.", Newline)
+		return true
+	}
 	return false
+}
+
+func GoNext(tbl []*Object) int {
+	val := Lkp(Here, tbl)
+	if val == nil {
+		return NumUndef
+	}
+	if !Goto(val, true) {
+		return 2
+	}
+	return 1
 }
 
 func ForestFcn(arg ActArg) bool {

@@ -41,6 +41,7 @@ type ObjProp struct {
 }
 
 type Syntx struct {
+	Syn       string
 	Verb      string
 	VrbPrep   string
 	Obj1      ObjProp
@@ -69,6 +70,9 @@ func (s *Syntx) IsObjPrep(prep string) bool {
 }
 
 func (s *Syntx) GetActionVerb() string {
+	if len(s.Syn) > 0 {
+		return s.Syn
+	}
 	av := s.Verb
 	if len(s.VrbPrep) > 0 {
 		av += " " + s.VrbPrep
@@ -145,12 +149,14 @@ var (
 			VrbPrep: "in",
 			Obj1:    ObjProp{HasObj: true, LocFlags: LocFlags{LocHeld, LocCarried, LocInRoom, LocOnGrnd, LocMany}},
 			Action:  VLookInside,
+			Syn:     "look inside",
 		},
 		{
 			Verb:    "examine",
 			VrbPrep: "on",
 			Obj1:    ObjProp{HasObj: true, LocFlags: LocFlags{LocHeld, LocCarried, LocInRoom, LocOnGrnd, LocMany}},
 			Action:  VLookInside,
+			Syn:     "look inside",
 		},
 		{
 			Verb:   "look",
@@ -161,24 +167,28 @@ var (
 			VrbPrep: "around",
 			Obj1:    ObjProp{HasObj: true, ObjFlags: []Flag{FlgSearch, FlgKludge}},
 			Action:  VLook,
+			Syn:     "look",
 		},
 		{
 			Verb:    "look",
 			VrbPrep: "up",
 			Obj1:    ObjProp{HasObj: true, ObjFlags: []Flag{FlgSearch, FlgKludge}},
 			Action:  VLook,
+			Syn:     "look",
 		},
 		{
 			Verb:    "look",
 			VrbPrep: "down",
 			Obj1:    ObjProp{HasObj: true, ObjFlags: []Flag{FlgSearch, FlgKludge}},
 			Action:  VLook,
+			Syn:     "look",
 		},
 		{
 			Verb:    "look",
 			VrbPrep: "at",
 			Obj1:    ObjProp{HasObj: true, LocFlags: LocFlags{LocHeld, LocCarried, LocInRoom, LocOnGrnd, LocMany}},
 			Action:  VExamine,
+			Syn:     "examine",
 		},
 		{
 			Verb:    "look",
@@ -191,6 +201,7 @@ var (
 			VrbPrep: "with",
 			Obj1:    ObjProp{HasObj: true, LocFlags: LocFlags{LocHeld, LocCarried, LocInRoom, LocOnGrnd, LocMany}},
 			Action:  VLookInside,
+			Syn:     "look inside",
 		},
 		{
 			Verb:    "look",
@@ -209,10 +220,12 @@ var (
 			VrbPrep: "in",
 			Obj1:    ObjProp{HasObj: true, LocFlags: LocFlags{LocHeld, LocCarried, LocInRoom, LocOnGrnd, LocMany}},
 			Action:  VLookInside,
+			Syn:     "look inside",
 		},
 		{
 			Verb:   "walk",
 			Action: VWalkAround,
+			Syn:    "walk around",
 		},
 		{
 			Verb:   "walk",
@@ -224,6 +237,7 @@ var (
 			VrbPrep: "away",
 			Obj1:    ObjProp{HasObj: true},
 			Action:  VWalk,
+			Syn:     "walk",
 		},
 		{
 			Verb:    "walk",

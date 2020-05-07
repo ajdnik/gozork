@@ -21,7 +21,7 @@ var (
 		Adjectives: []string{"white", "beautiful", "colonial"},
 		Desc:       "white house",
 		Flags:      []Flag{FlgNoDesc},
-		Action:     WhiteHouseFcn,
+		// Action:     WhiteHouseFcn,
 	}
 	Board = Object{
 		In:       &LocalGlobals,
@@ -121,7 +121,23 @@ var (
 	GratingClearing = Object{}
 	CanyonView      = Object{}
 	Match           = Object{}
-	AboveGround     = []*Object{
+	Kitchen         = Object{}
+	Attic           = Object{}
+	KitchenWindow   = Object{}
+	InHouseAround   = []*Object{
+		&LivingRoom,
+		&Kitchen,
+		&Attic,
+		&Kitchen,
+	}
+	HouseAround = []*Object{
+		&WestOfHouse,
+		&NorthOfHouse,
+		&EastOfHouse,
+		&SouthOfHouse,
+		&WestOfHouse,
+	}
+	AboveGround = []*Object{
 		&WestOfHouse,
 		&NorthOfHouse,
 		&EastOfHouse,
@@ -173,6 +189,9 @@ var (
 		&CanyonView,
 		&Match,
 		&BoardedWindow,
+		&Kitchen,
+		&Attic,
+		&KitchenWindow,
 	}
 )
 
@@ -184,4 +203,5 @@ func FinalizeGameObjects() {
 	}}
 	WestOfHouse.North = DirProps{UExit: true, RExit: &NorthOfHouse}
 	WestOfHouse.NorthEast = DirProps{UExit: true, RExit: &NorthOfHouse}
+	WhiteHouse.Action = WhiteHouseFcn
 }

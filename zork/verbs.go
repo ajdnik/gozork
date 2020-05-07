@@ -698,7 +698,18 @@ func Finish() bool {
 			Quit()
 		}
 	}
-	return false
+}
+
+func Lkp(itm *Object, tbl []*Object) *Object {
+	for idx, obj := range tbl {
+		if obj == itm {
+			if idx+1 <= len(tbl)-1 {
+				return tbl[idx+1]
+			}
+			break
+		}
+	}
+	return nil
 }
 
 func ToDirObj(dir string) *Object {
