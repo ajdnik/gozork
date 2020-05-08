@@ -684,8 +684,9 @@ func Finish() bool {
 		}
 		wrd := lex[0]
 		if wrd.Norm == "restart" {
-			Restart()
-			Print("Failed.", Newline)
+			if !Restart() {
+				Print("Failed.", Newline)
+			}
 			return true
 		}
 		if wrd.Norm == "restore" {

@@ -15,8 +15,9 @@ const (
 	PerfFatal
 )
 
-func Restart() {
+func Restart() bool {
 	// TODO: Implement restart
+	return false
 }
 
 func Restore() bool {
