@@ -257,10 +257,16 @@ var (
 )
 
 func addToVocab(wrd string, typ WordTyp) {
-	if _, ok := Vocabulary[wrd]; !ok {
+	v, ok := Vocabulary[wrd]
+	if !ok {
 		Vocabulary[wrd] = WordItm{
-			Norm: wrd,
-			Type: typ,
+			Norm:  wrd,
+			Types: WordTypes{typ},
+		}
+	} else {
+		Vocabulary[wrd] = WordItm{
+			Norm:  wrd,
+			Types: append(v.Types, typ),
 		}
 	}
 }
@@ -305,13 +311,13 @@ func BuildVocabulary() {
 	for key, val := range Synonyms {
 		if _, ok := Vocabulary[key]; !ok {
 			Vocabulary[key] = WordItm{
-				Norm: val,
-				Type: WordUnk,
+				Norm:  val,
+				Types: nil,
 			}
 			if el, ok := Vocabulary[val]; ok {
 				Vocabulary[key] = WordItm{
-					Norm: val,
-					Type: el.Type,
+					Norm:  val,
+					Types: append(WordTypes{}, el.Types...),
 				}
 			}
 		}

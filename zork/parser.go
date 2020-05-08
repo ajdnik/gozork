@@ -271,7 +271,7 @@ func Parse() bool {
 		for i := beg; Params.BufLen > -1; i, Params.BufLen = i+1, Params.BufLen-1 {
 			HandleNumber(i)
 			wrd := LexRes[i]
-			if wrd.Type == WordUnk && !wrd.Is("intnum") {
+			if wrd.Types == nil && !wrd.Is("intnum") {
 				UnknownWord(i)
 				return false
 			}
@@ -288,7 +288,7 @@ func Parse() bool {
 				} else {
 					ParsedSyntx.Verb.Norm = "tell"
 					ParsedSyntx.Verb.Orig = "tell"
-					ParsedSyntx.Verb.Type = WordVerb
+					ParsedSyntx.Verb.Types = WordTypes{WordVerb}
 					wrd.Set(mkBuzz("\""))
 				}
 			}
@@ -300,7 +300,7 @@ func Parse() bool {
 					Params.Continue = i + 1
 				}
 				break
-			} else if wrd.Type == WordDir &&
+			} else if wrd.Types.Has(WordDir) &&
 				(len(vrb) == 0 || vrb == "walk") &&
 				(ln == 1 ||
 					(ln == 2 && vrb == "walk") ||
@@ -315,13 +315,13 @@ func Parse() bool {
 					Params.InQuotes = false
 					break
 				}
-			} else if wrd.Type == WordVerb && len(vrb) == 0 {
+			} else if wrd.Types.Has(WordVerb) && len(vrb) == 0 {
 				vrb = wrd.Norm
 				ParsedSyntx.Verb.Set(wrd)
-			} else if wrd.Type == WordPrep || wrd.IsAny("all", "one") || wrd.Type == WordAdj || wrd.Type == WordObj {
-				if Params.BufLen > 1 && nw.Is("of") && wrd.Type != WordPrep && !wrd.IsAny("all", "one", "a") {
+			} else if wrd.Types.Has(WordPrep) || wrd.IsAny("all", "one") || wrd.Types.Has(WordAdj) || wrd.Types.Has(WordObj) {
+				if Params.BufLen > 1 && nw.Is("of") && !wrd.Types.Has(WordPrep) && !wrd.IsAny("all", "one", "a") {
 					isOf = true
-				} else if wrd.Type == WordPrep && (Params.BufLen == 0 || nw.IsAny("then", ".")) {
+				} else if wrd.Types.Has(WordPrep) && (Params.BufLen == 0 || nw.IsAny("then", ".")) {
 					Params.EndOnPrep = true
 					if Params.ObjOrClauseCnt < 2 {
 						ParsedSyntx.Prep1.Set(wrd)
@@ -346,10 +346,10 @@ func Parse() bool {
 					return false
 				}
 				isOf = false
-			} else if wrd.Type == WordBuzz {
+			} else if wrd.Types.Has(WordBuzz) {
 				lw.Set(wrd)
 				continue
-			} else if vrb == "tell" && wrd.Type == WordVerb && Winner == Player {
+			} else if vrb == "tell" && wrd.Types.Has(WordVerb) && Winner == Player {
 				Print("Please consult your manual for the correct way to talk to other people or creatures.", Newline)
 				return false
 			} else {
@@ -393,14 +393,14 @@ func Parse() bool {
 
 func mkBuzz(wrd string) LexItm {
 	return LexItm{
-		Norm: wrd,
-		Orig: wrd,
-		Type: WordBuzz,
+		Norm:  wrd,
+		Orig:  wrd,
+		Types: WordTypes{WordBuzz},
 	}
 }
 
 func Clause(idx int, wrd LexItm) (bool, int) {
-	if wrd.Type == WordPrep {
+	if wrd.Types.Has(WordPrep) {
 		if Params.ObjOrClauseCnt == 1 {
 			ParsedSyntx.Prep1.Set(wrd)
 		} else if Params.ObjOrClauseCnt == 2 {
@@ -426,7 +426,7 @@ func Clause(idx int, wrd LexItm) (bool, int) {
 	for i = idx; Params.BufLen > -1; i, Params.BufLen = i+1, Params.BufLen-1 {
 		HandleNumber(i)
 		cw := LexRes[i]
-		if cw.Type == WordUnk && !cw.Is("intnum") {
+		if cw.Types == nil && !cw.Is("intnum") {
 			UnknownWord(i)
 			return false, -1
 		}
@@ -442,7 +442,7 @@ func Clause(idx int, wrd LexItm) (bool, int) {
 				Params.BufLen--
 				i++
 			}
-		} else if cw.IsAny("then", ".") || (cw.Type == WordPrep && ParsedSyntx.Verb.IsSet() && !isFirst) {
+		} else if cw.IsAny("then", ".") || (cw.Types.Has(WordPrep) && ParsedSyntx.Verb.IsSet() && !isFirst) {
 			Params.BufLen++
 			if Params.ObjOrClauseCnt == 1 {
 				ParsedSyntx.ObjOrClause1 = append([]LexItm{}, LexRes[cpyStart:i]...)
@@ -450,14 +450,13 @@ func Clause(idx int, wrd LexItm) (bool, int) {
 				ParsedSyntx.ObjOrClause2 = append([]LexItm{}, LexRes[cpyStart:i]...)
 			}
 			return true, i - 1
-		} else if cw.Type == WordObj {
+		} else if cw.Types.Has(WordObj) {
 			if Params.BufLen > 0 && nw.Is("of") && !cw.IsAny("all", "one") {
 				lw.Set(cw)
 				isFirst = false
 				continue
 			}
-			// TODO: I'm not sure how this can ever be true.
-			if cw.Type == WordAdj && nw.IsSet() && nw.Type == WordObj {
+			if cw.Types.Has(WordAdj) && nw.IsSet() && nw.Types.Has(WordObj) {
 				lw.Set(cw)
 				isFirst = false
 				continue
@@ -472,15 +471,15 @@ func Clause(idx int, wrd LexItm) (bool, int) {
 			}
 			isAnd = true
 		} else if (Params.HasMerged || Params.ShldOrphan || ParsedSyntx.Verb.IsSet()) &&
-			(cw.Type == WordAdj || cw.Type == WordBuzz) {
+			(cw.Types.Has(WordAdj) || cw.Types.Has(WordBuzz)) {
 			lw.Set(cw)
 			isFirst = false
 			continue
-		} else if isAnd && (cw.Type == WordDir || cw.Type == WordVerb) {
+		} else if isAnd && (cw.Types.Has(WordDir) || cw.Types.Has(WordVerb)) {
 			i -= 2
 			Params.BufLen += 2
 			LexRes[i].Set(mkBuzz("then"))
-		} else if cw.Type == WordPrep {
+		} else if cw.Types.Has(WordPrep) {
 			lw.Set(cw)
 			isFirst = false
 			continue
@@ -559,9 +558,9 @@ func HandleNumber(idx int) {
 func OrphanMerge() {
 	Params.ShldOrphan = false
 	isAdj := false
-	if ParsedSyntx.Verb.Type == OrphanedSyntx.Verb.Type || ParsedSyntx.Verb.Type == WordAdj {
+	if ParsedSyntx.Verb.Types.Equals(OrphanedSyntx.Verb.Types) || ParsedSyntx.Verb.Types.Has(WordAdj) {
 		isAdj = true
-	} else if ParsedSyntx.Verb.Type == WordObj && Params.ObjOrClauseCnt == 0 {
+	} else if ParsedSyntx.Verb.Types.Has(WordObj) && Params.ObjOrClauseCnt == 0 {
 		ParsedSyntx.Verb.Clear()
 		ParsedSyntx.ObjOrClause1 = []LexItm{LexRes[0], LexRes[1]}
 		Params.ObjOrClauseCnt = 1
@@ -619,13 +618,13 @@ func OrphanMerge() {
 		broken := false
 		for i := beg; i < ParsedSyntx.Obj1End; i++ {
 			wrd := LexRes[i]
-			if !isAdj && (wrd.Type == WordAdj || wrd.IsAny("all", "one")) {
+			if !isAdj && (wrd.Types.Has(WordAdj) || wrd.IsAny("all", "one")) {
 				adj.Set(wrd)
 			} else if wrd.Is("one") {
 				AclauseWin(adj)
 				broken = true
 				break
-			} else if wrd.Type == WordObj {
+			} else if wrd.Types.Has(WordObj) {
 				if wrd.Matches(Params.AdjClause.Syn) {
 					AclauseWin(adj)
 				} else {
@@ -868,7 +867,7 @@ func Snarfem(isDirect bool, wrds []LexItm) []*Object {
 				res = append(res, out...)
 			}
 			continue
-		} else if wrd.Type == WordBuzz {
+		} else if wrd.Types.Has(WordBuzz) {
 			continue
 		} else if wrd.IsAny("and", ",") {
 			continue
@@ -876,9 +875,9 @@ func Snarfem(isDirect bool, wrds []LexItm) []*Object {
 			if Params.GetType == GetUndef {
 				Params.GetType = GetInhibit
 			}
-		} else if wrd.Type == WordAdj && !Search.Adj.IsSet() {
+		} else if wrd.Types.Has(WordAdj) && !Search.Adj.IsSet() {
 			Search.Adj.Set(wrd)
-		} else if wrd.Type == WordObj {
+		} else if wrd.Types.Has(WordObj) {
 			Search.Syn.Set(wrd)
 			Params.OneObj.Set(wrd)
 		}
@@ -990,12 +989,12 @@ func Orphan(first, second *Syntx) {
 	if first != nil {
 		OrphanedSyntx.Prep1.Norm = first.VrbPrep
 		OrphanedSyntx.Prep1.Orig = first.VrbPrep
-		OrphanedSyntx.Prep1.Type = WordPrep
+		OrphanedSyntx.Prep1.Types = WordTypes{WordPrep}
 		OrphanedSyntx.ObjOrClause1 = []LexItm{}
 	} else if second != nil {
 		OrphanedSyntx.Prep2.Norm = second.ObjPrep
 		OrphanedSyntx.Prep2.Orig = second.ObjPrep
-		OrphanedSyntx.Prep2.Type = WordPrep
+		OrphanedSyntx.Prep2.Types = WordTypes{WordPrep}
 		OrphanedSyntx.ObjOrClause2 = []LexItm{}
 	}
 }
@@ -1039,7 +1038,7 @@ func GetObject(isDirect, vrb bool) []*Object {
 	if Params.GetType == GetInhibit {
 		return []*Object{}
 	}
-	if !Search.Syn.IsSet() && Search.Adj.IsSet() && Search.Adj.Type == WordObj {
+	if !Search.Syn.IsSet() && Search.Adj.IsSet() && Search.Adj.Types.Has(WordObj) {
 		Search.Syn.Set(Search.Adj)
 		Search.Adj.Clear()
 	}
