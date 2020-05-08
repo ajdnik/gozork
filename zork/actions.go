@@ -180,6 +180,10 @@ func NailsPseudo(arg ActArg) bool {
 	return false
 }
 
+func SandFunction(arg ActArg) bool {
+	return false
+}
+
 func VScore(arg ActArg) bool {
 	Print("Your score is ", NoNewline)
 	PrintNumber(Score)

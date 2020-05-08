@@ -19,6 +19,8 @@ var (
 	Verbose    bool
 	Dead       bool
 	Deaths     int
+	// HelloSailor counts occurences of 'hello, sailor'
+	HelloSailor int
 	// IsSprayed is a flag indicating if the player is wearing Grue repellent
 	IsSprayed bool
 	Version   = [24]byte{0, 0, 0, 0, 119, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 56, 56, 48, 52, 50, 57}

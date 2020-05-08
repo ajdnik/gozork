@@ -124,6 +124,9 @@ var (
 	Kitchen         = Object{}
 	Attic           = Object{}
 	KitchenWindow   = Object{}
+	SandyCave       = Object{}
+	Mirror1         = Object{}
+	Mirror2         = Object{}
 	InHouseAround   = []*Object{
 		&LivingRoom,
 		&Kitchen,
@@ -192,6 +195,17 @@ var (
 		&Kitchen,
 		&Attic,
 		&KitchenWindow,
+		&Intnum,
+		&Blessings,
+		&Sailor,
+		&Ground,
+		&Grue,
+		&Lungs,
+		&PathObj,
+		&Zorkmid,
+		&SandyCave,
+		&Mirror1,
+		&Mirror2,
 	}
 )
 
@@ -204,4 +218,7 @@ func FinalizeGameObjects() {
 	WestOfHouse.North = DirProps{UExit: true, RExit: &NorthOfHouse}
 	WestOfHouse.NorthEast = DirProps{UExit: true, RExit: &NorthOfHouse}
 	WhiteHouse.Action = WhiteHouseFcn
+	NotHereObject.Action = NotHereObjectFcn
+	Me.Action = CretinFcn
+	Ground.Action = GroundFunction
 }

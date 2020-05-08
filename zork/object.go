@@ -88,6 +88,7 @@ const (
 	// FlgMaze means the room is a maze
 	FlgMaze
 	FlgClimb
+	FlgWeapon
 )
 
 // In function checks if the current flag is in the flag slice.
