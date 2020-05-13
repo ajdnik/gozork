@@ -118,10 +118,15 @@ type AgainProps struct {
 	Dir string
 }
 
+type ActionVerb struct {
+	Norm string
+	Orig string
+}
+
 var (
 	DirObj            *Object
 	IndirObj          *Object
-	ActVerb           string
+	ActVerb           ActionVerb
 	DirObjPossibles   []*Object
 	IndirObjPossibles []*Object
 	Winner            *Object
@@ -168,7 +173,7 @@ func Parse() bool {
 		Params.Continue = NumUndef
 	} else if Params.Continue != NumUndef {
 		beg = Params.Continue
-		if !SuperBrief && Player == Winner && ActVerb != "say" {
+		if !SuperBrief && Player == Winner && ActVerb.Norm != "say" {
 			NewLine()
 		}
 		Params.Continue = NumUndef
@@ -364,7 +369,8 @@ func Parse() bool {
 	}
 	Oops.UnkSet = false
 	if len(dir) != 0 {
-		ActVerb = "walk"
+		ActVerb.Norm = "walk"
+		ActVerb.Orig = "walk"
 		DirObj = ToDirObj(dir)
 		Params.ShldOrphan = false
 		Params.WalkDir = dir
@@ -501,7 +507,7 @@ func Clause(idx int, wrd LexItm) (bool, int) {
 func UnknownWord(idx int) {
 	Oops.UnkSet = true
 	Oops.Unk = idx
-	if ActVerb == "say" {
+	if ActVerb.Norm == "say" {
 		Print("Nothing happens.", Newline)
 		return
 	}
@@ -513,7 +519,7 @@ func UnknownWord(idx int) {
 }
 
 func CantUse(idx int) {
-	if ActVerb == "say" {
+	if ActVerb.Norm == "say" {
 		Print("Nothing happens.", Newline)
 		return
 	}
@@ -919,7 +925,8 @@ func SyntaxCheck() bool {
 				findSecond = &syn
 			} else if syn.IsObjPrep(ParsedSyntx.Prep2.Norm) {
 				DetectedSyntx = &syn
-				ActVerb = syn.GetActionVerb()
+				ActVerb.Norm = syn.GetNormVerb()
+				ActVerb.Orig = syn.GetActionVerb()
 				return true
 			}
 		}
@@ -934,7 +941,8 @@ func SyntaxCheck() bool {
 		if obj != nil {
 			DirObjPossibles = []*Object{obj}
 			DetectedSyntx = findFirst
-			ActVerb = findFirst.GetActionVerb()
+			ActVerb.Norm = findFirst.GetNormVerb()
+			ActVerb.Orig = findFirst.GetActionVerb()
 			found = true
 		}
 	}
@@ -943,7 +951,8 @@ func SyntaxCheck() bool {
 		if obj != nil {
 			IndirObjPossibles = []*Object{obj}
 			DetectedSyntx = findSecond
-			ActVerb = findSecond.GetActionVerb()
+			ActVerb.Norm = findSecond.GetNormVerb()
+			ActVerb.Orig = findSecond.GetActionVerb()
 			found = true
 		}
 	}
@@ -1115,7 +1124,7 @@ func GetObject(isDirect, vrb bool) []*Object {
 		if ln == 0 && gcheck {
 			if vrb {
 				Search.LocFlags = xbits
-				if Lit || ActVerb == "tell" {
+				if Lit || ActVerb.Norm == "tell" {
 					res = append(res, &NotHereObject)
 					NotHere.Syn.Set(Search.Syn)
 					NotHere.Adj.Set(Search.Adj)
@@ -1199,7 +1208,7 @@ func GlobalCheck() []*Object {
 		if g := SearchList(&GlobalObjects, FindAll); g != nil {
 			res = append(res, g...)
 		}
-		if len(res) == 0 && (ActVerb == "look inside" || ActVerb == "search" || ActVerb == "examine") {
+		if len(res) == 0 && (ActVerb.Norm == "look inside" || ActVerb.Norm == "search" || ActVerb.Norm == "examine") {
 			if LocHave.In(Search.LocFlags) {
 				if r := SearchList(&Rooms, FindAll); r != nil {
 					res = append(res, r...)

@@ -168,17 +168,17 @@ func NotHerePrint(isDir bool) {
 }
 
 func SailorFcn(arg ActArg) bool {
-	if ActVerb == "tell" {
+	if ActVerb.Norm == "tell" {
 		Params.Continue = NumUndef
 		Params.InQuotes = false
 		Print("You can't talk to the sailor that way.", Newline)
 		return true
 	}
-	if ActVerb == "examine" {
+	if ActVerb.Norm == "examine" {
 		Print("There is no sailor to be seen.", Newline)
 		return true
 	}
-	if ActVerb == "hello" {
+	if ActVerb.Norm == "hello" {
 		HelloSailor++
 		if HelloSailor%20 == 0 {
 			Print("You seem to be repeating yourself.", Newline)
@@ -193,14 +193,14 @@ func SailorFcn(arg ActArg) bool {
 }
 
 func GroundFunction(arg ActArg) bool {
-	if (ActVerb == "put" || ActVerb == "put on") && IndirObj == &Ground {
-		Perform("drop", DirObj, nil)
+	if (ActVerb.Norm == "put" || ActVerb.Norm == "put on") && IndirObj == &Ground {
+		Perform(ActionVerb{Norm: "drop", Orig: "drop"}, DirObj, nil)
 		return true
 	}
 	if Here == &SandyCave {
 		return SandFunction(ActUnk)
 	}
-	if ActVerb == "dig" {
+	if ActVerb.Norm == "dig" {
 		Print("The ground is too hard for digging here.", Newline)
 		return true
 	}
@@ -208,15 +208,15 @@ func GroundFunction(arg ActArg) bool {
 }
 
 func GrueFunction(arg ActArg) bool {
-	if ActVerb == "examine" {
+	if ActVerb.Norm == "examine" {
 		Print("The grue is a sinister, lurking presence in the dark places of the earth. Its favorite diet is adventurers, but its insatiable appetite is tempered by its fear of light. No grue has ever been seen by the light of day, and few have survived its fearsome jaws to tell the tale.", Newline)
 		return true
 	}
-	if ActVerb == "find" {
+	if ActVerb.Norm == "find" {
 		Print("There is no grue here, but I'm sure there is at least one lurking in the darkness nearby. I wouldn't let my light go out if I were you!", Newline)
 		return true
 	}
-	if ActVerb == "listen" {
+	if ActVerb.Norm == "listen" {
 		Print("It makes no sound but is always lurking in the darkness nearby.", Newline)
 		return true
 	}
@@ -224,44 +224,44 @@ func GrueFunction(arg ActArg) bool {
 }
 
 func CretinFcn(arg ActArg) bool {
-	if ActVerb == "tell" {
+	if ActVerb.Norm == "tell" {
 		Params.Continue = NumUndef
 		Params.InQuotes = false
 		Print("Talking to yourself is said to be a sign of impending mental collapse.", Newline)
 		return true
 	}
-	if ActVerb == "give" && IndirObj == &Me {
-		Perform("take", DirObj, nil)
+	if ActVerb.Norm == "give" && IndirObj == &Me {
+		Perform(ActionVerb{Norm: "take", Orig: "take"}, DirObj, nil)
 		return true
 	}
-	if ActVerb == "make" {
+	if ActVerb.Norm == "make" {
 		Print("Only you can do that.", Newline)
 		return true
 	}
-	if ActVerb == "disembark" {
+	if ActVerb.Norm == "disembark" {
 		Print("You'll have to do that on your own.", Newline)
 		return true
 	}
-	if ActVerb == "eat" {
+	if ActVerb.Norm == "eat" {
 		Print("Auto-cannibalism is not the answer.", Newline)
 		return true
 	}
-	if ActVerb == "attack" || ActVerb == "mung" {
+	if ActVerb.Norm == "attack" || ActVerb.Norm == "mung" {
 		if IndirObj != nil && IndirObj.Has(FlgWeapon) {
 			return JigsUp("If you insist.... Poof, you're dead!", false)
 		}
 		Print("Suicide is not the answer.", Newline)
 		return true
 	}
-	if ActVerb == "throw" && DirObj == &Me {
+	if ActVerb.Norm == "throw" && DirObj == &Me {
 		Print("Why don't you just walk like normal people?", Newline)
 		return true
 	}
-	if ActVerb == "take" {
+	if ActVerb.Norm == "take" {
 		Print("How romantic!", Newline)
 		return true
 	}
-	if ActVerb == "examine" {
+	if ActVerb.Norm == "examine" {
 		if Here == &Mirror1 || Here == &Mirror2 {
 			Print("Your image in the mirror looks tired.", Newline)
 			return true
@@ -273,15 +273,15 @@ func CretinFcn(arg ActArg) bool {
 }
 
 func PathObject(arg ActArg) bool {
-	if ActVerb == "take" || ActVerb == "follow" {
+	if ActVerb.Norm == "take" || ActVerb.Norm == "follow" {
 		Print("You must specify a direction to go.", Newline)
 		return true
 	}
-	if ActVerb == "find" {
+	if ActVerb.Norm == "find" {
 		Print("I can't help you there....", Newline)
 		return true
 	}
-	if ActVerb == "dig" {
+	if ActVerb.Norm == "dig" {
 		Print("Not a chance.", Newline)
 		return true
 	}
@@ -289,7 +289,7 @@ func PathObject(arg ActArg) bool {
 }
 
 func StairsFcn(arg ActArg) bool {
-	if ActVerb == "through" {
+	if ActVerb.Norm == "through" {
 		Print("You should say whether you want to go up or down.", Newline)
 		return true
 	}
@@ -297,11 +297,11 @@ func StairsFcn(arg ActArg) bool {
 }
 
 func ZorkmidFunction(arg ActArg) bool {
-	if ActVerb == "examine" {
+	if ActVerb.Norm == "examine" {
 		Print("The zorkmid is the unit of currency of the Great Underground Empire.", Newline)
 		return true
 	}
-	if ActVerb == "find" {
+	if ActVerb.Norm == "find" {
 		Print("The best way to find zorkmids is to go out and look for them.", Newline)
 		return true
 	}

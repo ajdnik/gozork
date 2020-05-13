@@ -93,6 +93,9 @@ var (
 	Coffin           = Object{}
 	EgyptRoom        = Object{}
 	Sword            = Object{}
+	Water            = Object{}
+	GlobalWater      = Object{}
+	Tree             = Object{}
 	BoardedWindow    = Object{
 		In:         &LocalGlobals,
 		Synonyms:   []string{"window"},
@@ -206,6 +209,9 @@ var (
 		&SandyCave,
 		&Mirror1,
 		&Mirror2,
+		&Water,
+		&GlobalWater,
+		&Tree,
 	}
 )
 

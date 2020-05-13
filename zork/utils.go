@@ -43,3 +43,7 @@ func Zprob(base int) bool {
 	}
 	return base > rand.Intn(300)
 }
+
+func IsFlaming(obj *Object) bool {
+	return false
+}

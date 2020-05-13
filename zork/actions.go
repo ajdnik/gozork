@@ -74,7 +74,7 @@ func RBoatFcn(arg ActArg) bool {
 }
 
 func MailboxFcn(arg ActArg) bool {
-	if ActVerb == "take" && DirObj == &Mailbox {
+	if ActVerb.Norm == "take" && DirObj == &Mailbox {
 		Print("It is securely anchored.", Newline)
 		return true
 	}
@@ -95,16 +95,16 @@ func WestHouseFcn(arg ActArg) bool {
 
 func WhiteHouseFcn(arg ActArg) bool {
 	if Here == &Kitchen || Here == &LivingRoom || Here == &Attic {
-		if ActVerb == "find" {
+		if ActVerb.Norm == "find" {
 			Print("Why not find your brains?", Newline)
 			return true
 		}
-		if ActVerb == "walk around" {
+		if ActVerb.Norm == "walk around" {
 			GoNext(InHouseAround)
 			return true
 		}
 	} else if Here != &WestOfHouse && Here != &NorthOfHouse && Here != &EastOfHouse && Here != &SouthOfHouse {
-		if ActVerb == "find" {
+		if ActVerb.Norm == "find" {
 			if Here == &Clearing {
 				Print("It seems to be to the west.", Newline)
 				return true
@@ -114,16 +114,16 @@ func WhiteHouseFcn(arg ActArg) bool {
 		}
 		Print("You're not at the house.", Newline)
 		return true
-	} else if ActVerb == "find" {
+	} else if ActVerb.Norm == "find" {
 		Print("It's right here! Are you blind or something?", Newline)
 		return true
-	} else if ActVerb == "walk around" {
+	} else if ActVerb.Norm == "walk around" {
 		GoNext(HouseAround)
 		return true
-	} else if ActVerb == "examine" {
+	} else if ActVerb.Norm == "examine" {
 		Print("The house is a beautiful colonial house which is painted white. It is clear that the owners must have been extremely wealthy.", Newline)
 		return true
-	} else if ActVerb == "through" || ActVerb == "open" {
+	} else if ActVerb.Norm == "through" || ActVerb.Norm == "open" {
 		if Here == &EastOfHouse {
 			if KitchenWindow.Has(FlgOpen) {
 				return Goto(&Kitchen, true)
@@ -134,7 +134,7 @@ func WhiteHouseFcn(arg ActArg) bool {
 		}
 		Print("I can't see how to get in from here.", Newline)
 		return true
-	} else if ActVerb == "burn" {
+	} else if ActVerb.Norm == "burn" {
 		Print("You must be joking.", Newline)
 		return true
 	}
@@ -157,7 +157,7 @@ func ForestFcn(arg ActArg) bool {
 }
 
 func BoardFcn(arg ActArg) bool {
-	if ActVerb == "take" || ActVerb == "examine" {
+	if ActVerb.Norm == "take" || ActVerb.Norm == "examine" {
 		Print("The boards are securely fastened.", Newline)
 		return true
 	}
@@ -181,6 +181,14 @@ func NailsPseudo(arg ActArg) bool {
 }
 
 func SandFunction(arg ActArg) bool {
+	return false
+}
+
+func Awaken(o *Object) bool {
+	return false
+}
+
+func HeroBlow() bool {
 	return false
 }
 

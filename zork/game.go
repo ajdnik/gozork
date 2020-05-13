@@ -4,6 +4,7 @@ import "os"
 
 var (
 	ParserOk bool
+	Script   bool
 	Player   *Object
 )
 
@@ -28,6 +29,16 @@ func Restore() bool {
 func Quit() {
 	// TODO: Implement quit
 	os.Exit(0)
+}
+
+func Save() bool {
+	// TODO: Implement save
+	return false
+}
+
+func Verify() bool {
+	// TODO: Implement disk verify
+	return false
 }
 
 func Run() {
@@ -107,7 +118,7 @@ func MainLoop() {
 			obj = IndirObjPossibles[0]
 		}
 		var res PerfRet
-		if ActVerb == "walk" && len(Params.WalkDir) != 0 {
+		if ActVerb.Norm == "walk" && len(Params.WalkDir) != 0 {
 			res = Perform(ActVerb, DirObj, nil)
 		} else if numObj == 0 {
 			if DetectedSyntx.NumObjects() == 0 {
@@ -135,7 +146,7 @@ func MainLoop() {
 						notHere++
 						continue
 					}
-					if ActVerb == "take" &&
+					if ActVerb.Norm == "take" &&
 						indir != nil &&
 						len(ParsedSyntx.ObjOrClause1) > 0 &&
 						ParsedSyntx.ObjOrClause1[0].Is("all") &&
@@ -144,7 +155,7 @@ func MainLoop() {
 						continue
 					}
 					if l := dir.Location(); Params.GetType == GetAll &&
-						ActVerb == "take" &&
+						ActVerb.Norm == "take" &&
 						((l != Winner &&
 							l != Here &&
 							l != Winner.Location() &&
@@ -197,7 +208,7 @@ func MainLoop() {
 		if res == PerfFatal {
 			Params.Continue = -1
 		}
-		if ActVerb == "tell" || ActVerb == "brief" || ActVerb == "superbrief" || ActVerb == "verbose" || ActVerb == "save" || ActVerb == "version" || ActVerb == "quit" || ActVerb == "restart" || ActVerb == "score" || ActVerb == "script" || ActVerb == "unscript" || ActVerb == "restore" {
+		if ActVerb.Norm == "tell" || ActVerb.Norm == "brief" || ActVerb.Norm == "superbrief" || ActVerb.Norm == "verbose" || ActVerb.Norm == "save" || ActVerb.Norm == "version" || ActVerb.Norm == "quit" || ActVerb.Norm == "restart" || ActVerb.Norm == "score" || ActVerb.Norm == "script" || ActVerb.Norm == "unscript" || ActVerb.Norm == "restore" {
 			continue
 		} else {
 			Clocker()
@@ -205,7 +216,7 @@ func MainLoop() {
 	}
 }
 
-func Perform(a string, o, i *Object) PerfRet {
+func Perform(a ActionVerb, o, i *Object) PerfRet {
 	if (o == &It || i == &It) && IsAccessible(Params.ItObj) {
 		Print("I don't see what you are referring to.", Newline)
 		return PerfFatal
@@ -216,7 +227,7 @@ func Perform(a string, o, i *Object) PerfRet {
 	if i == &It {
 		i = Params.ItObj
 	}
-	if o != nil && IndirObj != &It && a == "walk" {
+	if o != nil && IndirObj != &It && a.Norm == "walk" {
 		Params.ItObj = o
 	}
 	if o == &NotHereObject || i == &NotHereObject {
@@ -234,7 +245,7 @@ func Perform(a string, o, i *Object) PerfRet {
 			return PerfHndld
 		}
 	}
-	if act, ok := PreActions[a]; ok && act != nil {
+	if act, ok := PreActions[a.Orig]; ok && act != nil {
 		if act(ActUnk) {
 			return PerfHndld
 		}
@@ -244,17 +255,17 @@ func Perform(a string, o, i *Object) PerfRet {
 			return PerfHndld
 		}
 	}
-	if o != nil && a != "walk" && o.Location() != nil && o.Location().ContFcn != nil {
+	if o != nil && a.Norm != "walk" && o.Location() != nil && o.Location().ContFcn != nil {
 		if o.Location().ContFcn(ActUnk) {
 			return PerfHndld
 		}
 	}
-	if o != nil && a != "walk" && o.Action != nil {
+	if o != nil && a.Norm != "walk" && o.Action != nil {
 		if o.Action(ActUnk) {
 			return PerfHndld
 		}
 	}
-	if act, ok := Actions[a]; ok && act != nil {
+	if act, ok := Actions[a.Orig]; ok && act != nil {
 		if act(ActUnk) {
 			return PerfHndld
 		}
