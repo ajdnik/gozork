@@ -1,7 +1,9 @@
 package zork
 
 var (
-	TrollFlag bool
+	TrollFlag   bool
+	CyclopsFlag bool
+	MagicFlag   bool
 )
 
 var (
@@ -96,6 +98,7 @@ var (
 	Water            = Object{}
 	GlobalWater      = Object{}
 	Tree             = Object{}
+	Shovel           = Object{}
 	BoardedWindow    = Object{
 		In:         &LocalGlobals,
 		Synonyms:   []string{"window"},
@@ -130,6 +133,9 @@ var (
 	SandyCave       = Object{}
 	Mirror1         = Object{}
 	Mirror2         = Object{}
+	UpATree         = Object{}
+	CyclopsRoom     = Object{}
+	Cyclops         = Object{}
 	InHouseAround   = []*Object{
 		&LivingRoom,
 		&Kitchen,
@@ -212,6 +218,10 @@ var (
 		&Water,
 		&GlobalWater,
 		&Tree,
+		&Shovel,
+		&UpATree,
+		&CyclopsRoom,
+		&Cyclops,
 	}
 )
 

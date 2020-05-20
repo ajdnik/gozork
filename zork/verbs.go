@@ -43,6 +43,21 @@ var (
 			"What a concept!",
 		},
 	}
+	Hellos = RndSelect{
+		Unselected: []string{
+			"Hello.",
+			"Good day.",
+			"Nice weather we've been having lately.",
+			"Goodbye.",
+		},
+	}
+	JumpLoss = RndSelect{
+		Unselected: []string{
+			"You should have looked before you leaped.",
+			"In the movies, your life would be passing before your eyes.",
+			"Geronimo...",
+		},
+	}
 	Lucky        = true
 	FumbleNumber = 7
 	FumbleProb   = 8
@@ -508,11 +523,206 @@ func VDeflate(arg ActArg) bool {
 	return true
 }
 
-func VLook(arg ActArg) bool {
-	if DescribeRoom(true) {
-		return DescribeObjects(true)
+func VDig(arg ActArg) bool {
+	if IndirObj == nil {
+		IndirObj = &Hands
+	}
+	if IndirObj == &Shovel {
+		Print("There's no reason to be digging here.", Newline)
+		return true
+	}
+	if IndirObj.Has(FlgTool) {
+		Print("Digging with the ", NoNewline)
+		PrintObject(IndirObj)
+		Print(" is slow and tedious.", Newline)
+		return true
+	}
+	Print("Digging with a ", NoNewline)
+	PrintObject(IndirObj)
+	Print(" is silly.", Newline)
+	return true
+}
+
+func VDisembark(arg ActArg) bool {
+	loc := Winner.Location()
+	if DirObj == &Rooms && loc.Has(FlgVeh) {
+		Perform(ActionVerb{Norm: "disembark", Orig: "disembark"}, loc, nil)
+		return true
+	}
+	if loc != DirObj {
+		Print("You're not in that!", Newline)
+		// TODO: return fatal
+		return false
+	}
+	if Here.Has(FlgLand) {
+		Print("You are on your own feet again.", Newline)
+		Winner.MoveTo(Here)
+		return true
+	}
+	Print("You realize that getting out here would be fatal.", Newline)
+	// TODO: return fatal
+	return false
+}
+
+func VDisenchant(arg ActArg) bool {
+	Print("Nothing happens.", Newline)
+	return true
+}
+
+func VDrink(arg ActArg) bool {
+	return VEat(ActUnk)
+}
+
+func VDrinkFrom(act ActArg) bool {
+	Print("How peculiar!", Newline)
+	return true
+}
+
+func PreDrop(arg ActArg) bool {
+	if DirObj == Winner.Location() {
+		Perform(ActionVerb{Norm: "disembark", Orig: "disembark"}, DirObj, nil)
+		return true
 	}
 	return false
+}
+
+func VDrop(arg ActArg) bool {
+	if IDrop() {
+		Print("Dropped.", Newline)
+		return true
+	}
+	return false
+}
+
+func VEat(arg ActArg) bool {
+	isEat := DirObj.Has(FlgFood)
+	if isEat {
+		if !DirObj.IsIn(Winner) && !DirObj.Location().IsIn(Winner) {
+			Print("You're not holding that.", Newline)
+			return true
+		}
+		if ActVerb.Norm == "drink" {
+			Print("How can you drink that?", Newline)
+			return true
+		}
+		Print("Thank you very much. It really hit the spot.", Newline)
+		RemoveCarefully(DirObj)
+		return true
+	}
+	isDrink := DirObj.Has(FlgDrink)
+	if isDrink {
+		nobj := DirObj.Location()
+		if DirObj.IsIn(&GlobalObjects) || IsInGlobal(&GlobalWater, Here) || DirObj == &PseudoObject {
+			return HitSpot()
+		}
+		if nobj == nil || !IsAccessible(nobj) {
+			Print("There isn't any water here.", Newline)
+			return true
+		}
+		if IsAccessible(nobj) && !nobj.IsIn(Winner) {
+			Print("You have to be holding the ", NoNewline)
+			PrintObject(nobj)
+			Print(" first.", Newline)
+			return true
+		}
+		if !nobj.Has(FlgOpen) {
+			Print("You'll have to open the ", NoNewline)
+			PrintObject(nobj)
+			Print(" first.", Newline)
+			return true
+		}
+		return HitSpot()
+	}
+	if !isEat && !isDrink {
+		Print("I don't think that the ", NoNewline)
+		PrintObject(DirObj)
+		Print(" would agree with you.", Newline)
+		return true
+	}
+	return false
+}
+
+func HitSpot() bool {
+	if DirObj == &Water && !IsInGlobal(&GlobalWater, Here) {
+		RemoveCarefully(DirObj)
+	}
+	Print("Thank you very much. I was rather thirsty (from all this talking, probably).", Newline)
+	return true
+}
+
+func VEcho(arg ActArg) bool {
+	if len(LexRes) <= 0 {
+		Print("echo echo ...", Newline)
+		return true
+	}
+	wrd := LexRes[len(LexRes)-1]
+	Print(wrd.Orig+" "+wrd.Orig+" ...", Newline)
+	return true
+}
+
+func VEnchant(arg ActArg) bool {
+	return VDisenchant(ActUnk)
+}
+
+func VEnter(arg ActArg) bool {
+	return DoWalk("in")
+}
+
+func VExit(arg ActArg) bool {
+	if (DirObj == nil || DirObj == &Rooms) && Winner.Location().Has(FlgVeh) {
+		Perform(ActionVerb{Norm: "disembark", Orig: "disembark"}, Winner.Location(), nil)
+		return true
+	}
+	if DirObj != nil && Winner.IsIn(DirObj) {
+		Perform(ActionVerb{Norm: "disembark", Orig: "disembark"}, DirObj, nil)
+		return true
+	}
+	return DoWalk("out")
+}
+
+func VExcorcise(arg ActArg) bool {
+	Print("What a bizarre concept!", Newline)
+	return true
+}
+
+func PreFill(arg ActArg) bool {
+	if IndirObj == nil {
+		if IsInGlobal(&GlobalWater, Here) {
+			Perform(ActionVerb{Norm: "fill", Orig: "fill"}, DirObj, &GlobalWater)
+			return true
+		}
+		if Water.IsIn(Winner.Location()) {
+			Perform(ActionVerb{Norm: "fill", Orig: "fill"}, DirObj, &Water)
+			return true
+		}
+		Print("There is nothing to fill it with.", Newline)
+		return true
+	}
+	if IndirObj == &Water {
+		return false
+	}
+	if IndirObj != &GlobalWater {
+		Perform(ActionVerb{Norm: "put", Orig: "put"}, IndirObj, DirObj)
+		return true
+	}
+	return false
+}
+
+func VFill(arg ActArg) bool {
+	if IndirObj != nil {
+		Print("You may know how to do that, but I don't.", Newline)
+		return true
+	}
+	if IsInGlobal(&GlobalWater, Here) {
+		Perform(ActionVerb{Norm: "fill", Orig: "fill"}, DirObj, &GlobalWater)
+		return true
+	}
+	if Water.IsIn(Winner.Location()) {
+		Perform(ActionVerb{Norm: "fill", Orig: "fill"}, DirObj, &Water)
+		return true
+	}
+	Print("There is nothing to fill it with.", Newline)
+	return true
 }
 
 func VFirstLook(arg ActArg) bool {
@@ -520,6 +730,259 @@ func VFirstLook(arg ActArg) bool {
 		if !SuperBrief {
 			return DescribeObjects(false)
 		}
+	}
+	return false
+}
+
+func VFind(arg ActArg) bool {
+	if DirObj == &Hands || DirObj == &Lungs {
+		Print("Within six feet of your head, assuming you haven't left that somewhere.", Newline)
+		return true
+	}
+	if DirObj == &Me {
+		Print("You're around here somewhere...", Newline)
+		return true
+	}
+	l := DirObj.Location()
+	if l == &GlobalObjects {
+		Print("You find it.", Newline)
+		return true
+	}
+	if DirObj.IsIn(Winner) {
+		Print("You have it.", Newline)
+		return true
+	}
+	if DirObj.IsIn(Here) || IsInGlobal(DirObj, Here) || DirObj == &PseudoObject {
+		Print("It's right here.", Newline)
+		return true
+	}
+	if l.Has(FlgPerson) {
+		Print("The ", NoNewline)
+		PrintObject(l)
+		Print(" has it.", Newline)
+		return true
+	}
+	if l.Has(FlgSurf) {
+		Print("It's on the ", NoNewline)
+		PrintObject(l)
+		Print(".", Newline)
+		return true
+	}
+	if l.Has(FlgCont) {
+		Print("It's in the ", NoNewline)
+		PrintObject(l)
+		Print(".", Newline)
+		return true
+	}
+	Print("Beats me.", Newline)
+	return true
+}
+
+func VFollow(arg ActArg) bool {
+	Print("You're nuts!", Newline)
+	return true
+}
+
+func VFrobozz(arg ActArg) bool {
+	Print("The FROBOZZ Corporation created, owns, and operates this dungeon.", Newline)
+	return true
+}
+
+func PreGive(arg ActArg) bool {
+	if !IsHeld(DirObj) {
+		Print("That's easy for you to say since you don't even have the ", NoNewline)
+		PrintObject(DirObj)
+		Print(".", Newline)
+		return true
+	}
+	return false
+}
+
+func VGive(arg ActArg) bool {
+	if !DirObj.Has(FlgPerson) {
+		Print("You can't give a ", NoNewline)
+		PrintObject(DirObj)
+		Print(" to a ", NoNewline)
+		PrintObject(IndirObj)
+		Print("!", Newline)
+		return true
+	}
+	Print("The ", NoNewline)
+	PrintObject(IndirObj)
+	Print(" refuses it politely.", Newline)
+	return true
+}
+
+func VHatch(arg ActArg) bool {
+	Print("Bizarre!", Newline)
+	return true
+}
+
+func VHello(arg ActArg) bool {
+	if DirObj == nil {
+		Print(PickOne(Hellos), Newline)
+		return true
+	}
+	if DirObj.Has(FlgPerson) {
+		Print("The ", NoNewline)
+		PrintObject(DirObj)
+		Print(" bows his head to you in greeting.", Newline)
+		return true
+	}
+	Print("It's a well known fact that only schizophrenics say \"Hello\" to a ", NoNewline)
+	PrintObject(DirObj)
+	Print(".", Newline)
+	return true
+}
+
+func VIncant(arg ActArg) bool {
+	Print("The incantation echoes back faintly, but nothing else happens.", Newline)
+	Params.InQuotes = false
+	Params.Continue = NumUndef
+	return true
+}
+
+func VInflate(arg ActArg) bool {
+	Print("How can you inflate that?", Newline)
+	return true
+}
+
+func VKick(arg ActArg) bool {
+	return HackHack("Kicking the ")
+}
+
+func VKiss(arg ActArg) bool {
+	Print("I'd sooner kiss a pig.", Newline)
+	return true
+}
+
+func VKnock(arg ActArg) bool {
+	if DirObj.Has(FlgDoor) {
+		Print("Nobody's home.", Newline)
+		return true
+	}
+	Print("Why knock on a ", NoNewline)
+	PrintObject(DirObj)
+	Print("?", Newline)
+	return true
+}
+
+func VLampOff(arg ActArg) bool {
+	if !DirObj.Has(FlgLight) {
+		Print("You can't turn that off.", Newline)
+		return true
+	}
+	if !DirObj.Has(FlgOn) {
+		Print("It is already off.", Newline)
+		return true
+	}
+	DirObj.Take(FlgOn)
+	if Lit {
+		Lit = IsLit(Here, true)
+	}
+	Print("The ", NoNewline)
+	PrintObject(DirObj)
+	Print(" is now off.", Newline)
+	if !Lit {
+		Print("It is now pitch black.", Newline)
+	}
+	return true
+}
+
+func VLampOn(arg ActArg) bool {
+	if !DirObj.Has(FlgLight) {
+		if DirObj.Has(FlgBurn) {
+			Print("If you wish to burn the ", NoNewline)
+			PrintObject(DirObj)
+			Print(", you should say so.", Newline)
+			return true
+		}
+		Print("You can't turn that on.", Newline)
+		return true
+	}
+	if DirObj.Has(FlgOn) {
+		Print("It is already on.", Newline)
+		return true
+	}
+	DirObj.Give(FlgOn)
+	Print("The ", NoNewline)
+	PrintObject(DirObj)
+	Print(" is now on.", Newline)
+	if !Lit {
+		Lit = IsLit(Here, true)
+		NewLine()
+		return VLook(ActUnk)
+	}
+	return true
+}
+
+func VLaunch(arg ActArg) bool {
+	if DirObj.Has(FlgVeh) {
+		Print("You can't launch that by saying \"launch\"!", Newline)
+		return true
+	}
+	Print("That's pretty weird.", Newline)
+	return true
+}
+
+func VLeanOn(arg ActArg) bool {
+	Print("Getting tired?", Newline)
+	return true
+}
+
+func VLeap(arg ActArg) bool {
+	if DirObj != nil {
+		if !DirObj.IsIn(Here) {
+			Print("That would be a good trick.", Newline)
+			return true
+		}
+		if DirObj.Has(FlgPerson) {
+			Print("The ", NoNewline)
+			PrintObject(DirObj)
+			Print(" is too big to jump over.", Newline)
+			return true
+		}
+		return VSkip(ActUnk)
+	}
+	tx := Here.GetDir("down")
+	if tx.IsSet() {
+		if len(tx.NExit) > 0 || (tx.CExit != nil && !tx.CExit()) {
+			Print("This was not a very safe place to try jumping.", Newline)
+			return JigsUp(PickOne(JumpLoss), false)
+		}
+		if Here == &UpATree {
+			Print("In a feat of unaccustomed daring, you manage to land on your feet without killing yourself.", Newline)
+			NewLine()
+			DoWalk("down")
+			return true
+		}
+	}
+	return VSkip(ActUnk)
+}
+
+func VLeave(arg ActArg) bool {
+	return DoWalk("out")
+}
+
+func VListen(arg ActArg) bool {
+	Print("The ", NoNewline)
+	PrintObject(DirObj)
+	Print(" makes no sound.", Newline)
+	return true
+}
+
+func VLock(arg ActArg) bool {
+	Print("It doesn't seem to work.", Newline)
+	return true
+}
+
+func VLower(arg ActArg) bool {
+	return HackHack("Playing in this way with the ")
+}
+
+func VLook(arg ActArg) bool {
+	if DescribeRoom(true) {
+		return DescribeObjects(true)
 	}
 	return false
 }
@@ -594,6 +1057,132 @@ func VExamine(arg ActArg) bool {
 	}
 	Print("There's nothing special about the ", NoNewline)
 	PrintObject(DirObj)
+	Print(".", Newline)
+	return true
+}
+
+func VMake(arg ActArg) bool {
+	Print("You can't do that.", Newline)
+	return true
+}
+
+func VMelt(arg ActArg) bool {
+	Print("It's not clear that a ", NoNewline)
+	PrintObject(DirObj)
+	Print(" can be melted.", Newline)
+	return true
+}
+
+func PreMove(arg ActArg) bool {
+	if IsHeld(DirObj) {
+		Print("You aren't an accomplished enough juggler.", Newline)
+		return true
+	}
+	return false
+}
+
+func VMove(arg ActArg) bool {
+	if DirObj.Has(FlgTake) {
+		Print("Moving the ", NoNewline)
+		PrintObject(DirObj)
+		Print(" reveals nothing.", Newline)
+		return true
+	}
+	Print("You can't move the ", NoNewline)
+	PrintObject(DirObj)
+	Print(".", Newline)
+	return true
+}
+
+func VMumble(arg ActArg) bool {
+	Print("You'll have to speak up if you expect me to hear you!", Newline)
+	return true
+}
+
+func PreMung(arg ActArg) bool {
+	if IndirObj == nil || !IndirObj.Has(FlgWeapon) {
+		Print("Trying to destroy the ", NoNewline)
+		PrintObject(DirObj)
+		Print(" with ", NoNewline)
+		if IndirObj == nil {
+			Print("your bare hands", NoNewline)
+		} else {
+			Print("a", NoNewline)
+			PrintObject(IndirObj)
+		}
+		Print(" is futile.", Newline)
+		return true
+	}
+	return false
+}
+
+func VMung(arg ActArg) bool {
+	if !DirObj.Has(FlgPerson) {
+		Print("Nice try.", Newline)
+		return true
+	}
+	Perform(ActionVerb{Norm: "attack", Orig: "attack"}, DirObj, nil)
+	return true
+}
+
+func VOdysseus(arg ActArg) bool {
+	if Here != &CyclopsRoom || !Cyclops.IsIn(Here) || CyclopsFlag {
+		Print("Wasn't he a sailor?", Newline)
+		return true
+	}
+	QueueInt(ICyclops, false).Run = false
+	CyclopsFlag = true
+	Print("The cyclops, hearing the name of his father's deadly nemesis, flees the room by knocking down the wall on the east of the room.", Newline)
+	MagicFlag = true
+	Cyclops.Take(FlgFight)
+	return RemoveCarefully(&Cyclops)
+}
+
+func VOil(arg ActArg) bool {
+	Print("You probably put spinach in your gas tank, too.", Newline)
+	return true
+}
+
+func VOpen(arg ActArg) bool {
+	if !DirObj.Has(FlgCont) || DirObj.Capacity == 0 {
+		if DirObj.Has(FlgDoor) {
+			if DirObj.Has(FlgOpen) {
+				Print("It is already open.", Newline)
+				return true
+			}
+			Print("The ", NoNewline)
+			PrintObject(DirObj)
+			Print(" opens.", Newline)
+			DirObj.Give(FlgOpen)
+			return true
+		}
+		Print("You must tell me how to do that to a ", NoNewline)
+		PrintObject(DirObj)
+		Print(".", Newline)
+		return true
+	}
+	if DirObj.Has(FlgOpen) {
+		Print("It is already open.", Newline)
+		return true
+	}
+	DirObj.Give(FlgOpen)
+	DirObj.Give(FlgTouch)
+	if !DirObj.HasChildren() || DirObj.Has(FlgTrans) {
+		Print("Opened.", Newline)
+		return true
+	}
+	if len(DirObj.Children) == 1 && !DirObj.Children[0].Has(FlgTouch) && len(DirObj.Children[0].FirstDesc) > 0 {
+		str := DirObj.Children[0].FirstDesc
+		Print("The ", NoNewline)
+		PrintObject(DirObj)
+		Print(" opens.", Newline)
+		Print(str, Newline)
+		return true
+	}
+	Print("Opening the ", NoNewline)
+	PrintObject(DirObj)
+	Print(" reveals ", NoNewline)
+	PrintContents(DirObj)
 	Print(".", Newline)
 	return true
 }
@@ -771,6 +1360,10 @@ func Goto(rm *Object, isV bool) bool {
 	return true
 }
 
+func VSkip(arg ActArg) bool {
+	return false
+}
+
 func VQuit(arg ActArg) bool {
 	VScore(arg)
 	Print("Do you wish to leave the game? (Y is affirmative): ", NoNewline)
@@ -783,11 +1376,32 @@ func VQuit(arg ActArg) bool {
 }
 
 func RemoveCarefully(obj *Object) bool {
+	if obj == Params.ItObj {
+		Params.ItObj = nil
+	}
+	oLit := Lit
+	obj.Remove()
+	Lit = IsLit(Here, true)
+	if oLit && oLit != Lit {
+		Print("You are left in the dark...", Newline)
+	}
+	return true
+}
+
+func PrintContents(obj *Object) bool {
 	return false
 }
 
-func DoWalk(dir string) {
+func HackHack(str string) bool {
+	return false
+}
 
+func DoWalk(dir string) bool {
+	return false
+}
+
+func IDrop() bool {
+	return false
 }
 
 func IsYes() bool {

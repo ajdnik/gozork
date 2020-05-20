@@ -89,6 +89,8 @@ const (
 	FlgMaze
 	FlgClimb
 	FlgWeapon
+	FlgDrink
+	FlgFood
 )
 
 // In function checks if the current flag is in the flag slice.
@@ -248,6 +250,33 @@ func (o *Object) GetDir(dir string) *DirProps {
 		return &o.Land
 	}
 	return nil
+}
+
+func (o *Object) Remove() {
+	o.In.RemoveChild(o)
+	o.In = nil
+}
+
+func (o *Object) RemoveChild(obj *Object) {
+	if o.Children == nil {
+		return
+	}
+	if obj == nil {
+		return
+	}
+	found := -1
+	for idx, chld := range o.Children {
+		if obj == chld {
+			found = idx
+			break
+		}
+	}
+	if found == -1 {
+		return
+	}
+	o.Children[found] = o.Children[len(o.Children)-1]
+	o.Children[len(o.Children)-1] = nil
+	o.Children = o.Children[:len(o.Children)-1]
 }
 
 // AddChild adds the game object as a child of the current
