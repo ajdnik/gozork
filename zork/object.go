@@ -91,6 +91,7 @@ const (
 	FlgWeapon
 	FlgDrink
 	FlgFood
+	FlgTurn
 )
 
 // In function checks if the current flag is in the flag slice.

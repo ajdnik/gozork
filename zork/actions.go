@@ -192,6 +192,10 @@ func HeroBlow() bool {
 	return false
 }
 
+func FindWeapon(o *Object) *Object {
+	return nil
+}
+
 func VScore(arg ActArg) bool {
 	Print("Your score is ", NoNewline)
 	PrintNumber(Score)

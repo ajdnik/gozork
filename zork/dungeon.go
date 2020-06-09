@@ -136,6 +136,12 @@ var (
 	UpATree         = Object{}
 	CyclopsRoom     = Object{}
 	Cyclops         = Object{}
+	Teeth           = Object{}
+	Putty           = Object{}
+	NorthTemple     = Object{}
+	TreasureRoom    = Object{}
+	Book            = Object{}
+	Pump            = Object{}
 	InHouseAround   = []*Object{
 		&LivingRoom,
 		&Kitchen,
@@ -222,6 +228,12 @@ var (
 		&UpATree,
 		&CyclopsRoom,
 		&Cyclops,
+		&Teeth,
+		&Putty,
+		&NorthTemple,
+		&TreasureRoom,
+		&Book,
+		&Pump,
 	}
 )
 

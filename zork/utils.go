@@ -45,5 +45,9 @@ func Zprob(base int) bool {
 }
 
 func IsFlaming(obj *Object) bool {
-	return false
+	return obj.Has(FlgFlame) && obj.Has(FlgOn)
+}
+
+func IsOpenable(obj *Object) bool {
+	return obj.Has(FlgDoor) || obj.Has(FlgCont)
 }
