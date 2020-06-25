@@ -1868,6 +1868,10 @@ func Wait(num int) bool {
 	return true
 }
 
+func VWave(arg ActArg) bool {
+	return HackHack("Waving the ")
+}
+
 func VWear(arg ActArg) bool {
 	if !DirObj.Has(FlgWear) {
 		Print("You can't wear the ", NoNewline)
