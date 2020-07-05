@@ -1,10 +1,16 @@
-# GoZork
+<p align="center">
+  <img width="300" src="assets/logo.png" alt="GoZork Logo" />
+</p>
+<p align="center">A Zork I game ported from <a href="https://github.com/historicalsource/zork1" target="_blank">ZIL source</a> to Golang.</p>
+<p align="center">
+  <a href="https://goreportcard.com/report/github.com/ajdnik/gozork" target="_blank"><img src="https://goreportcard.com/badge/github.com/ajdnik/gozork" alt="Go Report" /></a>
+</p>
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/ajdnik/gozork)](https://goreportcard.com/report/github.com/ajdnik/gozork)
+## Description
 
-A Zork I game ported from [ZIL source](https://github.com/historicalsource/zork1) to Golang. Zork I is a 1980 interactive fiction game written by Marc Blank, Dave Lebling, Bruce Daniels and Tim Anderson and published by Infocom. To learn more about the history of the game feel free to read [Zork I: The Great Underground Empire](https://medium.com/@r.ajdnik/zork-the-great-underground-empire-cda94623861c) on Medium.
+Zork I is a 1980 interactive fiction game written by Marc Blank, Dave Lebling, Bruce Daniels and Tim Anderson and published by Infocom. To learn more about the history of the game feel free to read [Zork I: The Great Underground Empire](https://medium.com/@r.ajdnik/zork-the-great-underground-empire-cda94623861c) on Medium.
 
-### Usage
+## Usage
 
 Clone the git repository and build the go binary.
 
@@ -36,7 +42,7 @@ There is a small mailbox here.
 >
 ```
 
-### TODO
+## TODO
 
 The project is still a work in progress. Feel free to compile it and test it out, but a lot of the game objects are still unimplemented.
 
