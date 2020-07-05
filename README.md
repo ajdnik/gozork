@@ -53,3 +53,6 @@ The project is still a work in progress. Feel free to compile it and test it out
 - [ ] Game object actions
 - [ ] Testing
 - [ ] Refactoring to idiomatic Go
+- [ ] GitHub Actions CI/CD
+- [ ] Homebrew package
+- [ ] Chocolatey package
