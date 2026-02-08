@@ -286,6 +286,15 @@ func TestDiagnose(t *testing.T) {
 	})
 }
 
+func TestCrossCommand(t *testing.T) {
+	runScript(t, []Step{
+		{
+			Command:  "cross mailbox",
+			Contains: []string{"You can't cross that"},
+		},
+	})
+}
+
 func TestExamineMailbox(t *testing.T) {
 	runScript(t, []Step{
 		{
