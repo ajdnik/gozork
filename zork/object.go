@@ -76,13 +76,13 @@ const (
 	FlgIn
 	// Kludge is a syntax flag which can be used to support a syntax VERB PREPOSITION without any object
 	FlgKludge
-	// TODO: describe what the flag is used for
+	// Fight means the character is actively engaged in combat
 	FlgFight
-	// TODO: describe what the flag is used for
+	// Staggered means the character is recovering from a blow and will skip their next attack
 	FlgStagg
-	// TODO: describe
+	// Sacred means the object is protected and cannot be stolen by the thief
 	FlgSacred
-	// TODO: describe
+	// Tool means the object can be used as an implement (e.g. for digging, inflating, locking)
 	FlgTool
 	FlgNonLand
 	// FlgMaze means the room is a maze

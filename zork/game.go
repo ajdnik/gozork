@@ -20,28 +20,39 @@ const (
 // This allows tests to catch quit without os.Exit terminating the process.
 var ErrQuit = "game-quit"
 
-func Restart() bool {
-	// TODO: Implement restart
-	return false
+// PerformFatal is set by action handlers to signal the equivalent of ZIL's
+// RFATAL return. When set, the Perform function returns PerfFatal instead
+// of PerfHndld, which causes the main loop to stop the multi-object loop
+// and clear the continuation flag.
+var PerformFatal bool
+
+// RFatal signals a fatal action result (equivalent to ZIL's <RFATAL>).
+// Call this in an action handler and return its result to stop the
+// Perform chain and the multi-object loop in the main loop.
+func RFatal() bool {
+	PerformFatal = true
+	return true
 }
 
-func Restore() bool {
-	// TODO: Implement restore
-	return false
-}
+// Save, Restore, and Restart are function variables that start as stubs.
+// They are replaced with real implementations in InitGame (from save.go)
+// to break the init cycle between package-level variable initializers and
+// the Objects slice.
+var (
+	Save    = func() bool { return false }
+	Restore = func() bool { return false }
+	Restart = func() bool { return false }
+)
 
 func Quit() {
 	panic(ErrQuit)
 }
 
-func Save() bool {
-	// TODO: Implement save
-	return false
-}
-
+// Verify checks the integrity of the game file.
+// In the original Z-machine, VERIFY computes a checksum of the story file.
+// This is not applicable to the Go port; we always return true.
 func Verify() bool {
-	// TODO: Implement disk verify
-	return false
+	return true
 }
 
 // ResetGameState resets all mutable global state so a fresh game can be started.
@@ -52,6 +63,9 @@ func ResetGameState() {
 	QueueInts = 30
 	QueueDmns = 30
 	ClockWait = false
+
+	// Reset perform state
+	PerformFatal = false
 
 	// Reset parser/game state
 	ParserOk = false
@@ -142,6 +156,7 @@ func InitGame() {
 	BuildObjectTree()
 	BuildVocabulary()
 	InitReader()
+	initSaveSystem()
 
 	Queue(IFight, -1).Run = true
 	Queue(ISword, -1)
@@ -240,6 +255,9 @@ func MainLoop() {
 				res = Perform(ActVerb, nil, nil)
 				DirObj = nil
 			} else if !Lit {
+				Print("It's too dark to see.", Newline)
+				res = PerfNotHndld
+			} else {
 				Print("It's not clear what you're referring to.", Newline)
 				res = PerfNotHndld
 			}
@@ -331,8 +349,35 @@ func MainLoop() {
 	}
 }
 
+// callHandler invokes an action handler and checks for a fatal signal.
+// Returns the appropriate PerfRet and whether the chain should stop.
+func callHandler(fn func(ActArg) bool, arg ActArg) (PerfRet, bool) {
+	result := fn(arg)
+	if PerformFatal {
+		PerformFatal = false
+		return PerfFatal, true
+	}
+	if result {
+		return PerfHndld, true
+	}
+	return PerfNotHndld, false
+}
+
 func Perform(a ActionVerb, o, i *Object) PerfRet {
-	if (o == &It || i == &It) && IsAccessible(Params.ItObj) {
+	// Save old globals so nested Perform calls don't corrupt the outer
+	// call's state. This mirrors ZIL's save/restore of PRSA, PRSO, PRSI.
+	oldActVerb := ActVerb
+	oldDirObj := DirObj
+	oldIndirObj := IndirObj
+	defer func() {
+		ActVerb = oldActVerb
+		DirObj = oldDirObj
+		IndirObj = oldIndirObj
+	}()
+
+	// Clear any stale fatal flag (e.g. from parser's ITake call).
+	PerformFatal = false
+	if (o == &It || i == &It) && !IsAccessible(Params.ItObj) {
 		Print("I don't see what you are referring to.", Newline)
 		return PerfFatal
 	}
@@ -342,60 +387,66 @@ func Perform(a ActionVerb, o, i *Object) PerfRet {
 	if i == &It {
 		i = Params.ItObj
 	}
-	if o != nil && IndirObj != &It && a.Norm == "walk" {
+	// Set globals from parameters (like ZIL's SETG PRSA/PRSO/PRSI).
+	ActVerb = a
+	DirObj = o
+	// Track "it" for non-walk commands (ZIL: <NOT <VERB? WALK>>).
+	if o != nil && a.Norm != "walk" {
 		Params.ItObj = o
 	}
+	IndirObj = i
+
 	if o == &NotHereObject || i == &NotHereObject {
-		if NotHereObjectFcn(ActUnk) {
-			return PerfHndld
+		if ret, done := callHandler(NotHereObjectFcn, ActUnk); done {
+			return ret
 		}
 	}
 	if Winner != nil && Winner.Action != nil {
-		if Winner.Action(ActUnk) {
-			return PerfHndld
+		if ret, done := callHandler(Winner.Action, ActUnk); done {
+			return ret
 		}
 	}
 	if l := Winner.Location(); l != nil && l.Action != nil {
-		if l.Action(ActBegin) {
-			return PerfHndld
+		if ret, done := callHandler(l.Action, ActBegin); done {
+			return ret
 		}
 	}
 	if act, ok := PreActions[a.Orig]; ok && act != nil {
-		if act(ActUnk) {
-			return PerfHndld
+		if ret, done := callHandler(act, ActUnk); done {
+			return ret
 		}
 	} else if a.Norm != a.Orig {
 		if act, ok := PreActions[a.Norm]; ok && act != nil {
-			if act(ActUnk) {
-				return PerfHndld
+			if ret, done := callHandler(act, ActUnk); done {
+				return ret
 			}
 		}
 	}
 	if i != nil && i.Action != nil {
-		if i.Action(ActUnk) {
-			return PerfHndld
+		if ret, done := callHandler(i.Action, ActUnk); done {
+			return ret
 		}
 	}
 	if o != nil && a.Norm != "walk" && o.Location() != nil && o.Location().ContFcn != nil {
-		if o.Location().ContFcn(ActUnk) {
-			return PerfHndld
+		if ret, done := callHandler(o.Location().ContFcn, ActUnk); done {
+			return ret
 		}
 	}
 	if o != nil && a.Norm != "walk" && o.Action != nil {
-		if o.Action(ActUnk) {
-			return PerfHndld
+		if ret, done := callHandler(o.Action, ActUnk); done {
+			return ret
 		}
 	}
 	// Try the action by Orig first, then by Norm (for normalized verbs
 	// like "turn on" -> "lamp on")
 	if act, ok := Actions[a.Orig]; ok && act != nil {
-		if act(ActUnk) {
-			return PerfHndld
+		if ret, done := callHandler(act, ActUnk); done {
+			return ret
 		}
 	} else if a.Norm != a.Orig {
 		if act, ok := Actions[a.Norm]; ok && act != nil {
-			if act(ActUnk) {
-				return PerfHndld
+			if ret, done := callHandler(act, ActUnk); done {
+				return ret
 			}
 		}
 	}

@@ -110,7 +110,12 @@ func VRestart(arg ActArg) bool {
 	Print("Do you wish to restart? (Y is affirmative): ", NoNewline)
 	if IsYes() {
 		Print("Restarting.", Newline)
-		Restart()
+		if Restart() {
+			VVersion(ActUnk)
+			NewLine()
+			VFirstLook(ActUnk)
+			return true
+		}
 		Print("Failed.", Newline)
 		return true
 	}
@@ -164,7 +169,30 @@ func VVerify(arg ActArg) bool {
 	return true
 }
 
-// TODO: VCommandFile, VRandom, VRecord, VUnrecord
+// VCommandFile switches input to come from a file. In the original Z-machine
+// this uses the DIRIN opcode. Not applicable to this Go port.
+func VCommandFile(arg ActArg) bool {
+	return true
+}
+
+// VRandom reseeds the random number generator. In the original Z-machine
+// this uses the RANDOM opcode with a negative argument to set the seed.
+func VRandom(arg ActArg) bool {
+	Print("Illegal call to #RND.", Newline)
+	return true
+}
+
+// VRecord starts recording input to a file. In the original Z-machine
+// this uses the DIROUT opcode. Not applicable to this Go port.
+func VRecord(arg ActArg) bool {
+	return true
+}
+
+// VUnrecord stops recording input. In the original Z-machine this uses
+// the DIROUT opcode. Not applicable to this Go port.
+func VUnrecord(arg ActArg) bool {
+	return true
+}
 
 func VVersion(arg ActArg) bool {
 	Print("ZORK I: The Great Underground Empire", Newline)
@@ -258,15 +286,13 @@ func PreBoard(arg ActArg) bool {
 			Print("The ", NoNewline)
 			PrintObject(DirObj)
 			Print(" must be on the ground to be boarded.", Newline)
-			// TODO: return fatal
-			return false
+			return RFatal()
 		}
 		if av := Winner.Location(); av != nil && av.Has(FlgVeh) {
 			Print("You are already in the ", NoNewline)
 			PrintObject(av)
 			Print("!", Newline)
-			// TODO. return fatal
-			return false
+			return RFatal()
 		}
 		return false
 	}
@@ -277,8 +303,7 @@ func PreBoard(arg ActArg) bool {
 	Print("You have a theory on how to board a ", NoNewline)
 	PrintObject(DirObj)
 	Print(", perhaps?", Newline)
-	// TODO: return fatal
-	return false
+	return RFatal()
 }
 
 func VBoard(arg ActArg) bool {
@@ -286,17 +311,18 @@ func VBoard(arg ActArg) bool {
 	PrintObject(DirObj)
 	Print(".", Newline)
 	Winner.MoveTo(Here)
-	// TODO: Maybe check if Action is defined?
-	DirObj.Action(ActEnter)
+	if DirObj.Action != nil {
+		DirObj.Action(ActEnter)
+	}
 	return true
 }
 
 func VBreathe(arg ActArg) bool {
-	// TODO: In original code this returns perform
-	if Perform(ActionVerb{Norm: "inflate", Orig: "inflate"}, DirObj, &Lungs) == PerfHndld {
-		return true
+	ret := Perform(ActionVerb{Norm: "inflate", Orig: "inflate"}, DirObj, &Lungs)
+	if ret == PerfFatal {
+		return RFatal()
 	}
-	return false
+	return ret == PerfHndld
 }
 
 func VBrush(arg ActArg) bool {
@@ -501,11 +527,11 @@ func VCurses(arg ActArg) bool {
 
 func VCut(arg ActArg) bool {
 	if DirObj.Has(FlgPerson) {
-		// TODO: returns perform
-		if Perform(ActionVerb{Norm: "attack", Orig: "attack"}, DirObj, IndirObj) == PerfHndld {
-			return true
+		ret := Perform(ActionVerb{Norm: "attack", Orig: "attack"}, DirObj, IndirObj)
+		if ret == PerfFatal {
+			return RFatal()
 		}
-		return false
+		return ret == PerfHndld
 	}
 	if DirObj.Has(FlgBurn) && IndirObj.Has(FlgWeapon) {
 		if Winner.IsIn(DirObj) {
@@ -565,8 +591,7 @@ func VDisembark(arg ActArg) bool {
 	}
 	if loc != DirObj {
 		Print("You're not in that!", Newline)
-		// TODO: return fatal
-		return false
+		return RFatal()
 	}
 	if Here.Has(FlgLand) {
 		Print("You are on your own feet again.", Newline)
@@ -574,8 +599,7 @@ func VDisembark(arg ActArg) bool {
 		return true
 	}
 	Print("You realize that getting out here would be fatal.", Newline)
-	// TODO: return fatal
-	return false
+	return RFatal()
 }
 
 func VDisenchant(arg ActArg) bool {
@@ -1716,8 +1740,7 @@ func VTell(arg ActArg) bool {
 		Print("!", Newline)
 		Params.InQuotes = false
 		Params.Continue = NumUndef
-		// TODO: return fatal
-		return false
+		return RFatal()
 	}
 	if Params.Continue != NumUndef {
 		Winner = DirObj
@@ -1904,14 +1927,12 @@ func VWalk(arg ActArg) bool {
 		if !Lit && Prob(80, false) && Winner == &Adventurer && !Here.Has(FlgNonLand) {
 			if IsSprayed {
 				Print("There are odd noises in the darkness, and there is no exit in that direction.", Newline)
-				// TODO: return fatal
-				return false
+				return RFatal()
 			}
 			return JigsUp("Oh, no! You have walked into the slavering fangs of a lurking grue!", false)
 		}
 		Print("You can't go that way.", Newline)
-		// TODO: return fatal
-		return false
+		return RFatal()
 	}
 	// Unconditional exit
 	if props.UExit {
@@ -1920,15 +1941,13 @@ func VWalk(arg ActArg) bool {
 	// Non-exit
 	if len(props.NExit) > 0 {
 		Print(props.NExit, Newline)
-		// TODO: return fatal
-		return false
+		return RFatal()
 	}
 	// Functional exit
 	if props.FExit != nil {
 		rm := props.FExit()
 		if rm == nil {
-			// TODO: return fatal
-			return false
+			return RFatal()
 		}
 		return Goto(rm, true)
 	}
@@ -1939,12 +1958,10 @@ func VWalk(arg ActArg) bool {
 		}
 		if len(props.CExitStr) > 0 {
 			Print(props.CExitStr, Newline)
-			// TODO: return fatal
-			return false
+			return RFatal()
 		}
 		Print("You can't go that way.", Newline)
-		// TODO: return fatal
-		return false
+		return RFatal()
 	}
 	if props.DExit != nil {
 		if props.DExit.Has(FlgOpen) {
@@ -1952,15 +1969,13 @@ func VWalk(arg ActArg) bool {
 		}
 		if len(props.DExitStr) > 0 {
 			Print(props.DExitStr, Newline)
-			// TODO: return fatal
-			return false
+			return RFatal()
 		}
 		Print("The ", NoNewline)
 		PrintObject(props.DExit)
 		Print(" is closed.", Newline)
 		ThisIsIt(props.DExit)
-		// TODO: return fatal
-		return false
+		return RFatal()
 	}
 	return false
 }
@@ -2056,7 +2071,7 @@ func Goto(rm *Object, isV bool) bool {
 		Here.Action(ActEnter)
 	}
 	ScoreObj(rm)
-	// TODO: This statement should never be true
+	// If the room's enter action teleported the player elsewhere, stop here.
 	if Here != rm {
 		return true
 	}
@@ -2486,7 +2501,7 @@ func ITake(vb bool) bool {
 			}
 			NewLine()
 		}
-		// TODO: rfatal, not rfalse
+		PerformFatal = true
 		return false
 	}
 	cnt := CCount(Winner)
