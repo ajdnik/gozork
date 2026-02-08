@@ -33,6 +33,7 @@ make run
 | `make vet`   | Run `go vet` static analysis                       |
 | `make lint`  | Run `golangci-lint` (requires installation)        |
 | `make fmt`   | Format all Go source files with `gofmt`            |
+| `make cover` | Run tests and print per-package coverage summary   |
 | `make check` | Run fmt, vet, lint, and test in sequence            |
 | `make clean` | Remove build artifacts                             |
 
