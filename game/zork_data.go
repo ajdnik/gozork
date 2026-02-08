@@ -76,5 +76,9 @@ func newZorkData() *ZorkData {
 
 // gD returns the game-specific ZorkData from the engine's GameState.
 func gD() *ZorkData {
-	return G.GameData.(*ZorkData)
+	zd, ok := G.GameData.(*ZorkData)
+	if !ok || zd == nil {
+		panic("engine: GameData is not *ZorkData")
+	}
+	return zd
 }
