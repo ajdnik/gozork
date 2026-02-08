@@ -8,8 +8,8 @@ var (
 	// ================================================================
 
 	WestOfHouse = Object{
-		In:     &Rooms,
-		Desc:   "West of House",
+		In:   &Rooms,
+		Desc: "West of House",
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Flags:  FlgLand | FlgOn | FlgSacred,
 		Global: []*Object{&WhiteHouse, &Board, &Forest},
@@ -36,8 +36,8 @@ var (
 		Global:   []*Object{&BoardedWindow, &Board, &WhiteHouse, &Forest},
 	}
 	EastOfHouse = Object{
-		In:     &Rooms,
-		Desc:   "Behind House",
+		In:   &Rooms,
+		Desc: "Behind House",
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Flags:  FlgLand | FlgOn | FlgSacred,
 		Global: []*Object{&WhiteHouse, &KitchenWindow, &Forest},
@@ -47,16 +47,16 @@ var (
 		LongDesc: "This is a forest, with trees in all directions. To the east, there appears to be sunlight.",
 		Desc:     "Forest",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:    FlgLand | FlgOn | FlgSacred,
-		Global:   []*Object{&Tree, &Songbird, &WhiteHouse, &Forest},
+		Flags:  FlgLand | FlgOn | FlgSacred,
+		Global: []*Object{&Tree, &Songbird, &WhiteHouse, &Forest},
 	}
 	Forest2 = Object{
 		In:       &Rooms,
 		LongDesc: "This is a dimly lit forest, with large trees all around.",
 		Desc:     "Forest",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:    FlgLand | FlgOn | FlgSacred,
-		Global:   []*Object{&Tree, &Songbird, &WhiteHouse, &Forest},
+		Flags:  FlgLand | FlgOn | FlgSacred,
+		Global: []*Object{&Tree, &Songbird, &WhiteHouse, &Forest},
 	}
 	Mountains = Object{
 		In:       &Rooms,
@@ -70,20 +70,20 @@ var (
 		LongDesc: "This is a dimly lit forest, with large trees all around.",
 		Desc:     "Forest",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:    FlgLand | FlgOn | FlgSacred,
-		Global:   []*Object{&Tree, &Songbird, &WhiteHouse, &Forest},
+		Flags:  FlgLand | FlgOn | FlgSacred,
+		Global: []*Object{&Tree, &Songbird, &WhiteHouse, &Forest},
 	}
 	Path = Object{
 		In:       &Rooms,
 		LongDesc: "This is a path winding through a dimly lit forest. The path heads north-south here. One particularly large tree with some low branches stands at the edge of the path.",
 		Desc:     "Forest Path",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:    FlgLand | FlgOn | FlgSacred,
-		Global:   []*Object{&Tree, &Songbird, &WhiteHouse, &Forest},
+		Flags:  FlgLand | FlgOn | FlgSacred,
+		Global: []*Object{&Tree, &Songbird, &WhiteHouse, &Forest},
 	}
 	UpATree = Object{
-		In:     &Rooms,
-		Desc:   "Up a Tree",
+		In:   &Rooms,
+		Desc: "Up a Tree",
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Flags:  FlgLand | FlgOn | FlgSacred,
 		Global: []*Object{&Tree, &Forest, &Songbird, &WhiteHouse},
@@ -114,7 +114,7 @@ var (
 		Flags:  FlgLand | FlgOn | FlgSacred,
 		Global: []*Object{&KitchenWindow, &Chimney, &Stairs},
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Item:    &ItemData{Value: 10},
+		Item: &ItemData{Value: 10},
 	}
 	Attic = Object{
 		In:       &Rooms,
@@ -140,12 +140,12 @@ var (
 	// ================================================================
 
 	Cellar = Object{
-		In:     &Rooms,
-		Desc:   "Cellar",
+		In:   &Rooms,
+		Desc: "Cellar",
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Flags:  FlgLand,
 		Global: []*Object{&Slide, &Stairs},
-		Item:    &ItemData{Value: 25},
+		Item:   &ItemData{Value: 25},
 	}
 	TrollRoom = Object{
 		In:       &Rooms,

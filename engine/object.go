@@ -129,6 +129,7 @@ const (
 	ActEnd
 )
 
+// Action is a handler function attached to a game object, invoked with a context argument.
 type Action func(ActArg) bool
 
 // PseudoObj are special game objects which only have a single synonym and an action.
@@ -137,7 +138,10 @@ type PseudoObj struct {
 	Action  Action
 }
 
+// FDir is a function-based room exit that computes the destination dynamically.
 type FDir func() *Object
+
+// CDir is a conditional exit check that returns true if passage is allowed.
 type CDir func() bool
 
 // Direction represents a compass direction or vertical movement.
@@ -215,6 +219,7 @@ var AllDirections = []Direction{
 	Up, Down, In, Out, Land,
 }
 
+// DirProps describes how a room exit works (unconditional, conditional, etc.).
 type DirProps struct {
 	NExit    string
 	UExit    bool
@@ -226,6 +231,7 @@ type DirProps struct {
 	DExitStr string
 }
 
+// IsSet returns true if any exit data has been configured.
 func (dp DirProps) IsSet() bool {
 	return len(dp.NExit) > 0 ||
 		(dp.UExit && dp.RExit != nil) ||
@@ -311,6 +317,7 @@ func (o *Object) SetExit(d Direction, dp DirProps) {
 	o.Exits[d] = dp
 }
 
+// Remove detaches the object from its parent.
 func (o *Object) Remove() {
 	if o.In != nil {
 		o.In.RemoveChild(o)
@@ -318,6 +325,7 @@ func (o *Object) Remove() {
 	o.In = nil
 }
 
+// RemoveChild removes a direct child from this object's children list.
 func (o *Object) RemoveChild(obj *Object) {
 	if o.Children == nil {
 		return
@@ -340,6 +348,7 @@ func (o *Object) RemoveChild(obj *Object) {
 	o.Children = o.Children[:len(o.Children)-1]
 }
 
+// AddChild adds a child to this object's children list (no-op if already present).
 func (o *Object) AddChild(child *Object) {
 	if o.Children == nil {
 		o.Children = []*Object{}
@@ -352,6 +361,7 @@ func (o *Object) AddChild(child *Object) {
 	o.Children = append(o.Children, child)
 }
 
+// MoveTo removes the object from its current parent and places it inside dest.
 func (o *Object) MoveTo(dest *Object) {
 	if o.In != nil {
 		o.In.RemoveChild(o)
@@ -360,18 +370,22 @@ func (o *Object) MoveTo(dest *Object) {
 	dest.AddChild(o)
 }
 
+// Has returns true if any of the given flag bits are set.
 func (o *Object) Has(f Flags) bool {
 	return o.Flags&f != 0
 }
 
+// Give sets the given flag bits on the object.
 func (o *Object) Give(f Flags) {
 	o.Flags |= f
 }
 
+// Take clears the given flag bits on the object.
 func (o *Object) Take(f Flags) {
 	o.Flags &^= f
 }
 
+// Is returns true if wrd appears in the object's synonyms or adjectives.
 func (o *Object) Is(wrd string) bool {
 	for _, syn := range o.Synonyms {
 		if syn == wrd {
@@ -386,10 +400,12 @@ func (o *Object) Is(wrd string) bool {
 	return false
 }
 
+// Location returns the object's parent (container or room).
 func (o *Object) Location() *Object {
 	return o.In
 }
 
+// IsIn returns true if the object's direct parent is loc.
 func (o *Object) IsIn(loc *Object) bool {
 	return o.In == loc
 }

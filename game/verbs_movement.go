@@ -2,7 +2,6 @@ package game
 
 import . "github.com/ajdnik/gozork/engine"
 
-
 func PreBoard(arg ActArg) bool {
 	if G.DirObj.Has(FlgVeh) {
 		if !G.DirObj.IsIn(G.Here) {
@@ -310,10 +309,7 @@ func VWalkTo(arg ActArg) bool {
 func DoWalk(dir Direction) bool {
 	G.Params.WalkDir = dir
 	G.Params.HasWalkDir = true
-	if Perform(ActionVerb{Norm: "walk", Orig: "walk"}, nil, nil) == PerfHndld {
-		return true
-	}
-	return false
+	return Perform(ActionVerb{Norm: "walk", Orig: "walk"}, nil, nil) == PerfHndld
 }
 
 func NoGoTell(av Flags, wloc *Object) {
@@ -401,4 +397,3 @@ func VCross(arg ActArg) bool {
 	Printf("You can't cross that!\n")
 	return true
 }
-

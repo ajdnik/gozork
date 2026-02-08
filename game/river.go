@@ -2,8 +2,6 @@ package game
 
 import . "github.com/ajdnik/gozork/engine"
 
-
-
 func FixBoat() {
 	Printf("Well done. The boat is repaired.\n")
 	InflatableBoat.MoveTo(PuncturedBoat.Location())

@@ -23,11 +23,11 @@ const (
 
 // Combat mode constants
 const (
-	FBusy       = 1
-	FDead       = 2
+	FBusy        = 1
+	FDead        = 2
 	FUnconscious = 3
-	FConscious  = 4
-	FFirst      = 5
+	FConscious   = 4
+	FFirst       = 5
 )
 
 // Combat strength constants
@@ -38,11 +38,11 @@ const (
 )
 
 const (
-	VVillain  = 0
-	VBest     = 1
-	VBestAdv  = 2
-	VProb     = 3
-	VMsgs     = 4
+	VVillain = 0
+	VBest    = 1
+	VBestAdv = 2
+	VProb    = 3
+	VMsgs    = 4
 )
 
 // Melee message marker constants
@@ -308,14 +308,11 @@ var (
 			{mp("The thief, a pragmatist, dispatches you as a threat to his livelihood.")},
 		},
 	}
-
 )
 
 // ================================================================
 // HELPER FUNCTIONS
 // ================================================================
-
-
 
 func WeaponFunction(w, v *Object) bool {
 	if !v.IsIn(G.Here) {
@@ -773,14 +770,8 @@ func HeroBlow() bool {
 		res = BlowKill
 	} else {
 		if def == 1 {
-			if att > 2 {
-				att = 3
-			}
 			res = Def1[G.Rand.Intn(len(Def1))]
 		} else if def == 2 {
-			if att > 3 {
-				att = 4
-			}
 			res = Def2B[G.Rand.Intn(len(Def2B))]
 		} else {
 			att = att - def

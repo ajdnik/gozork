@@ -44,7 +44,7 @@ var (
 		"proceed":    "walk",
 		"xyzzy":      "plugh",
 		"awake":      "wake",
-		"suprise":    "wake",
+		"surprise":   "wake",
 		"startle":    "wake",
 		"reply":      "answer",
 		"fight":      "attack",

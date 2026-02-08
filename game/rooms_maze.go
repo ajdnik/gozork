@@ -93,8 +93,8 @@ var (
 		Flags:    FlgLand | FlgMaze,
 	}
 	GratingRoom = Object{
-		In:     &Rooms,
-		Desc:   "Grating Room",
+		In:   &Rooms,
+		Desc: "Grating Room",
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Flags:  FlgLand,
 		Global: []*Object{&Grate},
@@ -129,5 +129,4 @@ var (
 		Desc:     "Maze",
 		Flags:    FlgLand | FlgMaze,
 	}
-
 )

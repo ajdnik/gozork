@@ -122,10 +122,7 @@ func NotHereObjectFcn(arg ActArg) bool {
 	}
 	G.Params.Continue = NumUndef
 	G.Params.InQuotes = false
-	isDir := false
-	if G.DirObj == &NotHereObject {
-		isDir = true
-	}
+	isDir := G.DirObj == &NotHereObject
 	if G.Winner == G.Player {
 		Printf("You can't see any ")
 		NotHerePrint(isDir)

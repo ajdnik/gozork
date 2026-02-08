@@ -79,7 +79,6 @@ func WithTell(obj *Object) {
 	Printf("With a %s?\n", obj.Desc)
 }
 
-
 func BadEgg() {
 	if Canary.IsIn(&Egg) {
 		Printf(" %s", BrokenCanary.FirstDesc)
@@ -922,10 +921,7 @@ func LeafPileFcn(arg ActArg) bool {
 			return false
 		}
 		LeavesAppear()
-		if G.ActVerb.Norm == "take" {
-			return false
-		}
-		return true
+		return G.ActVerb.Norm != "take"
 	}
 	if G.ActVerb.Norm == "look under" && !GD().GrateRevealed {
 		Printf("Underneath the pile of leaves is a grating. As you release the leaves, the grating is once again concealed from view.\n")
@@ -1007,13 +1003,8 @@ func MirrorMirrorFcn(arg ActArg) bool {
 			rm2 = &MirrorRoom1
 		}
 		// Swap room contents
-		var l1, l2 []*Object
-		for _, c := range G.Here.Children {
-			l1 = append(l1, c)
-		}
-		for _, c := range rm2.Children {
-			l2 = append(l2, c)
-		}
+		l1 := append([]*Object{}, G.Here.Children...)
+		l2 := append([]*Object{}, rm2.Children...)
 		for _, c := range l1 {
 			c.MoveTo(rm2)
 		}
@@ -1361,10 +1352,7 @@ func MachineSwitchFcn(arg ActArg) bool {
 					Diamond.MoveTo(&Machine)
 				} else {
 					// Remove everything and put gunk in
-					var toRemove []*Object
-					for _, o := range Machine.Children {
-						toRemove = append(toRemove, o)
-					}
+					toRemove := append([]*Object{}, Machine.Children...)
 					for _, o := range toRemove {
 						RemoveCarefully(o)
 					}

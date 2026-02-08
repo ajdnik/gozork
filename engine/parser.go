@@ -1,9 +1,11 @@
 package engine
 
 const (
+	// NumUndef is the sentinel value for "no continuation index".
 	NumUndef int = -1
 )
 
+// ParseTbl holds the tokens and structure extracted from the player's input.
 type ParseTbl struct {
 	Verb         LexItm
 	Prep1        LexItm
@@ -14,6 +16,7 @@ type ParseTbl struct {
 	ObjOrClause2 []LexItm
 }
 
+// Set copies the contents of another ParseTbl into this one.
 func (pt *ParseTbl) Set(tbl ParseTbl) {
 	pt.Verb.Set(tbl.Verb)
 	pt.Prep1.Set(tbl.Prep1)
@@ -24,6 +27,7 @@ func (pt *ParseTbl) Set(tbl ParseTbl) {
 	pt.ObjOrClause2 = append([]LexItm{}, tbl.ObjOrClause2...)
 }
 
+// Clear resets the ParseTbl to its zero state.
 func (pt *ParseTbl) Clear() {
 	pt.Verb.Clear()
 	pt.Prep1.Clear()
@@ -34,11 +38,13 @@ func (pt *ParseTbl) Clear() {
 	pt.ObjOrClause2 = nil
 }
 
+// NotHereProps stores synonym/adjective data for the "not here" object.
 type NotHereProps struct {
 	Syn LexItm
 	Adj LexItm
 }
 
+// FindProps holds the current search criteria for object resolution.
 type FindProps struct {
 	ObjFlags Flags
 	LocFlags LocFlags
@@ -46,33 +52,45 @@ type FindProps struct {
 	Adj      LexItm
 }
 
+// ClauseTyp identifies which object clause is being resolved.
 type ClauseTyp int
 
 const (
+	// ClauseUnk means no clause is active.
 	ClauseUnk ClauseTyp = iota
+	// Clause1 refers to the first object clause.
 	Clause1
+	// Clause2 refers to the second object clause.
 	Clause2
 )
 
+// ClauseProps describes an adjective-disambiguating clause for the parser.
 type ClauseProps struct {
 	Type ClauseTyp
 	Syn  LexItm
 	Adj  LexItm
 }
 
+// IsSet returns true if this clause has been populated.
 func (cp ClauseProps) IsSet() bool {
 	return cp.Type != ClauseUnk
 }
 
+// GetObjTyp controls how the parser resolves object references.
 type GetObjTyp int
 
 const (
+	// GetUndef means no explicit quantifier was given.
 	GetUndef GetObjTyp = iota
+	// GetAll means the player said "all" / "everything".
 	GetAll
+	// GetOne means the player said "one" / "a".
 	GetOne
+	// GetInhibit suppresses object resolution.
 	GetInhibit
 )
 
+// ParseProps holds persistent parser state across turns.
 type ParseProps struct {
 	ObjOrClauseCnt int
 	EndOnPrep      bool
@@ -92,32 +110,41 @@ type ParseProps struct {
 	HasWalkDir     bool
 }
 
+// FindTyp controls the depth of object tree searches.
 type FindTyp int
 
 const (
+	// FindAll searches the entire subtree.
 	FindAll FindTyp = iota
+	// FindTop searches only direct children.
 	FindTop
+	// FindBottom searches only nested (non-direct) children.
 	FindBottom
 )
 
+// ReserveProps holds a buffered continuation for multi-command input.
 type ReserveProps struct {
 	Idx    int
 	IdxSet bool
 	Buf    []LexItm
 }
 
+// OopsProps tracks the unknown word for OOPS correction.
 type OopsProps struct {
 	Unk    int
 	UnkSet bool
 	Idx    int
 }
 
+// AgainProps stores the previous command for AGAIN / G repetition.
 type AgainProps struct {
 	Buf    []LexItm
 	Dir    Direction
 	HasDir bool
 }
 
+// Parse reads player input, tokenizes it, and resolves verb, objects, and
+// syntax. Returns true if a valid command was parsed.
 func Parse() bool {
 	if G.Params.ShldOrphan {
 		G.OrphanedSyntx.Set(G.ParsedSyntx)
@@ -289,7 +316,7 @@ func Parse() bool {
 					(G.Params.InQuotes && ln == 2 && nw.Is("\"")) ||
 					(ln > 2 && nw.IsAny(",", "and"))) {
 				dir, _ = StringToDir(wrd.Norm)
-			hasDir = true
+				hasDir = true
 				if nw.IsAny(",", "and") {
 					G.LexRes[i+1].Set(mkBuzz("then"))
 				}
@@ -384,6 +411,7 @@ func mkBuzz(wrd string) LexItm {
 	}
 }
 
+// Clause parses an object clause starting at idx. Returns (ok, endIdx).
 func Clause(idx int, wrd LexItm) (bool, int) {
 	if wrd.Types.Has(WordPrep) {
 		if G.Params.ObjOrClauseCnt == 1 {
@@ -483,6 +511,7 @@ func Clause(idx int, wrd LexItm) (bool, int) {
 	return true, -1
 }
 
+// UnknownWord reports an unrecognized word and records it for OOPS.
 func UnknownWord(idx int) {
 	G.Oops.UnkSet = true
 	G.Oops.Unk = idx
@@ -495,6 +524,7 @@ func UnknownWord(idx int) {
 	G.Params.ShldOrphan = false
 }
 
+// CantUse reports that a word was used in an unrecognizable way.
 func CantUse(idx int) {
 	if G.ActVerb.Norm == "say" {
 		Printf("Nothing happens.\n")
@@ -536,6 +566,7 @@ func HandleNumber(idx int) {
 	G.Params.Number = sum
 }
 
+// OrphanMerge merges the current input with a previously orphaned (incomplete) command.
 func OrphanMerge() {
 	G.Params.ShldOrphan = false
 	isAdj := false
@@ -631,9 +662,10 @@ func OrphanMerge() {
 	G.Params.HasMerged = true
 }
 
+// AclauseWin resolves an adjective clause by inserting the adjective into the orphaned syntax.
 func AclauseWin(adj LexItm) {
 	G.ParsedSyntx.Verb.Set(G.OrphanedSyntx.Verb)
-	var tbl *[]LexItm = &[]LexItm{}
+	tbl := &[]LexItm{}
 	if G.Params.AdjClause.Type == Clause1 {
 		tbl = &G.OrphanedSyntx.ObjOrClause1
 	} else if G.Params.AdjClause.Type == Clause2 {
@@ -651,6 +683,7 @@ func AclauseWin(adj LexItm) {
 	G.Params.AdjClause.Type = ClauseUnk
 }
 
+// NclauseWin resolves a noun clause by replacing the orphaned clause with new tokens.
 func NclauseWin() {
 	if G.Params.AdjClause.Type == Clause1 {
 		G.OrphanedSyntx.ObjOrClause1 = append([]LexItm{}, G.ParsedSyntx.ObjOrClause1...)
@@ -665,6 +698,7 @@ func NclauseWin() {
 	G.Params.AdjClause.Type = ClauseUnk
 }
 
+// TakeCheck verifies that objects requiring possession are held or can be taken.
 func TakeCheck() bool {
 	if !ITakeCheck(G.DirObjPossibles, G.DetectedSyntx.Obj1.LocFlags) {
 		return false
@@ -672,6 +706,7 @@ func TakeCheck() bool {
 	return ITakeCheck(G.IndirObjPossibles, G.DetectedSyntx.Obj2.LocFlags)
 }
 
+// ITakeCheck performs the implicit-take check for a list of objects.
 func ITakeCheck(tbl []*Object, ibits LocFlags) bool {
 	if len(tbl) == 0 || (!LocHave.In(ibits) && !LocTake.In(ibits)) {
 		return true
@@ -712,6 +747,7 @@ func ITakeCheck(tbl []*Object, ibits LocFlags) bool {
 	return true
 }
 
+// ManyCheck rejects multiple objects when the syntax doesn't allow them.
 func ManyCheck() bool {
 	loss := 0
 	if len(G.DirObjPossibles) > 1 && !LocMany.In(G.DetectedSyntx.Obj1.LocFlags) {
@@ -738,6 +774,7 @@ func ManyCheck() bool {
 	return false
 }
 
+// SnarfObjects resolves token clauses into concrete object lists.
 func SnarfObjects() bool {
 	G.Params.Buts = []*Object{}
 	if G.ParsedSyntx.ObjOrClause2 != nil {
@@ -768,6 +805,7 @@ func SnarfObjects() bool {
 	return true
 }
 
+// ButMerge filters an object list, keeping only those that appear in the "but" exclusion list.
 func ButMerge(tbl []*Object) []*Object {
 	res := []*Object{}
 	for _, bts := range G.Params.Buts {
@@ -780,12 +818,10 @@ func ButMerge(tbl []*Object) []*Object {
 	return res
 }
 
+// Snarfem resolves a single token clause into a list of matching objects.
 func Snarfem(isDirect bool, wrds []LexItm) []*Object {
 	G.Params.HasAnd = false
-	wasall := false
-	if G.Params.GetType == GetAll {
-		wasall = true
-	}
+	wasall := G.Params.GetType == GetAll
 	G.Search.ObjFlags = 0
 	res := []*Object{}
 	var but *[]*Object
@@ -960,6 +996,7 @@ func SyntaxCheck() bool {
 	return true
 }
 
+// Orphan saves the current parse state for later disambiguation.
 func Orphan(first, second *Syntx) {
 	G.OrphanedSyntx.Set(G.ParsedSyntx)
 	if G.Params.ObjOrClauseCnt < 2 {
@@ -981,10 +1018,13 @@ func Orphan(first, second *Syntx) {
 	}
 }
 
+// CanNotOrphan prints an error when disambiguation is not possible for NPCs.
 func CanNotOrphan() {
 	Printf("\"I don't understand! What are you referring to?\"\n")
 }
 
+// FindWhatIMean attempts to resolve a single object from context when the player
+// omitted a noun. Returns nil if the resolution is ambiguous or fails.
 func FindWhatIMean(objFlags Flags, locFlags LocFlags, prep string) *Object {
 	if objFlags&FlgKludge != 0 {
 		return G.RoomsObj
@@ -1014,6 +1054,7 @@ func FindWhatIMean(objFlags Flags, locFlags LocFlags, prep string) *Object {
 	return res[0]
 }
 
+// GetObject resolves the current search criteria into matching objects.
 func GetObject(isDirect, vrb bool) []*Object {
 	if G.Params.GetType == GetInhibit {
 		return []*Object{}
@@ -1034,7 +1075,6 @@ func GetObject(isDirect, vrb bool) []*Object {
 	}
 	res := []*Object{}
 	gcheck := false
-	olen := 0
 	for {
 		if gcheck {
 			res = append(res, GlobalCheck()...)
@@ -1063,12 +1103,8 @@ func GetObject(isDirect, vrb bool) []*Object {
 		} else if ln > 1 || (ln == 0 && G.Search.LocFlags.HasAll()) {
 			if G.Search.LocFlags.HasAll() {
 				G.Search.LocFlags = xbits
-				olen = ln
 				res = []*Object{}
 				continue
-			}
-			if ln == 0 {
-				ln = olen
 			}
 			if G.Winner != G.Player {
 				CanNotOrphan()
@@ -1189,6 +1225,7 @@ func GlobalCheck() []*Object {
 	return res
 }
 
+// ThingPrint outputs the textual description of the parsed object clause.
 func ThingPrint(isDirect, isThe bool) {
 	nsp, isFirst := true, true
 	pn := false
@@ -1258,10 +1295,7 @@ func IsLit(room *Object, rmChk bool) bool {
 	}
 	G.Here = bak
 	G.Search.ObjFlags = 0
-	if len(res) > 0 {
-		return true
-	}
-	return false
+	return len(res) > 0
 }
 
 // DoSL performs a specific game object search

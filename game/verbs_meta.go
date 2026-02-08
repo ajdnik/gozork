@@ -1,10 +1,9 @@
 package game
 
 import (
-	. "github.com/ajdnik/gozork/engine"
 	"encoding/binary"
+	. "github.com/ajdnik/gozork/engine"
 )
-
 
 func VVerbose(arg ActArg) bool {
 	G.Verbose = true
@@ -125,7 +124,7 @@ func VUnrecord(arg ActArg) bool {
 func VVersion(arg ActArg) bool {
 	Printf("ZORK I: The Great Underground Empire\nInfocom interactive fiction - a fantasy story\nCopyright (c) 1981, 1982, 1983, 1984, 1985, 1986 Infocom, Inc. All rights reserved.\nZORK is a registered trademark of Infocom, Inc.\nRelease ")
 	num := binary.LittleEndian.Uint16(Version[4:6])
-	Printf("%d / Serial number ", int(num & 2047))
+	Printf("%d / Serial number ", int(num&2047))
 	for offset := 18; offset <= 23; offset++ {
 		Printf("%s", string(Version[offset]))
 	}

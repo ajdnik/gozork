@@ -1,11 +1,16 @@
 package engine
 
+// PerfRet represents the result of a Perform call.
 type PerfRet int
 
 const (
+	// PerfNotHndld means no handler claimed the action.
 	PerfNotHndld PerfRet = iota
+	// PerfHndld means a handler processed the action.
 	PerfHndld
+	// PerfFatal means the action caused a fatal condition (e.g. player death).
 	PerfFatal
+	// PerfQuit means the player requested to quit.
 	PerfQuit
 )
 
@@ -28,7 +33,7 @@ func Verify() bool {
 // ResetGameState creates a fresh GameState with all defaults and restores the
 // object tree. Tests and restart use this to get a clean game.
 func ResetGameState() {
-	out, in_, rng := G.GameOutput, G.GameInput, G.Rand
+	out, inp, rng := G.GameOutput, G.GameInput, G.Rand
 	clockFuncs := G.ClockFuncs
 	allObjs := G.AllObjects
 	roomsObj := G.RoomsObj
@@ -45,8 +50,8 @@ func ResetGameState() {
 	if out != nil {
 		G.GameOutput = out
 	}
-	if in_ != nil {
-		G.GameInput = in_
+	if inp != nil {
+		G.GameInput = inp
 	}
 	if rng != nil {
 		G.Rand = rng
@@ -66,6 +71,7 @@ func ResetGameState() {
 	ResetObjectTree()
 }
 
+// MainLoop runs the main parse-perform-clock cycle until the game ends.
 func MainLoop() {
 	G.Params.Continue = NumUndef
 	for {
@@ -163,7 +169,7 @@ func MainLoop() {
 							l != G.Winner.Location() &&
 							l != indir &&
 							!l.Has(FlgSurf)) ||
-							!(dir.Has(FlgTake) || dir.Has(FlgTryTake))) {
+							(!dir.Has(FlgTake) && !dir.Has(FlgTryTake))) {
 						continue
 					}
 					if obj1 == G.ItPronounObj {
@@ -218,9 +224,8 @@ func MainLoop() {
 		}
 		if G.ActVerb.Norm == "tell" || G.ActVerb.Norm == "brief" || G.ActVerb.Norm == "superbrief" || G.ActVerb.Norm == "verbose" || G.ActVerb.Norm == "save" || G.ActVerb.Norm == "version" || G.ActVerb.Norm == "quit" || G.ActVerb.Norm == "restart" || G.ActVerb.Norm == "score" || G.ActVerb.Norm == "script" || G.ActVerb.Norm == "unscript" || G.ActVerb.Norm == "restore" {
 			continue
-		} else {
-			Clocker()
 		}
+		Clocker()
 	}
 }
 
@@ -240,6 +245,8 @@ func callHandler(fn func(ActArg) bool, arg ActArg) (PerfRet, bool) {
 	return PerfNotHndld, false
 }
 
+// Perform dispatches an action through the handler chain (winner, room,
+// pre-action, indirect, container, direct, and verb action handlers).
 func Perform(a ActionVerb, o, i *Object) PerfRet {
 	oldActVerb := G.ActVerb
 	oldDirObj := G.DirObj

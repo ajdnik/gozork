@@ -1,9 +1,9 @@
 package game
 
 import (
-	. "github.com/ajdnik/gozork/engine"
 	"encoding/gob"
 	"fmt"
+	. "github.com/ajdnik/gozork/engine"
 	"os"
 	"strings"
 )
@@ -35,20 +35,20 @@ type gameState struct {
 	ObjStates []savedObject
 
 	// Engine state
-	Dead       bool
-	Deaths     int
-	Score      int
-	BaseScore  int
-	Moves      int
-	Lit        bool
-	SuperBrief bool
-	Verbose    bool
-	WonGame    bool
-	HelloSailor int
-	IsSprayed  bool
-	Lucky      bool
+	Dead         bool
+	Deaths       int
+	Score        int
+	BaseScore    int
+	Moves        int
+	Lit          bool
+	SuperBrief   bool
+	Verbose      bool
+	WonGame      bool
+	HelloSailor  int
+	IsSprayed    bool
+	Lucky        bool
 	FumbleNumber int
-	FumbleProb int
+	FumbleProb   int
 
 	// Dungeon flags
 	TrollFlag         bool

@@ -1,17 +1,26 @@
 package engine
 
+// LocFlag represents a single location constraint for parser object resolution.
 type LocFlag int
 
 const (
+	// LocHeld means the object must be directly held by the actor.
 	LocHeld LocFlag = iota
+	// LocCarried means the object must be carried (held or in a carried container).
 	LocCarried
+	// LocInRoom means the object must be in the current room.
 	LocInRoom
+	// LocOnGrnd means the object must be on the ground.
 	LocOnGrnd
+	// LocTake means the parser may attempt an implicit take.
 	LocTake
+	// LocMany means multiple direct objects are allowed.
 	LocMany
+	// LocHave means the object must already be possessed.
 	LocHave
 )
 
+// In returns true if this flag appears in the given flag set.
 func (lf LocFlag) In(flgs LocFlags) bool {
 	for _, flg := range flgs {
 		if flg == lf {
@@ -21,25 +30,31 @@ func (lf LocFlag) In(flgs LocFlags) bool {
 	return false
 }
 
+// LocFlags is a set of LocFlag constraints.
 type LocFlags []LocFlag
 
+// All replaces the set with every possible LocFlag value.
 func (lfs *LocFlags) All() LocFlags {
 	*lfs = LocFlags{LocHeld, LocCarried, LocInRoom, LocOnGrnd, LocTake, LocMany, LocHave}
 	return *lfs
 }
 
+// HasAll returns true if all LocFlag values are present.
 func (lfs LocFlags) HasAll() bool {
 	return len(lfs) == 7
 }
 
+// VrbAction is a handler function invoked when a verb is performed.
 type VrbAction func(ActArg) bool
 
+// ObjProp describes the expected properties of an object slot in a syntax definition.
 type ObjProp struct {
 	ObjFlags Flags
 	LocFlags LocFlags
 	HasObj   bool
 }
 
+// Syntx defines a single command syntax pattern (verb + prepositions + object slots).
 type Syntx struct {
 	NormVerb  string
 	Verb      string
@@ -51,6 +66,7 @@ type Syntx struct {
 	PreAction VrbAction
 }
 
+// NumObjects returns how many object slots this syntax expects (0, 1, or 2).
 func (s *Syntx) NumObjects() int {
 	if !s.Obj1.HasObj {
 		return 0
@@ -61,9 +77,13 @@ func (s *Syntx) NumObjects() int {
 	return 2
 }
 
+// IsVrbPrep returns true if the verb preposition matches.
 func (s *Syntx) IsVrbPrep(prep string) bool { return s.VrbPrep == prep }
+
+// IsObjPrep returns true if the object preposition matches.
 func (s *Syntx) IsObjPrep(prep string) bool { return s.ObjPrep == prep }
 
+// GetActionVerb returns the full verb string including its preposition.
 func (s *Syntx) GetActionVerb() string {
 	av := s.Verb
 	if len(s.VrbPrep) > 0 {
@@ -72,6 +92,7 @@ func (s *Syntx) GetActionVerb() string {
 	return av
 }
 
+// GetNormVerb returns the normalized verb key for action dispatch.
 func (s *Syntx) GetNormVerb() string {
 	if len(s.NormVerb) > 0 {
 		return s.NormVerb
@@ -82,11 +103,13 @@ func (s *Syntx) GetNormVerb() string {
 	return s.GetActionVerb()
 }
 
+// RndSelect supports non-repeating random selection from a pool of strings.
 type RndSelect struct {
 	Unselected []string
 	Selected   []string
 }
 
+// ActionVerb stores both the normalized and original forms of the current verb.
 type ActionVerb struct {
 	Norm string
 	Orig string

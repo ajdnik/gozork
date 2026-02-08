@@ -1,8 +1,8 @@
 package game
 
 import (
-	. "github.com/ajdnik/gozork/engine"
 	"bytes"
+	. "github.com/ajdnik/gozork/engine"
 	"math/rand"
 	"strings"
 	"testing"

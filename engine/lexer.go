@@ -6,23 +6,33 @@ import (
 	"strings"
 )
 
+// Vocabulary maps known words to their lexical data. Populated during initialization.
 var Vocabulary = make(map[string]WordItm)
 
-// WordTyp defined the part-of-speech type
+// WordTyp represents the part-of-speech type of a word.
 type WordTyp int
 
 const (
+	// WordUnk is the zero value for an unrecognized word.
 	WordUnk WordTyp = iota
+	// WordDir indicates a compass direction (north, south, etc.).
 	WordDir
+	// WordVerb indicates a verb (take, open, etc.).
 	WordVerb
+	// WordPrep indicates a preposition (in, on, with, etc.).
 	WordPrep
+	// WordAdj indicates an adjective (brass, large, etc.).
 	WordAdj
+	// WordObj indicates a noun / object name (lamp, sword, etc.).
 	WordObj
+	// WordBuzz indicates a filler word that is ignored (the, a, etc.).
 	WordBuzz
 )
 
+// WordTypes is a list of part-of-speech tags for a single word.
 type WordTypes []WordTyp
 
+// Has returns true if typ appears in the list.
 func (wt WordTypes) Has(typ WordTyp) bool {
 	for _, t := range wt {
 		if t == typ {
@@ -32,10 +42,16 @@ func (wt WordTypes) Has(typ WordTyp) bool {
 	return false
 }
 
-func (wt WordTypes) Len() int           { return len(wt) }
-func (wt WordTypes) Less(i, j int) bool { return int(wt[i]) < int(wt[j]) }
-func (wt WordTypes) Swap(i, j int)      { wt[i], wt[j] = wt[j], wt[i] }
+// Len implements sort.Interface.
+func (wt WordTypes) Len() int { return len(wt) }
 
+// Less implements sort.Interface.
+func (wt WordTypes) Less(i, j int) bool { return int(wt[i]) < int(wt[j]) }
+
+// Swap implements sort.Interface.
+func (wt WordTypes) Swap(i, j int) { wt[i], wt[j] = wt[j], wt[i] }
+
+// Equals returns true if both type lists contain the same elements.
 func (wt WordTypes) Equals(tt WordTypes) bool {
 	if len(wt) != len(tt) {
 		return false
@@ -57,24 +73,29 @@ type LexItm struct {
 	Types WordTypes
 }
 
+// Matches returns true if both items have the same norm and types.
 func (e *LexItm) Matches(itm LexItm) bool {
 	return e.Norm == itm.Norm && e.Types.Equals(itm.Types)
 }
 
+// Set copies another LexItm's data into this one.
 func (e *LexItm) Set(itm LexItm) {
 	e.Norm = itm.Norm
 	e.Orig = itm.Orig
 	e.Types = append(WordTypes{}, itm.Types...)
 }
 
+// IsSet returns true if the item has been populated with data.
 func (e *LexItm) IsSet() bool {
 	return len(e.Norm) != 0 && len(e.Orig) != 0
 }
 
+// Is returns true if the normalized form equals wrd.
 func (e *LexItm) Is(wrd string) bool {
 	return e.Norm == wrd
 }
 
+// IsAny returns true if the normalized form matches any of the given words.
 func (e *LexItm) IsAny(wrds ...string) bool {
 	for _, wrd := range wrds {
 		if e.Norm == wrd {
@@ -84,12 +105,14 @@ func (e *LexItm) IsAny(wrds ...string) bool {
 	return false
 }
 
+// Clear resets the item to its zero state.
 func (e *LexItm) Clear() {
 	e.Norm = ""
 	e.Orig = ""
 	e.Types = nil
 }
 
+// WordItm is the vocabulary entry for a known word.
 type WordItm struct {
 	Norm  string
 	Types WordTypes
@@ -112,8 +135,8 @@ func Read() (string, []LexItm) {
 			return "", nil
 		}
 	}
-	txt = strings.Replace(txt, "\n", "", -1)
-	txt = strings.Replace(txt, "\r", "", -1)
+	txt = strings.ReplaceAll(txt, "\n", "")
+	txt = strings.ReplaceAll(txt, "\r", "")
 	txt = strings.ToLower(txt)
 	toks := Tokenize(txt)
 	itms := Lex(toks)
@@ -123,6 +146,8 @@ func Read() (string, []LexItm) {
 func isLetter(c rune) bool { return 'a' <= c && c <= 'z' }
 func isNum(c rune) bool    { return '0' <= c && c <= '9' }
 
+// Tokenize splits raw input into whitespace-delimited tokens,
+// separating letters, digits, and punctuation.
 func Tokenize(buf string) []string {
 	toks := []string{}
 	var cur string
@@ -155,6 +180,7 @@ func Tokenize(buf string) []string {
 	return toks
 }
 
+// Lex looks up each token in the Vocabulary and returns tagged LexItm entries.
 func Lex(toks []string) []LexItm {
 	itms := []LexItm{}
 	for _, tok := range toks {

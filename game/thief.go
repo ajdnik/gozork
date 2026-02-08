@@ -2,8 +2,6 @@ package game
 
 import . "github.com/ajdnik/gozork/engine"
 
-
-
 func Rob(what, where *Object, prob int) bool {
 	robbed := false
 	for _, x := range what.Children {
@@ -88,10 +86,7 @@ func RobMaze(rm *Object) bool {
 }
 
 func MoveAll(from, to *Object) {
-	var toMove []*Object
-	for _, x := range from.Children {
-		toMove = append(toMove, x)
-	}
+	toMove := append([]*Object{}, from.Children...)
 	for _, x := range toMove {
 		x.Take(FlgInvis)
 		x.MoveTo(to)

@@ -2,10 +2,10 @@ package engine
 
 // ClockEvent represents a timed or daemon interrupt in the game's event queue.
 type ClockEvent struct {
-	Key  string       // unique identifier for this event
-	Run  bool         // whether the event is active
-	Tick int          // countdown; fires when it reaches 0
-	Fn   func() bool  // the function to call when the event fires
+	Key  string      // unique identifier for this event
+	Run  bool        // whether the event is active
+	Tick int         // countdown; fires when it reaches 0
+	Fn   func() bool // the function to call when the event fires
 }
 
 // Queue finds (or creates) a clock event by key and sets its tick value.

@@ -95,9 +95,7 @@ var (
 	}
 
 	ScoreMax = 350
-
 )
-
 
 var (
 	// ================================================================
@@ -119,11 +117,11 @@ var (
 	}
 	// ForestAround maps each forest room to the next in a circular walk.
 	ForestAround = map[*Object]*Object{
-		&Forest1:   &Forest2,
-		&Forest2:   &Forest3,
-		&Forest3:   &Path,
-		&Path:      &Clearing,
-		&Clearing:  &Forest1,
+		&Forest1:  &Forest2,
+		&Forest2:  &Forest3,
+		&Forest3:  &Path,
+		&Path:     &Clearing,
+		&Clearing: &Forest1,
 	}
 	AboveGround = []*Object{
 		&WestOfHouse,
@@ -223,7 +221,6 @@ var (
 		&BrokenCanary,
 	}
 )
-
 
 // InitRoomExits sets all room directional properties.
 // This is done in a function to avoid circular reference issues

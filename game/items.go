@@ -184,7 +184,7 @@ var (
 		Desc:       "punctured boat",
 		Flags:      FlgTake | FlgBurn,
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Item:    &ItemData{Size: 20},
+		Item: &ItemData{Size: 20},
 	}
 	BrokenLamp = Object{
 		Synonyms:   []string{"lamp", "lantern"},
@@ -198,7 +198,7 @@ var (
 		Desc:       "small piece of vitreous slag",
 		Flags:      FlgTake | FlgTryTake,
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Item:    &ItemData{Size: 10},
+		Item: &ItemData{Size: 10},
 	}
 	HotBell = Object{
 		Synonyms:   []string{"bell"},
@@ -214,14 +214,14 @@ var (
 		Desc:       "broken jewel-encrusted egg",
 		Flags:      FlgTake | FlgCont | FlgOpen,
 		LongDesc:   "There is a somewhat ruined egg here.",
-		Item:    &ItemData{TValue: 2, Capacity: 6},
+		Item:       &ItemData{TValue: 2, Capacity: 6},
 	}
 	Bauble = Object{
 		Synonyms:   []string{"bauble", "treasure"},
 		Adjectives: []string{"brass", "beautiful"},
 		Desc:       "beautiful brass bauble",
 		Flags:      FlgTake,
-		Item:    &ItemData{Value: 1, TValue: 1},
+		Item:       &ItemData{Value: 1, TValue: 1},
 	}
 	Diamond = Object{
 		Synonyms:   []string{"diamond", "treasure"},
@@ -229,7 +229,7 @@ var (
 		Desc:       "huge diamond",
 		Flags:      FlgTake,
 		LongDesc:   "There is an enormous diamond (perfectly cut) here.",
-		Item:    &ItemData{Value: 10, TValue: 10},
+		Item:       &ItemData{Value: 10, TValue: 10},
 	}
 
 	// ================================================================
@@ -262,7 +262,7 @@ var (
 		Desc:       "small mailbox",
 		Flags:      FlgCont | FlgTryTake,
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Item:    &ItemData{Capacity: 10},
+		Item: &ItemData{Capacity: 10},
 	}
 
 	// Stone Barrow
@@ -291,7 +291,7 @@ var (
 		Desc:       "trophy case",
 		Flags:      FlgTrans | FlgCont | FlgNoDesc | FlgTryTake | FlgSearch,
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Item:    &ItemData{Capacity: 10000},
+		Item: &ItemData{Capacity: 10000},
 	}
 	Rug = Object{
 		In:         &LivingRoom,
@@ -316,7 +316,7 @@ var (
 		Desc:       "wooden door",
 		Flags:      FlgRead | FlgDoor | FlgNoDesc | FlgTrans,
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Text:       "The engravings translate to \"This space intentionally left blank.\"",
+		Text: "The engravings translate to \"This space intentionally left blank.\"",
 	}
 	Sword = Object{
 		In:         &LivingRoom,
@@ -326,7 +326,7 @@ var (
 		Flags:      FlgTake | FlgWeapon | FlgTryTake,
 		FirstDesc:  "Above the trophy case hangs an elvish sword of great antiquity.",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Item:    &ItemData{Size: 30, TValue: 0},
+		Item: &ItemData{Size: 30, TValue: 0},
 	}
 	Lamp = Object{
 		In:         &LivingRoom,
@@ -336,8 +336,8 @@ var (
 		Flags:      FlgTake | FlgLight,
 		FirstDesc:  "A battery-powered brass lantern is on the trophy case.",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		LongDesc:   "There is a brass lantern (battery-powered) here.",
-		Item:    &ItemData{Size: 15},
+		LongDesc: "There is a brass lantern (battery-powered) here.",
+		Item:     &ItemData{Size: 15},
 	}
 
 	// Kitchen
@@ -347,7 +347,7 @@ var (
 		Adjectives: []string{"kitchen"},
 		Desc:       "kitchen table",
 		Flags:      FlgNoDesc | FlgCont | FlgOpen | FlgSurf,
-		Item:    &ItemData{Capacity: 50},
+		Item:       &ItemData{Capacity: 50},
 	}
 
 	// Attic
@@ -356,7 +356,7 @@ var (
 		Synonyms: []string{"table"},
 		Desc:     "table",
 		Flags:    FlgNoDesc | FlgCont | FlgOpen | FlgSurf,
-		Item:    &ItemData{Capacity: 40},
+		Item:     &ItemData{Capacity: 40},
 	}
 	Rope = Object{
 		In:         &Attic,
@@ -365,8 +365,8 @@ var (
 		Desc:       "rope",
 		Flags:      FlgTake | FlgSacred | FlgTryTake,
 		// Action set in FinalizeGameObjects to avoid init cycle
-		FirstDesc:  "A large coil of rope is lying in the corner.",
-		Item:    &ItemData{Size: 10},
+		FirstDesc: "A large coil of rope is lying in the corner.",
+		Item:      &ItemData{Size: 10},
 	}
 
 	// Entrance to Hades
@@ -387,18 +387,18 @@ var (
 		Desc:       "crystal skull",
 		FirstDesc:  "Lying in one corner of the room is a beautifully carved crystal skull. It appears to be grinning at you rather nastily.",
 		Flags:      FlgTake,
-		Item:    &ItemData{Value: 10, TValue: 10},
+		Item:       &ItemData{Value: 10, TValue: 10},
 	}
 
 	// Shaft Room
 	RaisedBasket = Object{
-		In:         &ShaftRoom,
-		Synonyms:   []string{"cage", "dumbwaiter", "basket"},
-		Desc:       "basket",
-		Flags:      FlgTrans | FlgTryTake | FlgCont | FlgOpen,
+		In:       &ShaftRoom,
+		Synonyms: []string{"cage", "dumbwaiter", "basket"},
+		Desc:     "basket",
+		Flags:    FlgTrans | FlgTryTake | FlgCont | FlgOpen,
 		// Action set in FinalizeGameObjects to avoid init cycle
-		LongDesc:   "At the end of the chain is a basket.",
-		Item:    &ItemData{Capacity: 50},
+		LongDesc: "At the end of the chain is a basket.",
+		Item:     &ItemData{Capacity: 50},
 	}
 
 	// Lower Shaft
@@ -429,7 +429,7 @@ var (
 		Desc:       "jade figurine",
 		Flags:      FlgTake,
 		LongDesc:   "There is an exquisite jade figurine here.",
-		Item:    &ItemData{Size: 10, Value: 5, TValue: 5},
+		Item:       &ItemData{Size: 10, Value: 5, TValue: 5},
 	}
 
 	// North Temple
@@ -456,7 +456,7 @@ var (
 		Synonyms: []string{"altar"},
 		Desc:     "altar",
 		Flags:    FlgNoDesc | FlgSurf | FlgCont | FlgOpen,
-		Item:    &ItemData{Capacity: 50},
+		Item:     &ItemData{Capacity: 50},
 	}
 	Candles = Object{
 		In:         &SouthTemple,
@@ -465,8 +465,8 @@ var (
 		Desc:       "pair of candles",
 		Flags:      FlgTake | FlgFlame | FlgOn | FlgLight,
 		// Action set in FinalizeGameObjects to avoid init cycle
-		FirstDesc:  "On the two ends of the altar are burning candles.",
-		Item:    &ItemData{Size: 10},
+		FirstDesc: "On the two ends of the altar are burning candles.",
+		Item:      &ItemData{Size: 10},
 	}
 
 	// Troll Room
@@ -477,8 +477,8 @@ var (
 		Desc:       "troll",
 		Flags:      FlgPerson | FlgOpen | FlgTryTake,
 		// Action set in FinalizeGameObjects to avoid init cycle
-		LongDesc:   "A nasty-looking troll, brandishing a bloody axe, blocks all passages out of the room.",
-		Combat:  &CombatData{Strength: 2},
+		LongDesc: "A nasty-looking troll, brandishing a bloody axe, blocks all passages out of the room.",
+		Combat:   &CombatData{Strength: 2},
 	}
 
 	// Dam Room
@@ -499,10 +499,10 @@ var (
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	Dam = Object{
-		In:         &DamRoom,
-		Synonyms:   []string{"dam", "gate", "gates", "fcd#3"},
-		Desc:       "dam",
-		Flags:      FlgNoDesc | FlgTryTake,
+		In:       &DamRoom,
+		Synonyms: []string{"dam", "gate", "gates", "fcd#3"},
+		Desc:     "dam",
+		Flags:    FlgNoDesc | FlgTryTake,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	ControlPanel = Object{
@@ -522,8 +522,8 @@ var (
 		Flags:      FlgRead | FlgTake,
 		LongDesc:   "There is a matchbook whose cover says \"Visit Beautiful FCD#3\" here.",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Text:       "\n(Close cover before striking)\n\nYOU too can make BIG MONEY in the exciting field of PAPER SHUFFLING!\n\nMr. Anderson of Muddle, Mass. says: \"Before I took this course I was a lowly bit twiddler. Now with what I learned at GUE Tech I feel really important and can obfuscate and confuse with the best.\"\n\nDr. Blank had this to say: \"Ten short days ago all I could look forward to was a dead-end job as a doctor. Now I have a promising future and make really big Zorkmids.\"\n\nGUE Tech can't promise these fantastic results to everyone. But when you earn your degree from GUE Tech, your future will be brighter.",
-		Item:    &ItemData{Size: 2},
+		Text: "\n(Close cover before striking)\n\nYOU too can make BIG MONEY in the exciting field of PAPER SHUFFLING!\n\nMr. Anderson of Muddle, Mass. says: \"Before I took this course I was a lowly bit twiddler. Now with what I learned at GUE Tech I feel really important and can obfuscate and confuse with the best.\"\n\nDr. Blank had this to say: \"Ten short days ago all I could look forward to was a dead-end job as a doctor. Now I have a promising future and make really big Zorkmids.\"\n\nGUE Tech can't promise these fantastic results to everyone. But when you earn your degree from GUE Tech, your future will be brighter.",
+		Item: &ItemData{Size: 2},
 	}
 	Guide = Object{
 		In:         &DamLobby,
@@ -543,8 +543,8 @@ var (
 		Desc:       "pile of plastic",
 		Flags:      FlgTake | FlgBurn,
 		// Action set in FinalizeGameObjects to avoid init cycle
-		LongDesc:   "There is a folded pile of plastic here which has a small valve attached.",
-		Item:    &ItemData{Size: 20},
+		LongDesc: "There is a folded pile of plastic here which has a small valve attached.",
+		Item:     &ItemData{Size: 20},
 	}
 
 	// Maintenance Room
@@ -600,7 +600,7 @@ var (
 		Synonyms: []string{"wrench", "tool", "tools"},
 		Desc:     "wrench",
 		Flags:    FlgTake | FlgTool,
-		Item:    &ItemData{Size: 10},
+		Item:     &ItemData{Size: 10},
 	}
 	Tube = Object{
 		In:       &MaintenanceRoom,
@@ -610,7 +610,7 @@ var (
 		// Action set in FinalizeGameObjects to avoid init cycle
 		LongDesc: "There is an object which looks like a tube of toothpaste here.",
 		Text:     "---> Frobozz Magic Gunk Company <---\n\tAll-Purpose Gunk",
-		Item:    &ItemData{Size: 5, Capacity: 7},
+		Item:     &ItemData{Size: 5, Capacity: 7},
 	}
 	Leak = Object{
 		In:       &MaintenanceRoom,
@@ -627,7 +627,7 @@ var (
 		Desc:     "machine",
 		Flags:    FlgCont | FlgNoDesc | FlgTryTake,
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Item:    &ItemData{Capacity: 50},
+		Item: &ItemData{Capacity: 50},
 	}
 	MachineSwitch = Object{
 		In:       &MachineRoom,
@@ -645,7 +645,7 @@ var (
 		Desc:       "cyclops",
 		Flags:      FlgPerson | FlgNoDesc | FlgTryTake,
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Combat:  &CombatData{Strength: 10000},
+		Combat: &CombatData{Strength: 10000},
 	}
 
 	// Treasure Room
@@ -656,8 +656,8 @@ var (
 		Desc:       "chalice",
 		Flags:      FlgTake | FlgTryTake | FlgCont,
 		// Action set in FinalizeGameObjects to avoid init cycle
-		LongDesc:   "There is a silver chalice, intricately engraved, here.",
-		Item:    &ItemData{Size: 10, Value: 10, TValue: 5, Capacity: 5},
+		LongDesc: "There is a silver chalice, intricately engraved, here.",
+		Item:     &ItemData{Size: 10, Value: 10, TValue: 5, Capacity: 5},
 	}
 
 	// Gallery
@@ -668,9 +668,9 @@ var (
 		Desc:       "painting",
 		Flags:      FlgTake | FlgBurn,
 		// Action set in FinalizeGameObjects to avoid init cycle
-		FirstDesc:  "Fortunately, there is still one chance for you to be a vandal, for on the far wall is a painting of unparalleled beauty.",
-		LongDesc:   "A painting by a neglected genius is here.",
-		Item:    &ItemData{Size: 15, Value: 4, TValue: 6},
+		FirstDesc: "Fortunately, there is still one chance for you to be a vandal, for on the far wall is a painting of unparalleled beauty.",
+		LongDesc:  "A painting by a neglected genius is here.",
+		Item:      &ItemData{Size: 15, Value: 4, TValue: 6},
 	}
 
 	// Studio
@@ -692,7 +692,7 @@ var (
 		Flags:    FlgTake | FlgBurn | FlgTryTake,
 		// Action set in FinalizeGameObjects to avoid init cycle
 		LongDesc: "On the ground is a pile of leaves.",
-		Item:    &ItemData{Size: 25},
+		Item:     &ItemData{Size: 25},
 	}
 
 	// Up a Tree
@@ -703,7 +703,7 @@ var (
 		Desc:       "bird's nest",
 		Flags:      FlgTake | FlgBurn | FlgCont | FlgOpen | FlgSearch,
 		FirstDesc:  "Beside you on the branch is a small bird's nest.",
-		Item:    &ItemData{Capacity: 20},
+		Item:       &ItemData{Capacity: 20},
 	}
 
 	// Sandy Cave
@@ -720,7 +720,7 @@ var (
 		Adjectives: []string{"beautiful", "carved", "jeweled"},
 		Desc:       "beautiful jeweled scarab",
 		Flags:      FlgTake | FlgInvis,
-		Item:    &ItemData{Size: 8, Value: 5, TValue: 5},
+		Item:       &ItemData{Size: 8, Value: 5, TValue: 5},
 	}
 
 	// Sandy Beach
@@ -729,7 +729,7 @@ var (
 		Synonyms: []string{"shovel", "tool", "tools"},
 		Desc:     "shovel",
 		Flags:    FlgTake | FlgTool,
-		Item:    &ItemData{Size: 15},
+		Item:     &ItemData{Size: 15},
 	}
 
 	// Egypt Room
@@ -740,7 +740,7 @@ var (
 		Desc:       "gold coffin",
 		Flags:      FlgTake | FlgCont | FlgSacred | FlgSearch,
 		LongDesc:   "The solid-gold coffin used for the burial of Ramses II is here.",
-		Item:    &ItemData{Size: 55, Value: 10, TValue: 15, Capacity: 35},
+		Item:       &ItemData{Size: 55, Value: 10, TValue: 15, Capacity: 35},
 	}
 
 	// Round Room
@@ -751,8 +751,8 @@ var (
 		Desc:       "thief",
 		Flags:      FlgPerson | FlgInvis | FlgCont | FlgOpen | FlgTryTake,
 		// Action set in FinalizeGameObjects to avoid init cycle
-		LongDesc:   "There is a suspicious-looking individual, holding a large bag, leaning against one wall. He is armed with a deadly stiletto.",
-		Combat:  &CombatData{Strength: 5},
+		LongDesc: "There is a suspicious-looking individual, holding a large bag, leaning against one wall. He is armed with a deadly stiletto.",
+		Combat:   &CombatData{Strength: 5},
 	}
 
 	// Reservoir
@@ -765,7 +765,7 @@ var (
 		FirstDesc:  "Lying half buried in the mud is an old trunk, bulging with jewels.",
 		LongDesc:   "There is an old trunk here, bulging with assorted jewels.",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Item:    &ItemData{Size: 35, Value: 15, TValue: 5},
+		Item: &ItemData{Size: 35, Value: 15, TValue: 5},
 	}
 
 	// Reservoir North
@@ -785,22 +785,22 @@ var (
 		Desc:       "crystal trident",
 		Flags:      FlgTake,
 		FirstDesc:  "On the shore lies Poseidon's own crystal trident.",
-		Item:    &ItemData{Size: 20, Value: 4, TValue: 11},
+		Item:       &ItemData{Size: 20, Value: 4, TValue: 11},
 	}
 
 	// Mirror rooms
 	Mirror1 = Object{
-		In:         &MirrorRoom1,
-		Synonyms:   []string{"reflection", "mirror", "enormous"},
-		Desc:       "mirror",
-		Flags:      FlgTryTake | FlgNoDesc,
+		In:       &MirrorRoom1,
+		Synonyms: []string{"reflection", "mirror", "enormous"},
+		Desc:     "mirror",
+		Flags:    FlgTryTake | FlgNoDesc,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	Mirror2 = Object{
-		In:         &MirrorRoom2,
-		Synonyms:   []string{"reflection", "mirror", "enormous"},
-		Desc:       "mirror",
-		Flags:      FlgTryTake | FlgNoDesc,
+		In:       &MirrorRoom2,
+		Synonyms: []string{"reflection", "mirror", "enormous"},
+		Desc:     "mirror",
+		Flags:    FlgTryTake | FlgNoDesc,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 
@@ -821,18 +821,18 @@ var (
 		Desc:       "pedestal",
 		Flags:      FlgNoDesc | FlgCont | FlgOpen | FlgSurf,
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Item:    &ItemData{Capacity: 30},
+		Item: &ItemData{Capacity: 30},
 	}
 
 	// Engravings Cave
 	Engravings = Object{
-		In:       &EngravingsCave,
-		Synonyms: []string{"wall", "engravings", "inscription"},
+		In:         &EngravingsCave,
+		Synonyms:   []string{"wall", "engravings", "inscription"},
 		Adjectives: []string{"old", "ancient"},
-		Desc:     "wall with engravings",
-		Flags:    FlgRead | FlgSacred,
-		LongDesc: "There are old engravings on the walls here.",
-		Text:     "The engravings were incised in the living rock of the cave wall by an unknown hand. They depict, in symbolic form, the beliefs of the ancient Zorkers. Skillfully interwoven with the bas reliefs are excerpts illustrating the major religious tenets of that time. Unfortunately, a later age seems to have considered them blasphemous and just as skillfully excised them.",
+		Desc:       "wall with engravings",
+		Flags:      FlgRead | FlgSacred,
+		LongDesc:   "There are old engravings on the walls here.",
+		Text:       "The engravings were incised in the living rock of the cave wall by an unknown hand. They depict, in symbolic form, the beliefs of the ancient Zorkers. Skillfully interwoven with the bas reliefs are excerpts illustrating the major religious tenets of that time. Unfortunately, a later age seems to have considered them blasphemous and just as skillfully excised them.",
 	}
 
 	// Loud Room
@@ -843,7 +843,7 @@ var (
 		Desc:       "platinum bar",
 		Flags:      FlgTake | FlgSacred,
 		LongDesc:   "On the ground is a large platinum bar.",
-		Item:    &ItemData{Size: 20, Value: 10, TValue: 5},
+		Item:       &ItemData{Size: 20, Value: 10, TValue: 5},
 	}
 
 	// End of Rainbow
@@ -854,7 +854,7 @@ var (
 		Desc:       "pot of gold",
 		Flags:      FlgTake | FlgInvis,
 		FirstDesc:  "At the end of the rainbow is a pot of gold.",
-		Item:    &ItemData{Size: 15, Value: 10, TValue: 10},
+		Item:       &ItemData{Size: 15, Value: 10, TValue: 10},
 	}
 
 	// River 4
@@ -866,7 +866,7 @@ var (
 		Flags:      FlgTake | FlgCont,
 		FirstDesc:  "There is a red buoy here (probably a warning).",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Item:    &ItemData{Size: 10, Capacity: 20},
+		Item: &ItemData{Size: 10, Capacity: 20},
 	}
 
 	// Gas Room
@@ -876,7 +876,7 @@ var (
 		Adjectives: []string{"sapphire"},
 		Desc:       "sapphire-encrusted bracelet",
 		Flags:      FlgTake,
-		Item:    &ItemData{Size: 10, Value: 5, TValue: 5},
+		Item:       &ItemData{Size: 10, Value: 5, TValue: 5},
 	}
 
 	// Dead End 5
@@ -886,7 +886,7 @@ var (
 		Adjectives: []string{"small"},
 		Desc:       "small pile of coal",
 		Flags:      FlgTake | FlgBurn,
-		Item:    &ItemData{Size: 20},
+		Item:       &ItemData{Size: 20},
 	}
 
 	// Timber Room
@@ -896,15 +896,15 @@ var (
 		Adjectives: []string{"wooden", "broken"},
 		Desc:       "broken timber",
 		Flags:      FlgTake,
-		Item:    &ItemData{Size: 50},
+		Item:       &ItemData{Size: 50},
 	}
 
 	// Maze 5
 	Bones = Object{
-		In:         &Maze5,
-		Synonyms:   []string{"bones", "skeleton", "body"},
-		Desc:       "skeleton",
-		Flags:      FlgTryTake | FlgNoDesc,
+		In:       &Maze5,
+		Synonyms: []string{"bones", "skeleton", "body"},
+		Desc:     "skeleton",
+		Flags:    FlgTryTake | FlgNoDesc,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	BurnedOutLantern = Object{
@@ -914,7 +914,7 @@ var (
 		Desc:       "burned-out lantern",
 		Flags:      FlgTake,
 		FirstDesc:  "The deceased adventurer's useless lantern is here.",
-		Item:    &ItemData{Size: 20},
+		Item:       &ItemData{Size: 20},
 	}
 	BagOfCoins = Object{
 		In:         &Maze5,
@@ -924,7 +924,7 @@ var (
 		Flags:      FlgTake,
 		LongDesc:   "An old leather bag, bulging with coins, is here.",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Item:    &ItemData{Size: 15, Value: 10, TValue: 5},
+		Item: &ItemData{Size: 15, Value: 10, TValue: 5},
 	}
 	RustyKnife = Object{
 		In:         &Maze5,
@@ -933,8 +933,8 @@ var (
 		Desc:       "rusty knife",
 		Flags:      FlgTake | FlgTryTake | FlgWeapon | FlgTool,
 		// Action set in FinalizeGameObjects to avoid init cycle
-		FirstDesc:  "Beside the skeleton is a rusty knife.",
-		Item:    &ItemData{Size: 20},
+		FirstDesc: "Beside the skeleton is a rusty knife.",
+		Item:      &ItemData{Size: 20},
 	}
 	Keys = Object{
 		In:         &Maze5,
@@ -942,7 +942,7 @@ var (
 		Adjectives: []string{"skeleton"},
 		Desc:       "skeleton key",
 		Flags:      FlgTake | FlgTool,
-		Item:    &ItemData{Size: 10},
+		Item:       &ItemData{Size: 10},
 	}
 
 	// ================================================================
@@ -958,7 +958,7 @@ var (
 		Flags:      FlgInvis | FlgRead | FlgTake,
 		FirstDesc:  "In the trophy case is an ancient parchment which appears to be a map.",
 		Text:       "The map shows a forest with three clearings. The largest clearing contains a house. Three paths leave the large clearing. One of these paths, leading southwest, is marked \"To Stone Barrow\".",
-		Item:    &ItemData{Size: 2},
+		Item:       &ItemData{Size: 2},
 	}
 
 	// In Mailbox
@@ -970,7 +970,7 @@ var (
 		Flags:      FlgRead | FlgTake | FlgBurn,
 		LongDesc:   "A small leaflet is on the ground.",
 		Text:       "\"WELCOME TO ZORK!\n\nZORK is a game of adventure, danger, and low cunning. In it you will explore some of the most amazing territory ever seen by mortals. No computer should be without one!\"",
-		Item:    &ItemData{Size: 2},
+		Item:       &ItemData{Size: 2},
 	}
 
 	// In Kitchen Table
@@ -981,8 +981,8 @@ var (
 		Desc:       "glass bottle",
 		Flags:      FlgTake | FlgTrans | FlgCont,
 		// Action set in FinalizeGameObjects to avoid init cycle
-		FirstDesc:  "A bottle is sitting on the table.",
-		Item:    &ItemData{Capacity: 4},
+		FirstDesc: "A bottle is sitting on the table.",
+		Item:      &ItemData{Capacity: 4},
 	}
 	SandwichBag = Object{
 		In:         &KitchenTable,
@@ -992,7 +992,7 @@ var (
 		Flags:      FlgTake | FlgCont | FlgBurn,
 		FirstDesc:  "On the table is an elongated brown sack, smelling of hot peppers.",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Item:    &ItemData{Size: 9, Capacity: 9},
+		Item: &ItemData{Size: 9, Capacity: 9},
 	}
 
 	// In Attic Table
@@ -1008,12 +1008,12 @@ var (
 
 	// In Bottle
 	Water = Object{
-		In:         &Bottle,
-		Synonyms:   []string{"water", "quantity", "liquid", "h2o"},
-		Desc:       "quantity of water",
-		Flags:      FlgTryTake | FlgTake | FlgDrink,
+		In:       &Bottle,
+		Synonyms: []string{"water", "quantity", "liquid", "h2o"},
+		Desc:     "quantity of water",
+		Flags:    FlgTryTake | FlgTake | FlgDrink,
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Item:    &ItemData{Size: 4},
+		Item: &ItemData{Size: 4},
 	}
 
 	// In Sandwich Bag
@@ -1031,7 +1031,7 @@ var (
 		Desc:     "clove of garlic",
 		Flags:    FlgTake | FlgFood,
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Item:    &ItemData{Size: 4},
+		Item: &ItemData{Size: 4},
 	}
 
 	// In Altar
@@ -1042,9 +1042,9 @@ var (
 		Desc:       "black book",
 		Flags:      FlgRead | FlgTake | FlgCont | FlgBurn | FlgTurn,
 		// Action set in FinalizeGameObjects to avoid init cycle
-		FirstDesc:  "On the altar is a large black book, open to page 569.",
-		Text:       "Commandment #12592\n\nOh ye who go about saying unto each: \"Hello sailor\":\nDost thou know the magnitude of thy sin before the gods?\nYea, verily, thou shalt be ground between two stones.\nShall the angry gods cast thy body into the whirlpool?\nSurely, thy eye shall be put out with a sharp stick!\nEven unto the ends of the earth shalt thou wander and\nUnto the land of the dead shalt thou be sent at last.\nSurely thou shalt repent of thy cunning.",
-		Item:    &ItemData{Size: 10},
+		FirstDesc: "On the altar is a large black book, open to page 569.",
+		Text:      "Commandment #12592\n\nOh ye who go about saying unto each: \"Hello sailor\":\nDost thou know the magnitude of thy sin before the gods?\nYea, verily, thou shalt be ground between two stones.\nShall the angry gods cast thy body into the whirlpool?\nSurely, thy eye shall be put out with a sharp stick!\nEven unto the ends of the earth shalt thou wander and\nUnto the land of the dead shalt thou be sent at last.\nSurely thou shalt repent of thy cunning.",
+		Item:      &ItemData{Size: 10},
 	}
 
 	// In Coffin
@@ -1056,8 +1056,8 @@ var (
 		Flags:      FlgTake | FlgWeapon,
 		LongDesc:   "An ornamented sceptre, tapering to a sharp point, is here.",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		FirstDesc:  "A sceptre, possibly that of ancient Egypt itself, is in the coffin. The sceptre is ornamented with colored enamel, and tapers to a sharp point.",
-		Item:    &ItemData{Size: 3, Value: 4, TValue: 6},
+		FirstDesc: "A sceptre, possibly that of ancient Egypt itself, is in the coffin. The sceptre is ornamented with colored enamel, and tapers to a sharp point.",
+		Item:      &ItemData{Size: 3, Value: 4, TValue: 6},
 	}
 
 	// In Nest
@@ -1068,8 +1068,8 @@ var (
 		Desc:       "jewel-encrusted egg",
 		Flags:      FlgTake | FlgCont | FlgSearch,
 		// Action set in FinalizeGameObjects to avoid init cycle
-		FirstDesc:  "In the bird's nest is a large egg encrusted with precious jewels, apparently scavenged by a childless songbird. The egg is covered with fine gold inlay, and ornamented in lapis lazuli and mother-of-pearl. Unlike most eggs, this one is hinged and closed with a delicate looking clasp. The egg appears extremely fragile.",
-		Item:    &ItemData{Value: 5, TValue: 5, Capacity: 6},
+		FirstDesc: "In the bird's nest is a large egg encrusted with precious jewels, apparently scavenged by a childless songbird. The egg is covered with fine gold inlay, and ornamented in lapis lazuli and mother-of-pearl. Unlike most eggs, this one is hinged and closed with a delicate looking clasp. The egg appears extremely fragile.",
+		Item:      &ItemData{Value: 5, TValue: 5, Capacity: 6},
 	}
 
 	// In Egg
@@ -1080,8 +1080,8 @@ var (
 		Desc:       "golden clockwork canary",
 		Flags:      FlgTake | FlgSearch,
 		// Action set in FinalizeGameObjects to avoid init cycle
-		FirstDesc:  "There is a golden clockwork canary nestled in the egg. It has ruby eyes and a silver beak. Through a crystal window below its left wing you can see intricate machinery inside. It appears to have wound down.",
-		Item:    &ItemData{Value: 6, TValue: 4},
+		FirstDesc: "There is a golden clockwork canary nestled in the egg. It has ruby eyes and a silver beak. Through a crystal window below its left wing you can see intricate machinery inside. It appears to have wound down.",
+		Item:      &ItemData{Value: 6, TValue: 4},
 	}
 
 	// In Tube
@@ -1092,7 +1092,7 @@ var (
 		Desc:       "viscous material",
 		Flags:      FlgTake | FlgTool,
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Item:    &ItemData{Size: 6},
+		Item: &ItemData{Size: 6},
 	}
 
 	// In Troll
@@ -1103,7 +1103,7 @@ var (
 		Desc:       "bloody axe",
 		Flags:      FlgWeapon | FlgTryTake | FlgTake | FlgNoDesc,
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Item:    &ItemData{Size: 25},
+		Item: &ItemData{Size: 25},
 	}
 
 	// In Thief
@@ -1122,7 +1122,7 @@ var (
 		Desc:       "stiletto",
 		Flags:      FlgWeapon | FlgTryTake | FlgTake | FlgNoDesc,
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Item:    &ItemData{Size: 10},
+		Item: &ItemData{Size: 10},
 	}
 
 	// In Pedestal
@@ -1133,8 +1133,8 @@ var (
 		Desc:       "torch",
 		Flags:      FlgTake | FlgFlame | FlgOn | FlgLight,
 		// Action set in FinalizeGameObjects to avoid init cycle
-		FirstDesc:  "Sitting on the pedestal is a flaming torch, made of ivory.",
-		Item:    &ItemData{Size: 20, Value: 14, TValue: 6},
+		FirstDesc: "Sitting on the pedestal is a flaming torch, made of ivory.",
+		Item:      &ItemData{Size: 20, Value: 14, TValue: 6},
 	}
 
 	// In Inflated Boat
@@ -1145,7 +1145,7 @@ var (
 		Desc:       "tan label",
 		Flags:      FlgRead | FlgTake | FlgBurn,
 		Text:       "  !!!!FROBOZZ MAGIC BOAT COMPANY!!!!\n\nHello, Sailor!\n\nInstructions for use:\n\n   To get into a body of water, say \"Launch\".\n   To get to shore, say \"Land\" or the direction in which you want to maneuver the boat.\n\nWarranty:\n\n  This boat is guaranteed against all defects for a period of 76 milliseconds from date of purchase or until first used, whichever comes first.\n\nWarning:\n   This boat is made of thin plastic.\n   Good Luck!",
-		Item:    &ItemData{Size: 2},
+		Item:       &ItemData{Size: 2},
 	}
 
 	// In Buoy
@@ -1155,7 +1155,7 @@ var (
 		Adjectives: []string{"large"},
 		Desc:       "large emerald",
 		Flags:      FlgTake,
-		Item:    &ItemData{Value: 5, TValue: 10},
+		Item:       &ItemData{Value: 5, TValue: 10},
 	}
 
 	// In Broken Egg (unplaced)
@@ -1166,8 +1166,7 @@ var (
 		Desc:       "broken clockwork canary",
 		Flags:      FlgTake,
 		// Action set in FinalizeGameObjects to avoid init cycle
-		FirstDesc:  "There is a golden clockwork canary nestled in the egg. It seems to have recently had a bad experience. The mountings for its jewel-like eyes are empty, and its silver beak is crumpled. Through a cracked crystal window below its left wing you can see the remains of intricate machinery. It is not clear what result winding it would have, as the mainspring seems sprung.",
-		Item:    &ItemData{TValue: 1},
+		FirstDesc: "There is a golden clockwork canary nestled in the egg. It seems to have recently had a bad experience. The mountings for its jewel-like eyes are empty, and its silver beak is crumpled. Through a cracked crystal window below its left wing you can see the remains of intricate machinery. It is not clear what result winding it would have, as the mainspring seems sprung.",
+		Item:      &ItemData{TValue: 1},
 	}
-
 )

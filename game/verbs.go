@@ -3,9 +3,9 @@ package game
 import . "github.com/ajdnik/gozork/engine"
 
 var (
-	// HelloSailor counts occurences of 'hello, sailor'
+	// HelloSailor counts occurrences of 'hello, sailor'
 	// IsSprayed is a flag indicating if the player is wearing Grue repellent
-	Version   = [24]byte{0, 0, 0, 0, 119, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 56, 56, 48, 52, 50, 57}
+	Version = [24]byte{0, 0, 0, 0, 119, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 56, 56, 48, 52, 50, 57}
 	// DescObj stores the last object which was described
 	Indents = [6]string{
 		"",
@@ -828,10 +828,7 @@ func VPourOn(arg ActArg) bool {
 		return true
 	}
 	if G.DirObj == &Putty {
-		if Perform(ActionVerb{Norm: "put", Orig: "put"}, &Putty, G.IndirObj) == PerfHndld {
-			return true
-		}
-		return false
+		return Perform(ActionVerb{Norm: "put", Orig: "put"}, &Putty, G.IndirObj) == PerfHndld
 	}
 	Printf("You can't pour that.\n")
 	return true
@@ -851,10 +848,7 @@ func VPump(arg ActArg) bool {
 		return true
 	}
 	if Pump.IsIn(G.Winner) {
-		if Perform(ActionVerb{Norm: "inflate", Orig: "inflate"}, G.DirObj, &Pump) == PerfHndld {
-			return true
-		}
-		return false
+		return Perform(ActionVerb{Norm: "inflate", Orig: "inflate"}, G.DirObj, &Pump) == PerfHndld
 	}
 	Printf("It's really not clear how.\n")
 	return true
@@ -1117,10 +1111,7 @@ func VSqueeze(arg ActArg) bool {
 }
 
 func VSSpray(arg ActArg) bool {
-	if Perform(ActionVerb{Norm: "spray", Orig: "spray"}, G.IndirObj, G.DirObj) == PerfHndld {
-		return true
-	}
-	return false
+	return Perform(ActionVerb{Norm: "spray", Orig: "spray"}, G.IndirObj, G.DirObj) == PerfHndld
 }
 
 func VStab(arg ActArg) bool {
@@ -1664,4 +1655,3 @@ func ITake(vb bool) bool {
 	ScoreObj(G.DirObj)
 	return true
 }
-

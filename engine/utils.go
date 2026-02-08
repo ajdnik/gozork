@@ -1,5 +1,6 @@
 package engine
 
+// PickOne selects a random string from data without repeating until all have been used.
 func PickOne(data RndSelect) string {
 	if len(data.Unselected) == 0 {
 		data.Unselected = data.Selected
@@ -17,6 +18,7 @@ func PickOne(data RndSelect) string {
 	return msg
 }
 
+// Random returns a uniformly random element from the given object slice.
 func Random(tbl []*Object) *Object {
 	return tbl[G.Rand.Intn(len(tbl))]
 }
@@ -37,10 +39,12 @@ func Zprob(base int) bool {
 	return base > G.Rand.Intn(300)+1
 }
 
+// IsFlaming returns true if the object is an active fire source.
 func IsFlaming(obj *Object) bool {
 	return obj.Has(FlgFlame) && obj.Has(FlgOn)
 }
 
+// IsOpenable returns true if the object is a door or container.
 func IsOpenable(obj *Object) bool {
 	return obj.Has(FlgDoor) || obj.Has(FlgCont)
 }

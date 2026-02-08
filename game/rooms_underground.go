@@ -8,8 +8,8 @@ var (
 	// ================================================================
 
 	CyclopsRoom = Object{
-		In:     &Rooms,
-		Desc:   "Cyclops Room",
+		In:   &Rooms,
+		Desc: "Cyclops Room",
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Flags:  FlgLand,
 		Global: []*Object{&Stairs},
@@ -25,9 +25,9 @@ var (
 		LongDesc: "This is a large room, whose east wall is solid granite. A number of discarded bags, which crumble at your touch, are scattered about on the floor. There is an exit down a staircase.",
 		Desc:     "Treasure Room",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:    FlgLand,
-		Global:   []*Object{&Stairs},
-		Item:    &ItemData{Value: 25},
+		Flags:  FlgLand,
+		Global: []*Object{&Stairs},
+		Item:   &ItemData{Value: 25},
 	}
 
 	// ================================================================
@@ -35,8 +35,8 @@ var (
 	// ================================================================
 
 	ReservoirSouth = Object{
-		In:     &Rooms,
-		Desc:   "Reservoir South",
+		In:   &Rooms,
+		Desc: "Reservoir South",
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Flags:  FlgLand,
 		Global: []*Object{&GlobalWater},
@@ -46,16 +46,16 @@ var (
 		},
 	}
 	Reservoir = Object{
-		In:     &Rooms,
-		Desc:   "Reservoir",
+		In:   &Rooms,
+		Desc: "Reservoir",
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Flags:  FlgNonLand,
 		Global: []*Object{&GlobalWater},
 		Pseudo: []PseudoObj{{Synonym: "stream", Action: StreamPseudo}},
 	}
 	ReservoirNorth = Object{
-		In:     &Rooms,
-		Desc:   "Reservoir North",
+		In:   &Rooms,
+		Desc: "Reservoir North",
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Flags:  FlgLand,
 		Global: []*Object{&GlobalWater, &Stairs},
@@ -83,16 +83,16 @@ var (
 	// ================================================================
 
 	MirrorRoom1 = Object{
-		In:     &Rooms,
-		Desc:   "Mirror Room",
+		In:   &Rooms,
+		Desc: "Mirror Room",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:  FlgLand,
+		Flags: FlgLand,
 	}
 	MirrorRoom2 = Object{
-		In:     &Rooms,
-		Desc:   "Mirror Room",
+		In:   &Rooms,
+		Desc: "Mirror Room",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:  FlgLand | FlgOn,
+		Flags: FlgLand | FlgOn,
 	}
 	SmallCave = Object{
 		In:       &Rooms,
@@ -106,8 +106,8 @@ var (
 		LongDesc: "This is a tiny cave with entrances west and north, and a dark, forbidding staircase leading down.",
 		Desc:     "Cave",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:    FlgLand,
-		Global:   []*Object{&Stairs},
+		Flags:  FlgLand,
+		Global: []*Object{&Stairs},
 	}
 	ColdPassage = Object{
 		In:       &Rooms,
@@ -151,7 +151,7 @@ var (
 		Desc:     "East-West Passage",
 		Flags:    FlgLand,
 		Global:   []*Object{&Stairs},
-		Item:    &ItemData{Value: 5},
+		Item:     &ItemData{Value: 5},
 	}
 	RoundRoom = Object{
 		In:       &Rooms,
@@ -160,8 +160,8 @@ var (
 		Flags:    FlgLand,
 	}
 	DeepCanyon = Object{
-		In:     &Rooms,
-		Desc:   "Deep Canyon",
+		In:   &Rooms,
+		Desc: "Deep Canyon",
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Flags:  FlgLand,
 		Global: []*Object{&Stairs},
@@ -174,8 +174,8 @@ var (
 		Global:   []*Object{&Crack},
 	}
 	LoudRoom = Object{
-		In:     &Rooms,
-		Desc:   "Loud Room",
+		In:   &Rooms,
+		Desc: "Loud Room",
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Flags:  FlgLand,
 		Global: []*Object{&Stairs},
@@ -200,8 +200,8 @@ var (
 	// ================================================================
 
 	EnteranceToHades = Object{
-		In:     &Rooms,
-		Desc:   "Entrance to Hades",
+		In:   &Rooms,
+		Desc: "Entrance to Hades",
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Flags:  FlgLand | FlgOn,
 		Global: []*Object{&Bodies},
@@ -236,15 +236,15 @@ var (
 		Global:   []*Object{&Stairs},
 	}
 	DomeRoom = Object{
-		In:     &Rooms,
-		Desc:   "Dome Room",
+		In:   &Rooms,
+		Desc: "Dome Room",
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Flags:  FlgLand,
 		Pseudo: []PseudoObj{{Synonym: "dome", Action: DomePseudo}},
 	}
 	TorchRoom = Object{
-		In:     &Rooms,
-		Desc:   "Torch Room",
+		In:   &Rooms,
+		Desc: "Torch Room",
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Flags:  FlgLand,
 		Global: []*Object{&Stairs},
@@ -262,7 +262,7 @@ var (
 		LongDesc: "This is the south end of a large temple. In front of you is what appears to be an altar. In one corner is a small hole in the floor which leads into darkness. You probably could not get back up it.",
 		Desc:     "Altar",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:    FlgLand | FlgOn | FlgSacred,
+		Flags: FlgLand | FlgOn | FlgSacred,
 	}
 
 	// ================================================================
@@ -270,8 +270,8 @@ var (
 	// ================================================================
 
 	DamRoom = Object{
-		In:     &Rooms,
-		Desc:   "Dam",
+		In:   &Rooms,
+		Desc: "Dam",
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Flags:  FlgLand | FlgOn,
 		Global: []*Object{&GlobalWater},
@@ -326,24 +326,24 @@ var (
 		LongDesc: "You are on a narrow strip of beach which runs along the base of the White Cliffs. There is a narrow path heading south along the Cliffs and a tight passage leading west into the cliffs themselves.",
 		Desc:     "White Cliffs Beach",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:    FlgLand | FlgSacred,
-		Global:   []*Object{&GlobalWater, &WhiteCliff, &River},
+		Flags:  FlgLand | FlgSacred,
+		Global: []*Object{&GlobalWater, &WhiteCliff, &River},
 	}
 	WhiteCliffsSouth = Object{
 		In:       &Rooms,
 		LongDesc: "You are on a rocky, narrow strip of beach beside the Cliffs. A narrow path leads north along the shore.",
 		Desc:     "White Cliffs Beach",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:    FlgLand | FlgSacred,
-		Global:   []*Object{&GlobalWater, &WhiteCliff, &River},
+		Flags:  FlgLand | FlgSacred,
+		Global: []*Object{&GlobalWater, &WhiteCliff, &River},
 	}
 	River4 = Object{
 		In:       &Rooms,
 		LongDesc: "The river is running faster here and the sound ahead appears to be that of rushing water. On the east shore is a sandy beach. A small area of beach can also be seen below the cliffs on the west shore.",
 		Desc:     "Frigid River",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:    FlgNonLand | FlgSacred,
-		Global:   []*Object{&GlobalWater, &River},
+		Flags:  FlgNonLand | FlgSacred,
+		Global: []*Object{&GlobalWater, &River},
 	}
 	River5 = Object{
 		In:       &Rooms,
@@ -373,8 +373,8 @@ var (
 		Flags:    FlgLand,
 	}
 	AragainFalls = Object{
-		In:     &Rooms,
-		Desc:   "Aragain Falls",
+		In:   &Rooms,
+		Desc: "Aragain Falls",
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Flags:  FlgLand | FlgSacred | FlgOn,
 		Global: []*Object{&GlobalWater, &River, &Rainbow},
@@ -412,8 +412,8 @@ var (
 		LongDesc: "You are at the top of the Great Canyon on its west wall. From here there is a marvelous view of the canyon and parts of the Frigid River upstream. Across the canyon, the walls of the White Cliffs join the mighty ramparts of the Flathead Mountains to the east. Following the Canyon upstream to the north, Aragain Falls may be seen, complete with rainbow. The mighty Frigid River flows out from a great dark cavern. To the west and south can be seen an immense forest, stretching for miles around. A path leads northwest. It is possible to climb down into the canyon from here.",
 		Desc:     "Canyon View",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:    FlgLand | FlgOn | FlgSacred,
-		Global:   []*Object{&ClimbableCliff, &River, &Rainbow},
+		Flags:  FlgLand | FlgOn | FlgSacred,
+		Global: []*Object{&ClimbableCliff, &River, &Rainbow},
 	}
 
 	// ================================================================
@@ -433,10 +433,10 @@ var (
 		Flags:    FlgLand,
 	}
 	BatRoom = Object{
-		In:     &Rooms,
-		Desc:   "Bat Room",
+		In:   &Rooms,
+		Desc: "Bat Room",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:  FlgLand | FlgSacred,
+		Flags: FlgLand | FlgSacred,
 	}
 	ShaftRoom = Object{
 		In:       &Rooms,
@@ -461,8 +461,8 @@ var (
 		LongDesc: "This is a small room which smells strongly of coal gas. There is a short climb up some stairs and a narrow tunnel leading east.",
 		Desc:     "Gas Room",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:    FlgLand | FlgSacred,
-		Global:   []*Object{&Stairs},
+		Flags:  FlgLand | FlgSacred,
+		Global: []*Object{&Stairs},
 		Pseudo: []PseudoObj{
 			{Synonym: "gas", Action: GasPseudo},
 			{Synonym: "odor", Action: GasPseudo},
@@ -493,7 +493,7 @@ var (
 		LongDesc: "This is a long and narrow passage, which is cluttered with broken timbers. A wide passage comes from the east and turns at the west end of the room into a very narrow passageway. From the west comes a strong draft.",
 		Desc:     "Timber Room",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:    FlgLand | FlgSacred,
+		Flags: FlgLand | FlgSacred,
 	}
 	LowerShaft = Object{
 		In:       &Rooms,
@@ -504,9 +504,9 @@ var (
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	MachineRoom = Object{
-		In:     &Rooms,
-		Desc:   "Machine Room",
-		Flags:  FlgLand,
+		In:    &Rooms,
+		Desc:  "Machine Room",
+		Flags: FlgLand,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 
@@ -545,5 +545,4 @@ var (
 		Flags:    FlgLand,
 		Global:   []*Object{&Slide},
 	}
-
 )
