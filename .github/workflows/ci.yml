@@ -26,7 +26,7 @@ jobs:
       - name: Run golangci-lint
         run: |
           set +e
-          golangci-lint run ./... --out-format tab > lint-output.txt 2>&1
+          golangci-lint run ./... > lint-output.txt 2>&1
           echo "$?" > lint-exit-code.txt
 
       - name: Write lint summary
