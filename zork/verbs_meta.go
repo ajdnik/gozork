@@ -154,6 +154,9 @@ func Wait(num int) bool {
 	Printf("Time passes...\n")
 	for i := num; i > 0; i-- {
 		Clocker()
+		if G.QuitRequested {
+			return true
+		}
 	}
 	G.ClockWait = true
 	return true
@@ -189,6 +192,10 @@ func Finish() bool {
 		Printf("\nWould you like to restart the game from the beginning, restore a saved game position, or end this session of the game?\n(Type RESTART, RESTORE, or QUIT):\n>")
 		_, lex := Read()
 		if len(lex) == 0 {
+			if G.InputExhausted {
+				Quit()
+				return true
+			}
 			continue
 		}
 		wrd := lex[0]
@@ -208,6 +215,7 @@ func Finish() bool {
 		}
 		if wrd.Norm == "quit" {
 			Quit()
+			return true
 		}
 	}
 }

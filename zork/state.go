@@ -59,6 +59,7 @@ type GameState struct {
 	ParserOk      bool
 	Script        bool
 	PerformFatal  bool
+	QuitRequested bool
 	AlwaysLit     bool
 	Search        FindProps
 	ParsedSyntx   ParseTbl

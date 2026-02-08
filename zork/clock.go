@@ -48,6 +48,9 @@ func Clocker() bool {
 	}
 	flg := false
 	for i := len(G.QueueItms) - 1; i >= end; i-- {
+		if G.QuitRequested {
+			return flg
+		}
 		if !G.QueueItms[i].Run {
 			continue
 		}

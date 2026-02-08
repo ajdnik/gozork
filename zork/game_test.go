@@ -3,7 +3,6 @@ package zork
 import (
 	"bytes"
 	"math/rand"
-	"runtime/debug"
 	"strings"
 	"testing"
 )
@@ -45,22 +44,10 @@ func runScript(t *testing.T, steps []Step) {
 	G.Rand = newSeededRNG(1)
 	G.Reader = nil // force re-init
 
-	// Run the game, catching panics from Quit()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				if r != ErrQuit {
-					// Print full output to help diagnose
-					s := output.String()
-					t.Logf("FULL OUTPUT:\n%s", s)
-					t.Fatalf("unexpected panic: %v\n%s", r, debug.Stack())
-				}
-			}
-		}()
-		InitGame()
-		VLook(ActUnk)
-		MainLoop()
-	}()
+	// Run the game — Quit() now sets G.QuitRequested instead of panicking.
+	InitGame()
+	VLook(ActUnk)
+	MainLoop()
 
 	// Split output into segments aligned with commands.
 	// The game prints ">" before each Read(). We use that as a delimiter.

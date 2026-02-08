@@ -1,18 +1,13 @@
 package zork
 
-import "os"
-
 type PerfRet int
 
 const (
 	PerfNotHndld PerfRet = iota
 	PerfHndld
 	PerfFatal
+	PerfQuit
 )
-
-// ErrQuit is a sentinel value used to signal game exit via panic/recover.
-// This allows tests to catch quit without os.Exit terminating the process.
-var ErrQuit = "game-quit"
 
 // RFatal signals a fatal action result (equivalent to ZIL's <RFATAL>).
 // It sets G.PerformFatal, which makes Perform return PerfFatal.
@@ -23,8 +18,11 @@ func RFatal() bool {
 	return true
 }
 
+// Quit signals that the game should exit. The flag is checked by
+// callHandler and MainLoop so the quit propagates cleanly up the
+// call stack without requiring panic/recover.
 func Quit() {
-	panic(ErrQuit)
+	G.QuitRequested = true
 }
 
 // Verify checks the integrity of the game file.
@@ -87,15 +85,6 @@ func InitGame() {
 }
 
 func Run() {
-	defer func() {
-		if r := recover(); r != nil {
-			if r == ErrQuit {
-				os.Exit(0)
-			}
-			panic(r) // re-panic for unexpected panics
-		}
-	}()
-
 	InitGame()
 	if !G.Here.Has(FlgTouch) {
 		VVersion(ActUnk)
@@ -108,11 +97,11 @@ func Run() {
 func MainLoop() {
 	G.Params.Continue = NumUndef
 	for {
-		if G.InputExhausted {
+		if G.InputExhausted || G.QuitRequested {
 			return
 		}
 		G.ParserOk = Parse()
-		if G.InputExhausted {
+		if G.InputExhausted || G.QuitRequested {
 			return
 		}
 		if !G.ParserOk {
@@ -215,7 +204,7 @@ func MainLoop() {
 				G.DirObj, G.IndirObj = dir, indir
 				tmp = true
 				res = Perform(G.ActVerb, G.DirObj, G.IndirObj)
-				if res == PerfFatal {
+				if res == PerfFatal || res == PerfQuit {
 					break
 				}
 			}
@@ -239,12 +228,18 @@ func MainLoop() {
 				Printf("There's nothing here you can take.\n")
 			}
 		}
-		if l := G.Winner.Location(); res != PerfFatal && l != nil && l.Action != nil {
+		if G.QuitRequested {
+			return
+		}
+		if l := G.Winner.Location(); res != PerfFatal && res != PerfQuit && l != nil && l.Action != nil {
 			if l.Action(ActEnd) {
 				res = PerfHndld
 			} else {
 				res = PerfNotHndld
 			}
+		}
+		if G.QuitRequested {
+			return
 		}
 		if res == PerfFatal {
 			G.Params.Continue = -1
@@ -257,10 +252,13 @@ func MainLoop() {
 	}
 }
 
-// callHandler invokes an action handler and checks for a fatal signal.
+// callHandler invokes an action handler and checks for quit/fatal signals.
 // Returns the appropriate PerfRet and whether the chain should stop.
 func callHandler(fn func(ActArg) bool, arg ActArg) (PerfRet, bool) {
 	result := fn(arg)
+	if G.QuitRequested {
+		return PerfQuit, true
+	}
 	if G.PerformFatal {
 		G.PerformFatal = false
 		return PerfFatal, true
