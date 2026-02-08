@@ -184,26 +184,20 @@ jobs:
             echo ""
             echo "| Package | Status | Duration | Coverage |"
             echo "|---------|--------|----------|----------|"
-            awk -F'"' '
-              /"Action":"pass"/ && /"Package":/ {
-                pkg=""; dur=""; cov="—";
-                for (i=1;i<=NF;i++) {
-                  if ($i=="Package") pkg=$(i+2);
-                  if ($i=="Elapsed") dur=$(i+2)"s";
-                  if ($i=="Coverage") cov=$(i+2);
+            awk '
+              function getstr(re, s,    m) { return match(s, re, m) ? m[1] : "" }
+              {
+                line=$0
+                pkg=getstr(/"Package":"([^"]+)"/, line)
+                action=getstr(/"Action":"([^"]+)"/, line)
+                if (action=="pass" || action=="fail") {
+                  if (pkg!="") {
+                    status[pkg]=(action=="pass" ? "ok" : "FAIL")
+                    if (match(line, /"Elapsed":([0-9.]+)/, m)) durmap[pkg]=m[1]"s"
+                  }
                 }
-                if (pkg!="") {
-                  status[pkg]="ok"; durmap[pkg]=dur; covmap[pkg]=cov;
-                }
-              }
-              /"Action":"fail"/ && /"Package":/ {
-                pkg=""; dur="";
-                for (i=1;i<=NF;i++) {
-                  if ($i=="Package") pkg=$(i+2);
-                  if ($i=="Elapsed") dur=$(i+2)"s";
-                }
-                if (pkg!="") {
-                  status[pkg]="FAIL"; durmap[pkg]=dur;
+                if (action=="output") {
+                  if (pkg!="" && match(line, /coverage: ([0-9.]+%)/, m)) covmap[pkg]=m[1]
                 }
               }
               END {
