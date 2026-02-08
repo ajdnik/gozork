@@ -257,7 +257,9 @@ func (o *Object) GetDir(dir string) *DirProps {
 }
 
 func (o *Object) Remove() {
-	o.In.RemoveChild(o)
+	if o.In != nil {
+		o.In.RemoveChild(o)
+	}
 	o.In = nil
 }
 
@@ -300,8 +302,12 @@ func (o *Object) AddChild(child *Object) {
 
 // MoveTo moves the game object to the destination
 // supplied. This means the current game object will become
-// its child.
+// its child. It also removes the object from its previous
+// parent's children list.
 func (o *Object) MoveTo(dest *Object) {
+	if o.In != nil {
+		o.In.RemoveChild(o)
+	}
 	o.In = dest
 	dest.AddChild(o)
 }

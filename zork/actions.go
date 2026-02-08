@@ -789,7 +789,10 @@ func RandomizeObjects() {
 		Coffin.MoveTo(&EgyptRoom)
 	}
 	Sword.TValue = 0
-	for _, child := range Winner.Children {
+	// Copy children before iterating since MoveTo modifies the slice.
+	children := make([]*Object, len(Winner.Children))
+	copy(children, Winner.Children)
+	for _, child := range children {
 		if child.TValue <= 0 {
 			child.MoveTo(Random(AboveGround))
 			continue
@@ -2143,7 +2146,13 @@ func LanternFcn(arg ActArg) bool {
 			Print("A burned-out lamp won't light.", Newline)
 			return true
 		}
-		Queue(ILantern, -1).Run = true
+		itm := QueueInt(ILantern, false)
+		if itm.Tick <= 0 {
+			// First activation or timer expired: initialize countdown
+			itm.Tick = -1
+		}
+		// Otherwise resume from where we left off
+		itm.Run = true
 		return false
 	}
 	if ActVerb.Norm == "lamp off" {
@@ -3639,9 +3648,10 @@ func RBoatFcn(arg ActArg) bool {
 			}
 			tmp := GoNext(RiverLaunch)
 			if tmp == 1 {
-				spd := Lkp(Here, RiverSpeeds)
-				if spd != nil {
-					// enable river int
+				// ZIL: <ENABLE <QUEUE I-RIVER <LKP ,HERE ,RIVER-SPEEDS>>>
+				// After GoNext, HERE is the destination room. Use its speed.
+				if spd, ok := RiverSpeedMap[Here]; ok {
+					Queue(IRiver, spd).Run = true
 				}
 				return true
 			}
@@ -4254,6 +4264,11 @@ func IRiver() bool {
 		Print("The flow of the river carries you downstream.", Newline)
 		NewLine()
 		Goto(rm, true)
+		// ZIL: <ENABLE <QUEUE I-RIVER <LKP ,HERE ,RIVER-SPEEDS>>>
+		// After Goto, HERE is the new room. Use its speed for the next leg.
+		if spd, ok := RiverSpeedMap[Here]; ok {
+			Queue(IRiver, spd).Run = true
+		}
 		return true
 	}
 	JigsUp("Unfortunately, the magic boat doesn't provide protection from the rocks and boulders one meets at the bottom of waterfalls. Including this one.", false)

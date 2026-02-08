@@ -310,7 +310,7 @@ func VBoard(arg ActArg) bool {
 	Print("You are now in the ", NoNewline)
 	PrintObject(DirObj)
 	Print(".", Newline)
-	Winner.MoveTo(Here)
+	Winner.MoveTo(DirObj)
 	if DirObj.Action != nil {
 		DirObj.Action(ActEnter)
 	}
@@ -2013,7 +2013,7 @@ func NoGoTell(av Flag, wloc *Object) {
 }
 
 func Goto(rm *Object, isV bool) bool {
-	lb := rm.Has(FlgLand)
+	lb := rm.Has(FlgLand) || rm.Has(FlgRLand)
 	wloc := Winner.Location()
 	var av Flag
 	olit := Lit
@@ -2488,7 +2488,10 @@ func ITake(vb bool) bool {
 		}
 		return false
 	}
-	if DirObj.Has(FlgCont) && !DirObj.Has(FlgOpen) {
+	// ZIL: <FSET? <LOC ,PRSO> ,CONTBIT> / <NOT <FSET? <LOC ,PRSO> ,OPENBIT>>
+	// Prevent taking objects from inside a closed container.
+	loc := DirObj.Location()
+	if loc != nil && loc.Has(FlgCont) && !loc.Has(FlgOpen) {
 		return false
 	}
 	if !DirObj.Location().IsIn(Winner) && Weight(DirObj)+Weight(Winner) > LoadAllowed {

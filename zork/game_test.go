@@ -3,6 +3,7 @@ package zork
 import (
 	"bytes"
 	"math/rand"
+	"runtime/debug"
 	"strings"
 	"testing"
 )
@@ -43,7 +44,10 @@ func runScript(t *testing.T, steps []Step) {
 		defer func() {
 			if r := recover(); r != nil {
 				if r != ErrQuit {
-					t.Fatalf("unexpected panic: %v", r)
+					// Print full output to help diagnose
+					s := output.String()
+					t.Logf("FULL OUTPUT:\n%s", s)
+					t.Fatalf("unexpected panic: %v\n%s", r, debug.Stack())
 				}
 			}
 		}()

@@ -89,8 +89,17 @@ var (
 	RobberUDesc = "There is a suspicious-looking individual lying unconscious on the ground."
 
 	// River tables
-	RiverSpeeds = []*Object{&River1, nil, &River2, nil, &River3, nil, &River4, nil, &River5, nil}
-	RiverNext   = []*Object{&River1, &River2, &River2, &River3, &River3, &River4, &River4, &River5}
+	// ZIL: <LTABLE (PURE) RIVER-1 4 RIVER-2 4 RIVER-3 3 RIVER-4 2 RIVER-5 1>
+	RiverSpeedMap = map[*Object]int{
+		&River1: 4,
+		&River2: 4,
+		&River3: 3,
+		&River4: 2,
+		&River5: 1,
+	}
+	// ZIL: <LTABLE (PURE) RIVER-1 RIVER-2 RIVER-3 RIVER-4 RIVER-5>
+	// Lkp finds the item and returns the next element — must be a flat sequential list.
+	RiverNext = []*Object{&River1, &River2, &River3, &River4, &River5}
 	RiverLaunch = []*Object{
 		&DamBase, &River1,
 		&WhiteCliffsNorth, &River3,
