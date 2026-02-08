@@ -14,7 +14,7 @@ func fixMaintLeak() {
 	Printf("By some miracle of Zorkian technology, you have managed to stop the leak in the dam.\n")
 }
 
-func waterFcn(arg ActArg) bool {
+func waterFcn(arg ActionArg) bool {
 	if G.ActVerb.Norm == "sgive" {
 		return false
 	}
@@ -74,7 +74,7 @@ func waterFcn(arg ActArg) bool {
 	return false
 }
 
-func boltFcn(arg ActArg) bool {
+func boltFcn(arg ActionArg) bool {
 	if G.ActVerb.Norm == "turn" {
 		if G.IndirObj == &wrench {
 			if gD().GateFlag {
@@ -110,7 +110,7 @@ func boltFcn(arg ActArg) bool {
 	return false
 }
 
-func bubbleFcn(arg ActArg) bool {
+func bubbleFcn(arg ActionArg) bool {
 	if G.ActVerb.Norm == "take" {
 		integralPart()
 		return true
@@ -118,7 +118,7 @@ func bubbleFcn(arg ActArg) bool {
 	return false
 }
 
-func damFunction(arg ActArg) bool {
+func damFunction(arg ActionArg) bool {
 	if G.ActVerb.Norm == "open" || G.ActVerb.Norm == "close" {
 		Printf("Sounds reasonable, but this isn't how.\n")
 		return true
@@ -134,7 +134,7 @@ func damFunction(arg ActArg) bool {
 	return false
 }
 
-func puncturedBoatFcn(arg ActArg) bool {
+func puncturedBoatFcn(arg ActionArg) bool {
 	if (G.ActVerb.Norm == "put" || G.ActVerb.Norm == "put on") && G.DirObj == &putty {
 		fixBoat()
 		return true
@@ -154,7 +154,7 @@ func puncturedBoatFcn(arg ActArg) bool {
 	return false
 }
 
-func inflatableBoatFcn(arg ActArg) bool {
+func inflatableBoatFcn(arg ActionArg) bool {
 	if G.ActVerb.Norm == "inflate" || G.ActVerb.Norm == "fill" {
 		if !inflatableBoat.IsIn(G.Here) {
 			Printf("The boat must be on the ground to be inflated.\n")
@@ -181,7 +181,7 @@ func inflatableBoatFcn(arg ActArg) bool {
 	return false
 }
 
-func riverFcn(arg ActArg) bool {
+func riverFcn(arg ActionArg) bool {
 	if G.ActVerb.Norm == "put" && G.IndirObj == &river {
 		if G.DirObj == &me {
 			jigsUp("You splash around for a while, fighting the current, then you drown.", false)
@@ -207,7 +207,7 @@ func riverFcn(arg ActArg) bool {
 	return false
 }
 
-func damRoomFcn(arg ActArg) bool {
+func damRoomFcn(arg ActionArg) bool {
 	if arg == ActLook {
 		Printf("You are standing on the top of the Flood Control dam #3, which was quite a tourist attraction in times far distant. There are paths to the north, south, and west, and a scramble down.\n")
 		if gD().LowTide && gD().GatesOpen {
@@ -229,7 +229,7 @@ func damRoomFcn(arg ActArg) bool {
 	return false
 }
 
-func whiteCliffsFcn(arg ActArg) bool {
+func whiteCliffsFcn(arg ActionArg) bool {
 	if arg == ActEnd {
 		if inflatedBoat.IsIn(G.Winner) {
 			gD().Deflate = false
@@ -240,7 +240,7 @@ func whiteCliffsFcn(arg ActArg) bool {
 	return false
 }
 
-func fallsRoomFcn(arg ActArg) bool {
+func fallsRoomFcn(arg ActionArg) bool {
 	if arg == ActLook {
 		Printf("You are at the top of Aragain Falls, an enormous waterfall with a drop of about 450 feet. The only path here is on the north end.\n")
 		if gD().RainbowFlag {
@@ -253,7 +253,7 @@ func fallsRoomFcn(arg ActArg) bool {
 	return false
 }
 
-func rivr4RoomFcn(arg ActArg) bool {
+func rivr4RoomFcn(arg ActionArg) bool {
 	if arg == ActEnd {
 		if buoy.IsIn(G.Winner) && gD().BuoyFlag {
 			Printf("You notice something funny about the feel of the buoy.\n")
@@ -263,7 +263,7 @@ func rivr4RoomFcn(arg ActArg) bool {
 	return false
 }
 
-func rBoatFcn(arg ActArg) bool {
+func rBoatFcn(arg ActionArg) bool {
 	if arg == ActEnter || arg == ActEnd || arg == ActLook {
 		return false
 	}

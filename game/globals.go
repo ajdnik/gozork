@@ -4,7 +4,7 @@ import . "github.com/ajdnik/gozork/engine"
 
 var (
 	globalObjects = Object{
-		Flags: FlgKludge | FlgInvis | FlgTouch | FlgSurf | FlgTryTake | FlgOpen | FlgSearch | FlgTrans | FlgOn | FlgLand | FlgFight | FlgStagg | FlgWear,
+		Flags: FlgKludge | FlgInvis | FlgTouch | FlgSurf | FlgTryTake | FlgOpen | FlgSearch | FlgTrans | FlgOn | FlgLand | FlgFight | FlgStaggered | FlgWear,
 	}
 	localGlobals = Object{
 		In:        &globalObjects,
@@ -115,7 +115,7 @@ var (
 	}
 )
 
-func notHereObjectFcn(arg ActArg) bool {
+func notHereObjectFcn(arg ActionArg) bool {
 	if G.DirObj == &notHereObject && G.IndirObj == &notHereObject {
 		Printf("Those things aren't here!\n")
 		return true
@@ -162,7 +162,7 @@ func notHerePrint(isDir bool) {
 	}
 }
 
-func sailorFcn(arg ActArg) bool {
+func sailorFcn(arg ActionArg) bool {
 	if G.ActVerb.Norm == "tell" {
 		G.Params.Continue = NumUndef
 		G.Params.InQuotes = false
@@ -187,7 +187,7 @@ func sailorFcn(arg ActArg) bool {
 	return false
 }
 
-func groundFunction(arg ActArg) bool {
+func groundFunction(arg ActionArg) bool {
 	if (G.ActVerb.Norm == "put" || G.ActVerb.Norm == "put on") && G.IndirObj == &ground {
 		Perform(ActionVerb{Norm: "drop", Orig: "drop"}, G.DirObj, nil)
 		return true
@@ -202,7 +202,7 @@ func groundFunction(arg ActArg) bool {
 	return false
 }
 
-func grueFunction(arg ActArg) bool {
+func grueFunction(arg ActionArg) bool {
 	if G.ActVerb.Norm == "examine" {
 		Printf("The grue is a sinister, lurking presence in the dark places of the earth. Its favorite diet is adventurers, but its insatiable appetite is tempered by its fear of light. No grue has ever been seen by the light of day, and few have survived its fearsome jaws to tell the tale.\n")
 		return true
@@ -218,7 +218,7 @@ func grueFunction(arg ActArg) bool {
 	return false
 }
 
-func cretinFcn(arg ActArg) bool {
+func cretinFcn(arg ActionArg) bool {
 	if G.ActVerb.Norm == "tell" {
 		G.Params.Continue = NumUndef
 		G.Params.InQuotes = false
@@ -267,7 +267,7 @@ func cretinFcn(arg ActArg) bool {
 	return false
 }
 
-func pathObject(arg ActArg) bool {
+func pathObject(arg ActionArg) bool {
 	if G.ActVerb.Norm == "take" || G.ActVerb.Norm == "follow" {
 		Printf("You must specify a direction to go.\n")
 		return true
@@ -283,7 +283,7 @@ func pathObject(arg ActArg) bool {
 	return false
 }
 
-func stairsFcn(arg ActArg) bool {
+func stairsFcn(arg ActionArg) bool {
 	if G.ActVerb.Norm == "through" {
 		Printf("You should say whether you want to go up or down.\n")
 		return true
@@ -291,7 +291,7 @@ func stairsFcn(arg ActArg) bool {
 	return false
 }
 
-func zorkmidFunction(arg ActArg) bool {
+func zorkmidFunction(arg ActionArg) bool {
 	if G.ActVerb.Norm == "examine" {
 		Printf("The zorkmid is the unit of currency of the Great Underground Empire.\n")
 		return true

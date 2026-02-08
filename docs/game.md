@@ -114,7 +114,7 @@ Major NPCs: troll, thief, cyclops, bat, ghosts
 
 ### Syntax Definitions (`syntax_data.go`)
 
-Every recognizable command is a `Syntx` entry in `gameCommands`. Examples:
+Every recognizable command is a `Syntax` entry in `gameCommands`. Examples:
 
 | Input Pattern | Verb | VrbPrep | Obj1 | ObjPrep | Obj2 |
 |--------------|------|---------|------|---------|------|
@@ -126,7 +126,7 @@ Every recognizable command is a `Syntx` entry in `gameCommands`. Examples:
 
 ### Verb Handlers (`verbs.go`)
 
-Default handlers for ~80 verbs. Each is a `func(ActArg) bool`. Key verbs:
+Default handlers for ~80 verbs. Each is a `func(ActionArg) bool`. Key verbs:
 
 | Handler | Verbs | Behavior |
 |---------|-------|----------|

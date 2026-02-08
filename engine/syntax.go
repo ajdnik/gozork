@@ -44,8 +44,8 @@ func (lfs LocFlags) HasAll() bool {
 	return len(lfs) == 7
 }
 
-// VrbAction is a handler function invoked when a verb is performed.
-type VrbAction func(ActArg) bool
+// VerbAction is a handler function invoked when a verb is performed.
+type VerbAction func(ActionArg) bool
 
 // ObjProp describes the expected properties of an object slot in a syntax definition.
 type ObjProp struct {
@@ -54,20 +54,20 @@ type ObjProp struct {
 	HasObj   bool
 }
 
-// Syntx defines a single command syntax pattern (verb + prepositions + object slots).
-type Syntx struct {
+// Syntax defines a single command syntax pattern (verb + prepositions + object slots).
+type Syntax struct {
 	NormVerb  string
 	Verb      string
 	VrbPrep   string
 	Obj1      ObjProp
 	ObjPrep   string
 	Obj2      ObjProp
-	Action    VrbAction
-	PreAction VrbAction
+	Action    VerbAction
+	PreAction VerbAction
 }
 
 // NumObjects returns how many object slots this syntax expects (0, 1, or 2).
-func (s *Syntx) NumObjects() int {
+func (s *Syntax) NumObjects() int {
 	if !s.Obj1.HasObj {
 		return 0
 	}
@@ -78,13 +78,13 @@ func (s *Syntx) NumObjects() int {
 }
 
 // IsVrbPrep returns true if the verb preposition matches.
-func (s *Syntx) IsVrbPrep(prep string) bool { return s.VrbPrep == prep }
+func (s *Syntax) IsVrbPrep(prep string) bool { return s.VrbPrep == prep }
 
 // IsObjPrep returns true if the object preposition matches.
-func (s *Syntx) IsObjPrep(prep string) bool { return s.ObjPrep == prep }
+func (s *Syntax) IsObjPrep(prep string) bool { return s.ObjPrep == prep }
 
 // GetActionVerb returns the full verb string including its preposition.
-func (s *Syntx) GetActionVerb() string {
+func (s *Syntax) GetActionVerb() string {
 	av := s.Verb
 	if len(s.VrbPrep) > 0 {
 		av += " " + s.VrbPrep
@@ -93,7 +93,7 @@ func (s *Syntx) GetActionVerb() string {
 }
 
 // GetNormVerb returns the normalized verb key for action dispatch.
-func (s *Syntx) GetNormVerb() string {
+func (s *Syntax) GetNormVerb() string {
 	if len(s.NormVerb) > 0 {
 		return s.NormVerb
 	}
@@ -117,18 +117,18 @@ type ActionVerb struct {
 
 // Commands holds the game's syntax definitions. Set by the game package
 // during initialization and used by the parser's SyntaxCheck.
-var Commands []Syntx
+var Commands []Syntax
 
 // AddToVocab adds a word with its type to the global Vocabulary map.
 func AddToVocab(wrd string, typ WordTyp) {
 	v, ok := Vocabulary[wrd]
 	if !ok {
-		Vocabulary[wrd] = WordItm{
+		Vocabulary[wrd] = WordItem{
 			Norm:  wrd,
 			Types: WordTypes{typ},
 		}
 	} else {
-		Vocabulary[wrd] = WordItm{
+		Vocabulary[wrd] = WordItem{
 			Norm:  wrd,
 			Types: append(v.Types, typ),
 		}
@@ -137,7 +137,7 @@ func AddToVocab(wrd string, typ WordTyp) {
 
 // BuildVocabulary builds the vocabulary and action maps from the provided
 // game-specific data. The game package calls this during initialization.
-func BuildVocabulary(commands []Syntx, buzzWords []string, synonyms map[string]string) {
+func BuildVocabulary(commands []Syntax, buzzWords []string, synonyms map[string]string) {
 	Commands = commands
 	// Add buzz words
 	for _, bw := range buzzWords {
@@ -188,12 +188,12 @@ func BuildVocabulary(commands []Syntx, buzzWords []string, synonyms map[string]s
 	// Add synonyms
 	for key, val := range synonyms {
 		if _, ok := Vocabulary[key]; !ok {
-			Vocabulary[key] = WordItm{
+			Vocabulary[key] = WordItem{
 				Norm:  val,
 				Types: nil,
 			}
 			if el, ok := Vocabulary[val]; ok {
-				Vocabulary[key] = WordItm{
+				Vocabulary[key] = WordItem{
 					Norm:  val,
 					Types: append(WordTypes{}, el.Types...),
 				}

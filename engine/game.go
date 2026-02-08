@@ -1,11 +1,11 @@
 package engine
 
-// PerfRet represents the result of a Perform call.
-type PerfRet int
+// PerformResult represents the result of a Perform call.
+type PerformResult int
 
 const (
 	// PerfNotHndld means no handler claimed the action.
-	PerfNotHndld PerfRet = iota
+	PerfNotHndld PerformResult = iota
 	// PerfHndld means a handler processed the action.
 	PerfHndld
 	// PerfFatal means the action caused a fatal condition (e.g. player death).
@@ -122,7 +122,7 @@ func MainLoop() {
 		if obj == nil && len(G.IndirObjPossibles) == 1 {
 			obj = G.IndirObjPossibles[0]
 		}
-		var res PerfRet
+		var res PerformResult
 		if G.ActVerb.Norm == "walk" && G.Params.HasWalkDir {
 			res = Perform(G.ActVerb, G.DirObj, nil)
 		} else if numObj == 0 {
@@ -230,7 +230,7 @@ func MainLoop() {
 }
 
 // callHandler invokes an action handler and checks for quit/fatal signals.
-func callHandler(fn func(ActArg) bool, arg ActArg) (PerfRet, bool) {
+func callHandler(fn func(ActionArg) bool, arg ActionArg) (PerformResult, bool) {
 	result := fn(arg)
 	if G.QuitRequested {
 		return PerfQuit, true
@@ -247,7 +247,7 @@ func callHandler(fn func(ActArg) bool, arg ActArg) (PerfRet, bool) {
 
 // Perform dispatches an action through the handler chain (winner, room,
 // pre-action, indirect, container, direct, and verb action handlers).
-func Perform(a ActionVerb, o, i *Object) PerfRet {
+func Perform(a ActionVerb, o, i *Object) PerformResult {
 	oldActVerb := G.ActVerb
 	oldDirObj := G.DirObj
 	oldIndirObj := G.IndirObj

@@ -21,7 +21,7 @@ const (
 	blowSitDuck
 )
 
-// Combat mode constants are defined in engine as ActArg values:
+// Combat mode constants are defined in engine as ActionArg values:
 // ActBusy, ActDead, ActUnconscious, ActConscious, ActFirst.
 
 // Combat strength constants
@@ -404,8 +404,8 @@ func iFight() bool {
 			if o == &thief {
 				gD().ThiefEngrossed = false
 			}
-			G.Winner.Take(FlgStagg)
-			o.Take(FlgStagg)
+			G.Winner.Take(FlgStaggered)
+			o.Take(FlgStaggered)
 			o.Take(FlgFight)
 			awaken(o)
 		}
@@ -542,10 +542,10 @@ func villainBlow(oo *VillainEntry, out bool) BlowRes {
 	villain := oo.Villain
 	remarks := oo.Msgs
 
-	G.Winner.Take(FlgStagg)
-	if villain.Has(FlgStagg) {
+	G.Winner.Take(FlgStaggered)
+	if villain.Has(FlgStaggered) {
 		Printf("The %s slowly regains his feet.\n", villain.Desc)
-		villain.Take(FlgStagg)
+		villain.Take(FlgStaggered)
 		return blowMissed
 	}
 	att := villainStrength(oo)
@@ -661,7 +661,7 @@ func villainBlow(oo *VillainEntry, out bool) BlowRes {
 			gD().LoadAllowed -= 20
 		}
 	case res == blowStag:
-		G.Winner.Give(FlgStagg)
+		G.Winner.Give(FlgStaggered)
 	default:
 		// blowLoseWpn
 		if dweapon != nil {
@@ -726,9 +726,9 @@ func heroBlow() bool {
 		}
 	}
 	G.DirObj.Give(FlgFight)
-	if G.Winner.Has(FlgStagg) {
+	if G.Winner.Has(FlgStaggered) {
 		Printf("You are still recovering from that last blow, so your attack is ineffective.\n")
-		G.Winner.Take(FlgStagg)
+		G.Winner.Take(FlgStaggered)
 		return true
 	}
 	att := fightStrength(true)
@@ -815,7 +815,7 @@ func heroBlow() bool {
 			def = 0
 		}
 	case res == blowStag:
-		G.DirObj.Give(FlgStagg)
+		G.DirObj.Give(FlgStaggered)
 	default:
 		// blowLoseWpn
 		if dweapon != nil {

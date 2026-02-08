@@ -7,24 +7,24 @@ const (
 
 // ParseTbl holds the tokens and structure extracted from the player's input.
 type ParseTbl struct {
-	Verb         LexItm
-	Prep1        LexItm
-	ObjOrClause1 []LexItm
+	Verb         LexItem
+	Prep1        LexItem
+	ObjOrClause1 []LexItem
 	Obj1Start    int
 	Obj1End      int
-	Prep2        LexItm
-	ObjOrClause2 []LexItm
+	Prep2        LexItem
+	ObjOrClause2 []LexItem
 }
 
 // Set copies the contents of another ParseTbl into this one.
 func (pt *ParseTbl) Set(tbl ParseTbl) {
 	pt.Verb.Set(tbl.Verb)
 	pt.Prep1.Set(tbl.Prep1)
-	pt.ObjOrClause1 = append([]LexItm{}, tbl.ObjOrClause1...)
+	pt.ObjOrClause1 = append([]LexItem{}, tbl.ObjOrClause1...)
 	pt.Obj1Start = tbl.Obj1Start
 	pt.Obj1End = tbl.Obj1End
 	pt.Prep2.Set(tbl.Prep2)
-	pt.ObjOrClause2 = append([]LexItm{}, tbl.ObjOrClause2...)
+	pt.ObjOrClause2 = append([]LexItem{}, tbl.ObjOrClause2...)
 }
 
 // Clear resets the ParseTbl to its zero state.
@@ -40,16 +40,16 @@ func (pt *ParseTbl) Clear() {
 
 // NotHereProps stores synonym/adjective data for the "not here" object.
 type NotHereProps struct {
-	Syn LexItm
-	Adj LexItm
+	Syn LexItem
+	Adj LexItem
 }
 
 // FindProps holds the current search criteria for object resolution.
 type FindProps struct {
 	ObjFlags Flags
 	LocFlags LocFlags
-	Syn      LexItm
-	Adj      LexItm
+	Syn      LexItem
+	Adj      LexItem
 }
 
 // ClauseTyp identifies which object clause is being resolved.
@@ -67,8 +67,8 @@ const (
 // ClauseProps describes an adjective-disambiguating clause for the parser.
 type ClauseProps struct {
 	Type ClauseTyp
-	Syn  LexItm
-	Adj  LexItm
+	Syn  LexItem
+	Adj  LexItem
 }
 
 // IsSet returns true if this clause has been populated.
@@ -102,7 +102,7 @@ type ParseProps struct {
 	GetType        GetObjTyp
 	AdjClause      ClauseProps
 	Buts           []*Object
-	OneObj         LexItm
+	OneObj         LexItem
 	Continue       int
 	InQuotes       bool
 	BufLen         int
@@ -126,7 +126,7 @@ const (
 type ReserveProps struct {
 	Idx    int
 	IdxSet bool
-	Buf    []LexItm
+	Buf    []LexItem
 }
 
 // OopsProps tracks the unknown word for OOPS correction.
@@ -138,7 +138,7 @@ type OopsProps struct {
 
 // AgainProps stores the previous command for AGAIN / G repetition.
 type AgainProps struct {
-	Buf    []LexItm
+	Buf    []LexItem
 	Dir    Direction
 	HasDir bool
 }
@@ -165,7 +165,7 @@ func Parse() bool {
 	beg := 0
 	if G.Reserv.IdxSet {
 		beg = G.Reserv.Idx
-		G.LexRes = append([]LexItm{}, G.Reserv.Buf...)
+		G.LexRes = append([]LexItem{}, G.Reserv.Buf...)
 		if !G.SuperBrief && G.Player == G.Winner {
 			Printf("\n")
 		}
@@ -215,7 +215,7 @@ func Parse() bool {
 			}
 			G.Again.Buf[G.Oops.Unk].Set(G.LexRes[beg+1])
 			G.Winner = bakWin
-			G.LexRes = append([]LexItm{}, G.Again.Buf...)
+			G.LexRes = append([]LexItem{}, G.Again.Buf...)
 			G.Params.BufLen = len(G.LexRes)
 			beg = G.Oops.Idx
 		} else {
@@ -255,24 +255,24 @@ func Parse() bool {
 		if tmpLen > 0 {
 			G.Reserv.Idx = beg
 			G.Reserv.IdxSet = true
-			G.Reserv.Buf = append([]LexItm{}, G.LexRes...)
+			G.Reserv.Buf = append([]LexItem{}, G.LexRes...)
 		} else {
 			G.Reserv.IdxSet = false
 		}
 		G.Winner = bakWin
 		G.Params.HasMerged = bakMerg
-		G.LexRes = append([]LexItm{}, G.Again.Buf...)
+		G.LexRes = append([]LexItem{}, G.Again.Buf...)
 		dir = G.Again.Dir
 		hasDir = G.Again.HasDir
 		G.ParsedSyntx.Set(G.OrphanedSyntx)
 	} else {
-		G.Again.Buf = append([]LexItm{}, G.LexRes...)
+		G.Again.Buf = append([]LexItem{}, G.LexRes...)
 		G.Oops.Idx = beg
 		G.Reserv.IdxSet = false
 		G.Params.ObjOrClauseCnt = 0
 		G.Params.GetType = GetUndef
 		ln := G.Params.BufLen
-		var lw, nw LexItm
+		var lw, nw LexItem
 		var vrb string
 		var isOf bool
 		G.Params.BufLen--
@@ -403,8 +403,8 @@ func Parse() bool {
 	return true
 }
 
-func mkBuzz(wrd string) LexItm {
-	return LexItm{
+func mkBuzz(wrd string) LexItem {
+	return LexItem{
 		Norm:  wrd,
 		Orig:  wrd,
 		Types: WordTypes{WordBuzz},
@@ -412,7 +412,7 @@ func mkBuzz(wrd string) LexItm {
 }
 
 // Clause parses an object clause starting at idx. Returns (ok, endIdx).
-func Clause(idx int, wrd LexItm) (bool, int) {
+func Clause(idx int, wrd LexItem) (bool, int) {
 	if wrd.Types.Has(WordPrep) {
 		if G.Params.ObjOrClauseCnt == 1 {
 			G.ParsedSyntx.Prep1.Set(wrd)
@@ -431,7 +431,7 @@ func Clause(idx int, wrd LexItm) (bool, int) {
 	if G.LexRes[idx].IsAny("the", "a", "an") {
 		cpyStart++
 	}
-	var lw, nw LexItm
+	var lw, nw LexItem
 	isFirst := true
 	var isAnd bool
 	var i int
@@ -458,9 +458,9 @@ func Clause(idx int, wrd LexItm) (bool, int) {
 		} else if cw.IsAny("then", ".") || (cw.Types.Has(WordPrep) && G.ParsedSyntx.Verb.IsSet() && !isFirst) {
 			G.Params.BufLen++
 			if G.Params.ObjOrClauseCnt == 1 {
-				G.ParsedSyntx.ObjOrClause1 = append([]LexItm{}, G.LexRes[cpyStart:i]...)
+				G.ParsedSyntx.ObjOrClause1 = append([]LexItem{}, G.LexRes[cpyStart:i]...)
 			} else if G.Params.ObjOrClauseCnt == 2 {
-				G.ParsedSyntx.ObjOrClause2 = append([]LexItm{}, G.LexRes[cpyStart:i]...)
+				G.ParsedSyntx.ObjOrClause2 = append([]LexItem{}, G.LexRes[cpyStart:i]...)
 			}
 			return true, i - 1
 		} else if cw.Types.Has(WordObj) {
@@ -476,9 +476,9 @@ func Clause(idx int, wrd LexItm) (bool, int) {
 			}
 			if !isAnd && !nw.IsAny("but", "except", "and", ",") {
 				if G.Params.ObjOrClauseCnt == 1 {
-					G.ParsedSyntx.ObjOrClause1 = append([]LexItm{}, G.LexRes[cpyStart:i+1]...)
+					G.ParsedSyntx.ObjOrClause1 = append([]LexItem{}, G.LexRes[cpyStart:i+1]...)
 				} else if G.Params.ObjOrClauseCnt == 2 {
-					G.ParsedSyntx.ObjOrClause2 = append([]LexItm{}, G.LexRes[cpyStart:i+1]...)
+					G.ParsedSyntx.ObjOrClause2 = append([]LexItem{}, G.LexRes[cpyStart:i+1]...)
 				}
 				return true, i
 			}
@@ -504,9 +504,9 @@ func Clause(idx int, wrd LexItm) (bool, int) {
 		isFirst = false
 	}
 	if G.Params.ObjOrClauseCnt == 1 {
-		G.ParsedSyntx.ObjOrClause1 = append([]LexItm{}, G.LexRes[cpyStart:i]...)
+		G.ParsedSyntx.ObjOrClause1 = append([]LexItem{}, G.LexRes[cpyStart:i]...)
 	} else if G.Params.ObjOrClauseCnt == 2 {
-		G.ParsedSyntx.ObjOrClause2 = append([]LexItm{}, G.LexRes[cpyStart:i]...)
+		G.ParsedSyntx.ObjOrClause2 = append([]LexItem{}, G.LexRes[cpyStart:i]...)
 	}
 	return true, -1
 }
@@ -574,7 +574,7 @@ func OrphanMerge() {
 		isAdj = true
 	} else if G.ParsedSyntx.Verb.Types.Has(WordObj) && G.Params.ObjOrClauseCnt == 0 {
 		G.ParsedSyntx.Verb.Clear()
-		G.ParsedSyntx.ObjOrClause1 = []LexItm{G.LexRes[0], G.LexRes[1]}
+		G.ParsedSyntx.ObjOrClause1 = []LexItem{G.LexRes[0], G.LexRes[1]}
 		G.Params.ObjOrClauseCnt = 1
 	}
 	if G.ParsedSyntx.Verb.IsSet() && !isAdj && !G.ParsedSyntx.Verb.Matches(G.OrphanedSyntx.Verb) {
@@ -592,12 +592,12 @@ func OrphanMerge() {
 				G.Params.ObjOrClauseCnt = 1
 			}
 			if len(G.ParsedSyntx.ObjOrClause1) == 0 {
-				G.OrphanedSyntx.ObjOrClause1 = []LexItm{G.LexRes[0], G.LexRes[1]}
+				G.OrphanedSyntx.ObjOrClause1 = []LexItem{G.LexRes[0], G.LexRes[1]}
 			} else {
 				G.OrphanedSyntx.ObjOrClause1 = G.LexRes[0:G.ParsedSyntx.Obj1End]
 			}
 		} else {
-			G.OrphanedSyntx.ObjOrClause1 = append([]LexItm{}, G.ParsedSyntx.ObjOrClause1...)
+			G.OrphanedSyntx.ObjOrClause1 = append([]LexItem{}, G.ParsedSyntx.ObjOrClause1...)
 		}
 	} else if G.OrphanedSyntx.ObjOrClause2 != nil && len(G.OrphanedSyntx.ObjOrClause2) == 0 {
 		if !G.ParsedSyntx.Prep1.Matches(G.OrphanedSyntx.Prep2) && G.ParsedSyntx.Prep1.IsSet() {
@@ -605,12 +605,12 @@ func OrphanMerge() {
 		}
 		if isAdj {
 			if len(G.ParsedSyntx.ObjOrClause1) == 0 {
-				G.OrphanedSyntx.ObjOrClause2 = []LexItm{G.LexRes[0], G.LexRes[1]}
+				G.OrphanedSyntx.ObjOrClause2 = []LexItem{G.LexRes[0], G.LexRes[1]}
 			} else {
 				G.OrphanedSyntx.ObjOrClause2 = G.LexRes[0:G.ParsedSyntx.Obj1End]
 			}
 		} else {
-			G.OrphanedSyntx.ObjOrClause2 = append([]LexItm{}, G.ParsedSyntx.ObjOrClause1...)
+			G.OrphanedSyntx.ObjOrClause2 = append([]LexItem{}, G.ParsedSyntx.ObjOrClause1...)
 		}
 		G.Params.ObjOrClauseCnt = 2
 	} else if G.Params.AdjClause.Type != ClauseUnk {
@@ -623,7 +623,7 @@ func OrphanMerge() {
 			beg = 0
 			isAdj = false
 		}
-		var adj LexItm
+		var adj LexItem
 		if G.ParsedSyntx.Obj1End == 0 {
 			G.ParsedSyntx.Obj1End = 1
 		}
@@ -648,7 +648,7 @@ func OrphanMerge() {
 		}
 		if !broken {
 			if G.ParsedSyntx.Obj1End == 1 {
-				G.ParsedSyntx.ObjOrClause1 = []LexItm{G.LexRes[0]}
+				G.ParsedSyntx.ObjOrClause1 = []LexItem{G.LexRes[0]}
 				G.Params.ObjOrClauseCnt = 1
 			}
 			if !adj.IsSet() {
@@ -663,9 +663,9 @@ func OrphanMerge() {
 }
 
 // AclauseWin resolves an adjective clause by inserting the adjective into the orphaned syntax.
-func AclauseWin(adj LexItm) {
+func AclauseWin(adj LexItem) {
 	G.ParsedSyntx.Verb.Set(G.OrphanedSyntx.Verb)
-	tbl := &[]LexItm{}
+	tbl := &[]LexItem{}
 	if G.Params.AdjClause.Type == Clause1 {
 		tbl = &G.OrphanedSyntx.ObjOrClause1
 	} else if G.Params.AdjClause.Type == Clause2 {
@@ -673,7 +673,7 @@ func AclauseWin(adj LexItm) {
 	}
 	for idx, obj := range *tbl {
 		if obj.Matches(G.Params.AdjClause.Adj) {
-			*tbl = append((*tbl)[0:idx], append([]LexItm{adj}, (*tbl)[idx:len(*tbl)]...)...)
+			*tbl = append((*tbl)[0:idx], append([]LexItem{adj}, (*tbl)[idx:len(*tbl)]...)...)
 			break
 		}
 	}
@@ -686,11 +686,11 @@ func AclauseWin(adj LexItm) {
 // NclauseWin resolves a noun clause by replacing the orphaned clause with new tokens.
 func NclauseWin() {
 	if G.Params.AdjClause.Type == Clause1 {
-		G.OrphanedSyntx.ObjOrClause1 = append([]LexItm{}, G.ParsedSyntx.ObjOrClause1...)
+		G.OrphanedSyntx.ObjOrClause1 = append([]LexItem{}, G.ParsedSyntx.ObjOrClause1...)
 		G.OrphanedSyntx.Obj1Start = G.ParsedSyntx.Obj1Start
 		G.OrphanedSyntx.Obj1End = G.ParsedSyntx.Obj1End
 	} else if G.Params.AdjClause.Type == Clause2 {
-		G.OrphanedSyntx.ObjOrClause2 = append([]LexItm{}, G.ParsedSyntx.ObjOrClause1...)
+		G.OrphanedSyntx.ObjOrClause2 = append([]LexItem{}, G.ParsedSyntx.ObjOrClause1...)
 	}
 	if G.OrphanedSyntx.ObjOrClause2 != nil {
 		G.Params.ObjOrClauseCnt = 2
@@ -819,13 +819,13 @@ func ButMerge(tbl []*Object) []*Object {
 }
 
 // Snarfem resolves a single token clause into a list of matching objects.
-func Snarfem(isDirect bool, wrds []LexItm) []*Object {
+func Snarfem(isDirect bool, wrds []LexItem) []*Object {
 	G.Params.HasAnd = false
 	wasall := G.Params.GetType == GetAll
 	G.Search.ObjFlags = 0
 	res := []*Object{}
 	var but *[]*Object
-	var nw LexItm
+	var nw LexItem
 	for idx, wrd := range wrds {
 		if idx != len(wrds)-1 {
 			nw.Set(wrds[idx+1])
@@ -919,7 +919,7 @@ func SyntaxCheck() bool {
 		Printf("There was no verb in that sentence!\n")
 		return false
 	}
-	var findFirst, findSecond *Syntx
+	var findFirst, findSecond *Syntax
 	for _, syn := range Commands {
 		if !G.ParsedSyntx.Verb.Is(syn.Verb) {
 			continue
@@ -997,24 +997,24 @@ func SyntaxCheck() bool {
 }
 
 // Orphan saves the current parse state for later disambiguation.
-func Orphan(first, second *Syntx) {
+func Orphan(first, second *Syntax) {
 	G.OrphanedSyntx.Set(G.ParsedSyntx)
 	if G.Params.ObjOrClauseCnt < 2 {
-		G.OrphanedSyntx.ObjOrClause2 = []LexItm{}
+		G.OrphanedSyntx.ObjOrClause2 = []LexItem{}
 	}
 	if G.Params.ObjOrClauseCnt < 1 {
-		G.OrphanedSyntx.ObjOrClause1 = []LexItm{}
+		G.OrphanedSyntx.ObjOrClause1 = []LexItem{}
 	}
 	if first != nil {
 		G.OrphanedSyntx.Prep1.Norm = first.VrbPrep
 		G.OrphanedSyntx.Prep1.Orig = first.VrbPrep
 		G.OrphanedSyntx.Prep1.Types = WordTypes{WordPrep}
-		G.OrphanedSyntx.ObjOrClause1 = []LexItm{}
+		G.OrphanedSyntx.ObjOrClause1 = []LexItem{}
 	} else if second != nil {
 		G.OrphanedSyntx.Prep2.Norm = second.ObjPrep
 		G.OrphanedSyntx.Prep2.Orig = second.ObjPrep
 		G.OrphanedSyntx.Prep2.Types = WordTypes{WordPrep}
-		G.OrphanedSyntx.ObjOrClause2 = []LexItm{}
+		G.OrphanedSyntx.ObjOrClause2 = []LexItem{}
 	}
 }
 

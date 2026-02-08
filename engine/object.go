@@ -79,8 +79,8 @@ const (
 	FlgKludge
 	// FlgFight means the character is actively engaged in combat.
 	FlgFight
-	// FlgStagg means the character is recovering from a blow and will skip their next attack.
-	FlgStagg
+	// FlgStaggered means the character is recovering from a blow and will skip their next attack.
+	FlgStaggered
 	// FlgSacred means the object is protected and cannot be stolen by the thief.
 	FlgSacred
 	// FlgTool means the object can be used as an implement (e.g. for digging, inflating, locking).
@@ -99,8 +99,8 @@ const (
 	FlgFood
 	// FlgTurn means the object can be turned.
 	FlgTurn
-	// FlgRMung means the room is munged/destroyed.
-	FlgRMung
+	// FlgDestroyed means the room is munged/destroyed.
+	FlgDestroyed
 	// FlgRLand means the room becomes dry land conditionally.
 	FlgRLand
 	// FlgActor means the object is an actor.
@@ -116,11 +116,11 @@ func AnyFlagIn(required, actual Flags) bool {
 	return required&actual != 0
 }
 
-// ActArg represents an argument enum that is passed to Action functions.
-type ActArg int
+// ActionArg represents an argument enum that is passed to Action functions.
+type ActionArg int
 
 const (
-	ActUnk ActArg = iota
+	ActUnk ActionArg = iota
 	ActBegin
 	ActEnter
 	ActLook
@@ -137,7 +137,7 @@ const (
 )
 
 // Action is a handler function attached to a game object, invoked with a context argument.
-type Action func(ActArg) bool
+type Action func(ActionArg) bool
 
 // PseudoObj are special game objects which only have a single synonym and an action.
 type PseudoObj struct {
@@ -226,8 +226,8 @@ var AllDirections = []Direction{
 	Up, Down, In, Out, Land,
 }
 
-// DirProps describes how a room exit works (unconditional, conditional, etc.).
-type DirProps struct {
+// ExitProps describes how a room exit works (unconditional, conditional, etc.).
+type ExitProps struct {
 	NExit    string
 	UExit    bool
 	RExit    *Object
@@ -239,7 +239,7 @@ type DirProps struct {
 }
 
 // IsSet returns true if any exit data has been configured.
-func (dp DirProps) IsSet() bool {
+func (dp ExitProps) IsSet() bool {
 	return len(dp.NExit) > 0 ||
 		(dp.UExit && dp.RExit != nil) ||
 		dp.FExit != nil ||
@@ -291,7 +291,7 @@ type Object struct {
 	Pseudo []PseudoObj
 
 	// ---- Room data ----
-	Exits map[Direction]DirProps
+	Exits map[Direction]ExitProps
 
 	// ---- Optional facets (nil when not applicable) ----
 	Item    *ItemData    // non-nil for takeable items / containers
@@ -305,7 +305,7 @@ func (o *Object) HasChildren() bool {
 }
 
 // GetExit returns the direction properties for the given direction, or nil.
-func (o *Object) GetExit(d Direction) *DirProps {
+func (o *Object) GetExit(d Direction) *ExitProps {
 	if o.Exits == nil {
 		return nil
 	}
@@ -317,9 +317,9 @@ func (o *Object) GetExit(d Direction) *DirProps {
 }
 
 // SetExit sets exit properties for a direction, initializing the map if needed.
-func (o *Object) SetExit(d Direction, dp DirProps) {
+func (o *Object) SetExit(d Direction, dp ExitProps) {
 	if o.Exits == nil {
-		o.Exits = make(map[Direction]DirProps)
+		o.Exits = make(map[Direction]ExitProps)
 	}
 	o.Exits[d] = dp
 }

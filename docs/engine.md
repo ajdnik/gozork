@@ -8,10 +8,10 @@ The `engine` package is a reusable, game-agnostic text-adventure engine. It prov
 |------|---------------|
 | `state.go` | `GameState` struct, `NewGameState()`, global `G` pointer, `RNG` interface |
 | `object.go` | `Object` struct, flags, directions, facets, object-tree operations |
-| `lexer.go` | Vocabulary, tokenizer, lexer, `LexItm` and `WordItm` types |
+| `lexer.go` | Vocabulary, tokenizer, lexer, `LexItem` and `WordItem` types |
 | `parser.go` | Full natural-language parser: `Parse()`, clause handling, orphan merging, object resolution |
-| `syntax.go` | Syntax definitions (`Syntx`), vocabulary builder, `Commands` registry |
-| `game.go` | `MainLoop()`, `Perform()`, `ResetGameState()`, `PerfRet` result type |
+| `syntax.go` | Syntax definitions (`Syntax`), vocabulary builder, `Commands` registry |
+| `game.go` | `MainLoop()`, `Perform()`, `ResetGameState()`, `PerformResult` result type |
 | `clock.go` | `ClockEvent`, `Queue()`, `Clocker()` — timed events and daemons |
 | `helpers.go` | `IsInGlobal()`, `IsHeld()` |
 | `utils.go` | `PickOne()`, `Random()`, `Prob()`, `IsFlaming()`, `IsOpenable()` |
@@ -69,7 +69,7 @@ type Object struct {
 
     Global     []*Object    // objects globally visible from this room
     Pseudo     []PseudoObj  // pseudo-objects (synonym + action, no real object)
-    Exits      map[Direction]DirProps  // room exits
+    Exits      map[Direction]ExitProps  // room exits
 }
 ```
 
@@ -130,15 +130,15 @@ Flags is a `uint64` bitfield with ~45 named constants covering:
 - **Character**: `FlgPerson`, `FlgFemale`, `FlgActor`
 - **Grammar**: `FlgVowel`, `FlgNoArt`, `FlgPlural`, `FlgKludge`
 - **Room type**: `FlgLand`, `FlgWater`, `FlgAir`, `FlgOut`, `FlgNonLand`, `FlgMaze`
-- **Combat**: `FlgFight`, `FlgStagg`, `FlgWeapon`
-- **Special**: `FlgSacred`, `FlgTool`, `FlgIntegral`, `FlgBodyPart`, `FlgNotAll`, `FlgDrop`, `FlgIn`, `FlgClimb`, `FlgDrink`, `FlgFood`, `FlgTurn`, `FlgRMung`, `FlgRLand`, `FlgWear`, `FlgWorn`, `FlgVeh`, `FlgSearch`, `FlgDoor`
+- **Combat**: `FlgFight`, `FlgStaggered`, `FlgWeapon`
+- **Special**: `FlgSacred`, `FlgTool`, `FlgIntegral`, `FlgBodyPart`, `FlgNotAll`, `FlgDrop`, `FlgIn`, `FlgClimb`, `FlgDrink`, `FlgFood`, `FlgTurn`, `FlgDestroyed`, `FlgRLand`, `FlgWear`, `FlgWorn`, `FlgVeh`, `FlgSearch`, `FlgDoor`
 
 ### Directions and Exits
 
-13 directions are defined (`North` through `Land`). Room exits are stored in `Exits map[Direction]DirProps`:
+13 directions are defined (`North` through `Land`). Room exits are stored in `Exits map[Direction]ExitProps`:
 
 ```go
-type DirProps struct {
+type ExitProps struct {
     NExit    string   // message for blocked exit
     UExit    bool     // unconditional exit flag
     RExit    *Object  // destination room
@@ -160,7 +160,7 @@ The lexer converts raw player input into tagged tokens.
 Raw input string
   → Tokenize()    Split on whitespace, separate letters/digits/punctuation
   → Lex()         Look up each token in Vocabulary, tag with WordTypes
-  → []LexItm      Tagged token list for the parser
+  → []LexItem      Tagged token list for the parser
 ```
 
 ### Word Types
@@ -178,7 +178,7 @@ A single word can have multiple types (e.g. "light" can be both verb and adjecti
 
 ### Vocabulary
 
-`Vocabulary` is a `map[string]WordItm` built at init time by `BuildVocabulary()`. It merges:
+`Vocabulary` is a `map[string]WordItem` built at init time by `BuildVocabulary()`. It merges:
 
 1. Buzz words (articles, fillers)
 2. Verbs and prepositions from syntax definitions
@@ -235,18 +235,18 @@ Commands separated by "then", ".", or "," are handled via the continuation syste
 
 ## Syntax System (`syntax.go`)
 
-Each recognized command pattern is a `Syntx`:
+Each recognized command pattern is a `Syntax`:
 
 ```go
-type Syntx struct {
+type Syntax struct {
     NormVerb  string     // normalized verb for action lookup
     Verb      string     // primary verb word
     VrbPrep   string     // verb preposition ("look" + "at")
     Obj1      ObjProp    // first object slot constraints
     ObjPrep   string     // object preposition ("put X" + "in" + Y)
     Obj2      ObjProp    // second object slot constraints
-    Action    VrbAction  // default verb handler
-    PreAction VrbAction  // pre-action check
+    Action    VerbAction  // default verb handler
+    PreAction VerbAction  // pre-action check
 }
 ```
 
@@ -267,7 +267,7 @@ type Syntx struct {
 1. Saves and restores `ActVerb`, `DirObj`, `IndirObj` (allowing nested `Perform` calls)
 2. Resolves "it" pronoun references
 3. Walks the handler chain in priority order
-4. Returns `PerfRet`: `PerfNotHndld`, `PerfHndld`, `PerfFatal`, or `PerfQuit`
+4. Returns `PerformResult`: `PerfNotHndld`, `PerfHndld`, `PerfFatal`, or `PerfQuit`
 
 ### MainLoop
 

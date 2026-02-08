@@ -7,7 +7,7 @@ import (
 )
 
 // Vocabulary maps known words to their lexical data. Populated during initialization.
-var Vocabulary = make(map[string]WordItm)
+var Vocabulary = make(map[string]WordItem)
 
 // WordTyp represents the part-of-speech type of a word.
 type WordTyp int
@@ -66,37 +66,37 @@ func (wt WordTypes) Equals(tt WordTypes) bool {
 	return true
 }
 
-// LexItm is an object that is returned after lexing
-type LexItm struct {
+// LexItem is an object that is returned after lexing
+type LexItem struct {
 	Norm  string
 	Orig  string
 	Types WordTypes
 }
 
 // Matches returns true if both items have the same norm and types.
-func (e *LexItm) Matches(itm LexItm) bool {
+func (e *LexItem) Matches(itm LexItem) bool {
 	return e.Norm == itm.Norm && e.Types.Equals(itm.Types)
 }
 
-// Set copies another LexItm's data into this one.
-func (e *LexItm) Set(itm LexItm) {
+// Set copies another LexItem's data into this one.
+func (e *LexItem) Set(itm LexItem) {
 	e.Norm = itm.Norm
 	e.Orig = itm.Orig
 	e.Types = append(WordTypes{}, itm.Types...)
 }
 
 // IsSet returns true if the item has been populated with data.
-func (e *LexItm) IsSet() bool {
+func (e *LexItem) IsSet() bool {
 	return len(e.Norm) != 0 && len(e.Orig) != 0
 }
 
 // Is returns true if the normalized form equals wrd.
-func (e *LexItm) Is(wrd string) bool {
+func (e *LexItem) Is(wrd string) bool {
 	return e.Norm == wrd
 }
 
 // IsAny returns true if the normalized form matches any of the given words.
-func (e *LexItm) IsAny(wrds ...string) bool {
+func (e *LexItem) IsAny(wrds ...string) bool {
 	for _, wrd := range wrds {
 		if e.Norm == wrd {
 			return true
@@ -106,14 +106,14 @@ func (e *LexItm) IsAny(wrds ...string) bool {
 }
 
 // Clear resets the item to its zero state.
-func (e *LexItm) Clear() {
+func (e *LexItem) Clear() {
 	e.Norm = ""
 	e.Orig = ""
 	e.Types = nil
 }
 
-// WordItm is the vocabulary entry for a known word.
-type WordItm struct {
+// WordItem is the vocabulary entry for a known word.
+type WordItem struct {
 	Norm  string
 	Types WordTypes
 }
@@ -124,7 +124,7 @@ func InitReader() {
 }
 
 // Read reads input from the game input, tokenizes the input and tags parts-of-speech.
-func Read() (string, []LexItm) {
+func Read() (string, []LexItem) {
 	if G.Reader == nil {
 		InitReader()
 	}
@@ -180,18 +180,18 @@ func Tokenize(buf string) []string {
 	return toks
 }
 
-// Lex looks up each token in the Vocabulary and returns tagged LexItm entries.
-func Lex(toks []string) []LexItm {
-	itms := []LexItm{}
+// Lex looks up each token in the Vocabulary and returns tagged LexItem entries.
+func Lex(toks []string) []LexItem {
+	itms := []LexItem{}
 	for _, tok := range toks {
 		if val, ok := Vocabulary[tok]; ok {
-			itms = append(itms, LexItm{
+			itms = append(itms, LexItem{
 				Norm:  val.Norm,
 				Orig:  tok,
 				Types: append(WordTypes{}, val.Types...),
 			})
 		} else {
-			itms = append(itms, LexItm{
+			itms = append(itms, LexItem{
 				Norm:  tok,
 				Orig:  tok,
 				Types: nil,

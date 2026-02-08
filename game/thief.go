@@ -113,7 +113,7 @@ func infested(r *Object) bool {
 	return false
 }
 
-func robberFcn(arg ActArg) bool {
+func robberFcn(arg ActionArg) bool {
 	if G.ActVerb.Norm == "tell" {
 		Printf("The thief is a strong, silent type.\n")
 		G.Params.Continue = NumUndef
@@ -256,7 +256,7 @@ func robberFcn(arg ActArg) bool {
 	return false
 }
 
-func largeBagFcn(arg ActArg) bool {
+func largeBagFcn(arg ActionArg) bool {
 	if G.ActVerb.Norm == "take" {
 		if thief.LongDesc == robberUDesc {
 			Printf("Sadly for you, the robber collapsed on top of the bag. Trying to take it would wake him.\n")
@@ -280,11 +280,11 @@ func largeBagFcn(arg ActArg) bool {
 	return false
 }
 
-func stiletteFcn(arg ActArg) bool {
+func stiletteFcn(arg ActionArg) bool {
 	return weaponFunction(&stiletto, &thief)
 }
 
-func treasureInsideFcn(arg ActArg) bool {
+func treasureInsideFcn(arg ActionArg) bool {
 	return false
 }
 

@@ -153,7 +153,7 @@ var (
 		"scream":     "yell",
 		"shout":      "yell",
 	}
-	gameCommands = []Syntx{
+	gameCommands = []Syntax{
 		{
 			Verb:   "verbose",
 			Action: vVerbose,

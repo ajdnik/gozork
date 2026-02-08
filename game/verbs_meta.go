@@ -5,27 +5,27 @@ import (
 	. "github.com/ajdnik/gozork/engine"
 )
 
-func vVerbose(arg ActArg) bool {
+func vVerbose(arg ActionArg) bool {
 	G.Verbose = true
 	G.SuperBrief = false
 	Printf("Maximum verbosity.\n")
 	return true
 }
 
-func vBrief(arg ActArg) bool {
+func vBrief(arg ActionArg) bool {
 	G.Verbose = false
 	G.SuperBrief = false
 	Printf("Brief descriptions.\n")
 	return true
 }
 
-func vSuperBrief(arg ActArg) bool {
+func vSuperBrief(arg ActionArg) bool {
 	G.SuperBrief = true
 	Printf("Superbrief descriptions.\n")
 	return true
 }
 
-func vInventory(arg ActArg) bool {
+func vInventory(arg ActionArg) bool {
 	if G.Winner.HasChildren() {
 		return printCont(G.Winner, false, 0)
 	}
@@ -33,7 +33,7 @@ func vInventory(arg ActArg) bool {
 	return true
 }
 
-func vRestart(arg ActArg) bool {
+func vRestart(arg ActionArg) bool {
 	vScore(ActUnk)
 	Printf("Do you wish to restart? (Y is affirmative): ")
 	if isYes() {
@@ -50,7 +50,7 @@ func vRestart(arg ActArg) bool {
 	return false
 }
 
-func vRestore(arg ActArg) bool {
+func vRestore(arg ActionArg) bool {
 	if err := G.Restore(); err != nil {
 		Printf("Failed: %s\n", err)
 		return true
@@ -59,7 +59,7 @@ func vRestore(arg ActArg) bool {
 	return vFirstLook(ActUnk)
 }
 
-func vSave(arg ActArg) bool {
+func vSave(arg ActionArg) bool {
 	if err := G.Save(); err != nil {
 		Printf("Failed: %s\n", err)
 		return true
@@ -68,7 +68,7 @@ func vSave(arg ActArg) bool {
 	return true
 }
 
-func vScript(arg ActArg) bool {
+func vScript(arg ActionArg) bool {
 	// This code turns on the first bit in the 8th word from the beginning
 	// Put(0, 8, Bor(Get(0, 8), 1))
 	G.Script = true
@@ -77,7 +77,7 @@ func vScript(arg ActArg) bool {
 	return true
 }
 
-func vUnscript(arg ActArg) bool {
+func vUnscript(arg ActionArg) bool {
 	Printf("Here ends a transcript of interaction with\n")
 	vVersion(ActUnk)
 	// This code turns off the first bit in the 8th word from the beginning
@@ -86,7 +86,7 @@ func vUnscript(arg ActArg) bool {
 	return true
 }
 
-func vVerify(arg ActArg) bool {
+func vVerify(arg ActionArg) bool {
 	Printf("Verifying disk...\n")
 	if Verify() {
 		Printf("The disk is correct.\n")
@@ -98,30 +98,30 @@ func vVerify(arg ActArg) bool {
 
 // vCommandFile switches input to come from a file. In the original Z-machine
 // this uses the DIRIN opcode. Not applicable to this Go port.
-func vCommandFile(arg ActArg) bool {
+func vCommandFile(arg ActionArg) bool {
 	return true
 }
 
 // vRandom reseeds the random number generator. In the original Z-machine
 // this uses the RANDOM opcode with a negative argument to set the seed.
-func vRandom(arg ActArg) bool {
+func vRandom(arg ActionArg) bool {
 	Printf("Illegal call to #RND.\n")
 	return true
 }
 
 // vRecord starts recording input to a file. In the original Z-machine
 // this uses the DIROUT opcode. Not applicable to this Go port.
-func vRecord(arg ActArg) bool {
+func vRecord(arg ActionArg) bool {
 	return true
 }
 
 // vUnrecord stops recording input. In the original Z-machine this uses
 // the DIROUT opcode. Not applicable to this Go port.
-func vUnrecord(arg ActArg) bool {
+func vUnrecord(arg ActionArg) bool {
 	return true
 }
 
-func vVersion(arg ActArg) bool {
+func vVersion(arg ActionArg) bool {
 	Printf("ZORK I: The Great Underground Empire\nInfocom interactive fiction - a fantasy story\nCopyright (c) 1981, 1982, 1983, 1984, 1985, 1986 Infocom, Inc. All rights reserved.\nZORK is a registered trademark of Infocom, Inc.\nRelease ")
 	num := binary.LittleEndian.Uint16(version[4:6])
 	Printf("%d / Serial number ", int(num&2047))
@@ -132,7 +132,7 @@ func vVersion(arg ActArg) bool {
 	return true
 }
 
-func vQuit(arg ActArg) bool {
+func vQuit(arg ActionArg) bool {
 	vScore(arg)
 	Printf("Do you wish to leave the game? (Y is affirmative): ")
 	if isYes() {
@@ -143,12 +143,12 @@ func vQuit(arg ActArg) bool {
 	return true
 }
 
-func vBug(arg ActArg) bool {
+func vBug(arg ActionArg) bool {
 	Printf("Bug? Not in a flawless program like this! (Cough, cough).\n")
 	return true
 }
 
-func vWait(arg ActArg) bool {
+func vWait(arg ActionArg) bool {
 	return wait(3)
 }
 
@@ -164,17 +164,17 @@ func wait(num int) bool {
 	return true
 }
 
-func vWin(arg ActArg) bool {
+func vWin(arg ActionArg) bool {
 	Printf("Naturally!\n")
 	return true
 }
 
-func vWish(arg ActArg) bool {
+func vWish(arg ActionArg) bool {
 	Printf("With luck, your wish will come true.\n")
 	return true
 }
 
-func vZork(arg ActArg) bool {
+func vZork(arg ActionArg) bool {
 	Printf("At your service!\n")
 	return true
 }
@@ -222,7 +222,7 @@ func finish() bool {
 	}
 }
 
-func vAdvent(arg ActArg) bool {
+func vAdvent(arg ActionArg) bool {
 	Printf("A hollow voice says \"Fool.\"\n")
 	return true
 }

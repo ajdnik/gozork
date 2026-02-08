@@ -35,7 +35,7 @@ type GameState struct {
 	ActVerb           ActionVerb
 	DirObjPossibles   []*Object
 	IndirObjPossibles []*Object
-	DetectedSyntx     *Syntx
+	DetectedSyntx     *Syntax
 
 	// ---- Game progress ----
 	Moves     int
@@ -59,7 +59,7 @@ type GameState struct {
 	OrphanedSyntx ParseTbl
 	Params        ParseProps
 	NotHere       NotHereProps
-	LexRes        []LexItm
+	LexRes        []LexItem
 	Reserv        ReserveProps
 	Again         AgainProps
 	Oops          OopsProps
@@ -96,8 +96,8 @@ type GameState struct {
 	HandsObj       *Object   // the player's hands object
 
 	// ---- Vocabulary registries (populated by BuildVocabulary) ----
-	Actions    map[string]VrbAction
-	PreActions map[string]VrbAction
+	Actions    map[string]VerbAction
+	PreActions map[string]VerbAction
 	NormVerbs  map[string]string
 
 	// ---- Clock function registry (populated by game) ----
@@ -134,8 +134,8 @@ func NewGameState() *GameState {
 		Restart: func() error { return fmt.Errorf("restart system not initialized") },
 
 		// Initialize maps
-		Actions:    make(map[string]VrbAction),
-		PreActions: make(map[string]VrbAction),
+		Actions:    make(map[string]VerbAction),
+		PreActions: make(map[string]VerbAction),
 		NormVerbs:  make(map[string]string),
 		ClockFuncs: make(map[string]func() bool),
 	}

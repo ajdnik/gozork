@@ -2,7 +2,7 @@ package game
 
 import . "github.com/ajdnik/gozork/engine"
 
-func preBoard(arg ActArg) bool {
+func preBoard(arg ActionArg) bool {
 	if G.DirObj.Has(FlgVeh) {
 		if !G.DirObj.IsIn(G.Here) {
 			Printf("The %s must be on the ground to be boarded.\n", G.DirObj.Desc)
@@ -22,7 +22,7 @@ func preBoard(arg ActArg) bool {
 	return RFatal()
 }
 
-func vBoard(arg ActArg) bool {
+func vBoard(arg ActionArg) bool {
 	Printf("You are now in the %s.\n", G.DirObj.Desc)
 	G.Winner.MoveTo(G.DirObj)
 	if G.DirObj.Action != nil {
@@ -31,15 +31,15 @@ func vBoard(arg ActArg) bool {
 	return true
 }
 
-func vClimbDown(arg ActArg) bool {
+func vClimbDown(arg ActionArg) bool {
 	return vClimbFcn(Down, G.DirObj)
 }
 
-func vClimbFoo(arg ActArg) bool {
+func vClimbFoo(arg ActionArg) bool {
 	return vClimbFcn(Up, G.DirObj)
 }
 
-func vClimbOn(arg ActArg) bool {
+func vClimbOn(arg ActionArg) bool {
 	if !G.DirObj.Has(FlgVeh) {
 		Printf("You can't climb onto the %s.\n", G.DirObj.Desc)
 		return true
@@ -48,7 +48,7 @@ func vClimbOn(arg ActArg) bool {
 	return true
 }
 
-func vClimbUp(arg ActArg) bool {
+func vClimbUp(arg ActionArg) bool {
 	return vClimbFcn(Up, nil)
 }
 
@@ -92,7 +92,7 @@ func vClimbFcn(dir Direction, obj *Object) bool {
 	return true
 }
 
-func vDisembark(arg ActArg) bool {
+func vDisembark(arg ActionArg) bool {
 	loc := G.Winner.Location()
 	if G.DirObj == &rooms && loc.Has(FlgVeh) {
 		Perform(ActionVerb{Norm: "disembark", Orig: "disembark"}, loc, nil)
@@ -111,11 +111,11 @@ func vDisembark(arg ActArg) bool {
 	return RFatal()
 }
 
-func vEnter(arg ActArg) bool {
+func vEnter(arg ActionArg) bool {
 	return doWalk(In)
 }
 
-func vExit(arg ActArg) bool {
+func vExit(arg ActionArg) bool {
 	if (G.DirObj == nil || G.DirObj == &rooms) && G.Winner.Location().Has(FlgVeh) {
 		Perform(ActionVerb{Norm: "disembark", Orig: "disembark"}, G.Winner.Location(), nil)
 		return true
@@ -127,12 +127,12 @@ func vExit(arg ActArg) bool {
 	return doWalk(Out)
 }
 
-func vFollow(arg ActArg) bool {
+func vFollow(arg ActionArg) bool {
 	Printf("You're nuts!\n")
 	return true
 }
 
-func vLeap(arg ActArg) bool {
+func vLeap(arg ActionArg) bool {
 	if G.DirObj != nil {
 		if !G.DirObj.IsIn(G.Here) {
 			Printf("That would be a good trick.\n")
@@ -159,11 +159,11 @@ func vLeap(arg ActArg) bool {
 	return vSkip(ActUnk)
 }
 
-func vLeave(arg ActArg) bool {
+func vLeave(arg ActionArg) bool {
 	return doWalk(Out)
 }
 
-func vStand(arg ActArg) bool {
+func vStand(arg ActionArg) bool {
 	loc := G.Winner.Location()
 	if !loc.Has(FlgVeh) {
 		Printf("You are already standing, I think.\n")
@@ -173,12 +173,12 @@ func vStand(arg ActArg) bool {
 	return true
 }
 
-func vStay(arg ActArg) bool {
+func vStay(arg ActionArg) bool {
 	Printf("You will be lost without me!\n")
 	return true
 }
 
-func vSwim(arg ActArg) bool {
+func vSwim(arg ActionArg) bool {
 	if !IsInGlobal(&globalWater, G.Here) {
 		Printf("Go jump in a lake!\n")
 		return true
@@ -192,7 +192,7 @@ func vSwim(arg ActArg) bool {
 	return true
 }
 
-func vThrough(arg ActArg) bool {
+func vThrough(arg ActionArg) bool {
 	return through(nil)
 }
 
@@ -231,7 +231,7 @@ func otherSide(dobj *Object) (Direction, bool) {
 	return 0, false
 }
 
-func vWalk(arg ActArg) bool {
+func vWalk(arg ActionArg) bool {
 	if !G.Params.HasWalkDir {
 		Perform(ActionVerb{Norm: "walk to", Orig: "walk to"}, G.DirObj, nil)
 		return true
@@ -292,12 +292,12 @@ func vWalk(arg ActArg) bool {
 	return false
 }
 
-func vWalkAround(arg ActArg) bool {
+func vWalkAround(arg ActionArg) bool {
 	Printf("Use compass directions for movement.\n")
 	return true
 }
 
-func vWalkTo(arg ActArg) bool {
+func vWalkTo(arg ActionArg) bool {
 	if G.DirObj != nil && (G.DirObj.IsIn(G.Here) || IsInGlobal(G.DirObj, G.Here)) {
 		Printf("it's here!\n")
 		return true
@@ -393,7 +393,7 @@ func gotoRoom(rm *Object, isV bool) bool {
 	return true
 }
 
-func vCross(arg ActArg) bool {
+func vCross(arg ActionArg) bool {
 	Printf("You can't cross that!\n")
 	return true
 }
