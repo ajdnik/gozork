@@ -2,6 +2,7 @@ package zork
 
 import (
 	"bufio"
+	"io"
 	"os"
 	"sort"
 	"strings"
@@ -119,16 +120,40 @@ type WordItm struct {
 	Types WordTypes
 }
 
+// GameInput is the reader all game input comes from. Defaults to os.Stdin.
+// Tests can replace this to feed commands programmatically.
+var GameInput io.Reader = os.Stdin
+
 var (
-	Reader     = bufio.NewReader(os.Stdin)
+	Reader     *bufio.Reader
 	Vocabulary = make(map[string]WordItm)
 )
 
-// Read function reads input from stdin,
-// tokenizes the input and taggs parts-of-speach
+// InitReader initializes the buffered reader from GameInput.
+// Must be called before any Read() calls.
+func InitReader() {
+	Reader = bufio.NewReader(GameInput)
+}
+
+// ErrInputExhausted is returned when the game input stream reaches EOF.
+var InputExhausted bool
+
+// Read function reads input from the game input,
+// tokenizes the input and tags parts-of-speech
 func Read() (string, []LexItm) {
-	txt, _ := Reader.ReadString('\n')
+	if Reader == nil {
+		InitReader()
+	}
+	txt, err := Reader.ReadString('\n')
+	if err != nil {
+		InputExhausted = true
+		// Return whatever partial text we got
+		if len(txt) == 0 {
+			return "", nil
+		}
+	}
 	txt = strings.Replace(txt, "\n", "", -1)
+	txt = strings.Replace(txt, "\r", "", -1)
 	txt = strings.ToLower(txt)
 	toks := Tokenize(txt)
 	itms := Lex(toks)

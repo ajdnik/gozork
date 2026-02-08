@@ -41,18 +41,3 @@ There is a small mailbox here.
 
 >
 ```
-
-## TODO
-
-The project is still a work in progress. Feel free to compile it and test it out, but a lot of the game objects are still unimplemented.
-
-- [x] Input parser
-- [x] Syntax definition
-- [x] Verb actions
-- [ ] Game objects
-- [ ] Game object actions
-- [ ] Testing
-- [ ] Refactoring to idiomatic Go
-- [ ] GitHub Actions CI/CD
-- [ ] Homebrew package
-- [ ] Chocolatey package

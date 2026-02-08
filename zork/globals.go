@@ -262,7 +262,7 @@ func CretinFcn(arg ActArg) bool {
 		return true
 	}
 	if ActVerb.Norm == "examine" {
-		if Here == &Mirror1 || Here == &Mirror2 {
+		if Here == &MirrorRoom1 || Here == &MirrorRoom2 {
 			Print("Your image in the mirror looks tired.", Newline)
 			return true
 		}

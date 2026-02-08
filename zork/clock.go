@@ -1,6 +1,13 @@
 package zork
 
+import "reflect"
+
 type RtnFunc func() bool
+
+// funcAddr returns the function pointer address for comparison.
+func funcAddr(f RtnFunc) uintptr {
+	return reflect.ValueOf(f).Pointer()
+}
 
 type QueueItm struct {
 	Run  bool
@@ -22,13 +29,18 @@ func Queue(rtn RtnFunc, tick int) *QueueItm {
 }
 
 func QueueInt(rtn RtnFunc, dmn bool) *QueueItm {
-	for i := len(QueueItms) - 1; i > QueueInts; i-- {
-		// Compare two function pointers,
-		// might not be the best way to do it but I wanted
-		// to stay as true to the original code as possible.
-		if &QueueItms[i].Rtn == &rtn {
+	// Search existing queue entries for a matching function.
+	// We use reflect to compare function pointers since Go doesn't
+	// allow direct comparison of function values.
+	rtnPtr := funcAddr(rtn)
+	for i := len(QueueItms) - 1; i >= QueueInts; i-- {
+		if QueueItms[i].Rtn != nil && funcAddr(QueueItms[i].Rtn) == rtnPtr {
 			return &QueueItms[i]
 		}
+	}
+	if QueueInts <= 0 {
+		// Queue is full, reuse the last slot
+		return &QueueItms[0]
 	}
 	QueueInts--
 	if dmn {

@@ -1075,6 +1075,8 @@ func GetObject(isDirect, vrb bool) []*Object {
 			}
 			res = append(res, DoSL(Player, LocHeld, LocCarried)...)
 		}
+		// Deduplicate results
+		res = dedup(res)
 		ln := len(res)
 		if Params.GetType == GetAll {
 			Search.LocFlags = xbits
@@ -1399,4 +1401,17 @@ func MetaLoc(obj *Object) *Object {
 		}
 		obj = obj.Location()
 	}
+}
+
+// dedup removes duplicate *Object entries from a slice.
+func dedup(objs []*Object) []*Object {
+	seen := make(map[*Object]bool, len(objs))
+	result := make([]*Object, 0, len(objs))
+	for _, o := range objs {
+		if !seen[o] {
+			seen[o] = true
+			result = append(result, o)
+		}
+	}
+	return result
 }

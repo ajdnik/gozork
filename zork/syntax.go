@@ -78,6 +78,10 @@ func (s *Syntx) GetActionVerb() string {
 }
 
 func (s *Syntx) GetNormVerb() string {
+	// Use the entry's own NormVerb if specified
+	if len(s.NormVerb) > 0 {
+		return s.NormVerb
+	}
 	if vrb, ok := NormVerbs[s.GetActionVerb()]; ok {
 		return vrb
 	}
@@ -276,6 +280,10 @@ var (
 		{
 			Verb:   "score",
 			Action: VScore,
+		},
+		{
+			Verb:   "diagnose",
+			Action: VDiagnose,
 		},
 		{
 			Verb:   "script",
@@ -1934,13 +1942,28 @@ func BuildVocabulary() {
 		if len(cmd.ObjPrep) > 0 {
 			addToVocab(cmd.ObjPrep, WordPrep)
 		}
-		Actions[cmd.GetActionVerb()] = cmd.Action
-		if cmd.PreAction != nil {
-			PreActions[cmd.GetActionVerb()] = cmd.PreAction
+		// Store actions keyed by the action verb. Entries whose NormVerb
+		// differs from their verb are "variants" and shouldn't overwrite
+		// the default action for that verb.
+		actionKey := cmd.GetActionVerb()
+		if len(cmd.NormVerb) > 0 && cmd.NormVerb != actionKey {
+			// Variant: store under NormVerb key only
+			Actions[cmd.NormVerb] = cmd.Action
+			if cmd.PreAction != nil {
+				PreActions[cmd.NormVerb] = cmd.PreAction
+			}
+		} else {
+			// Default entry for this verb
+			Actions[actionKey] = cmd.Action
+			if cmd.PreAction != nil {
+				PreActions[actionKey] = cmd.PreAction
+			}
 		}
-		NormVerbs[cmd.GetActionVerb()] = cmd.GetActionVerb()
-		if len(cmd.NormVerb) > 0 {
-			NormVerbs[cmd.GetActionVerb()] = cmd.NormVerb
+		// Only set NormVerbs for the default case (no NormVerb or same as verb).
+		// Don't let variant entries (e.g. "move X with Y" -> NormVerb="turn")
+		// overwrite the default normalization for "move".
+		if len(cmd.NormVerb) == 0 || cmd.NormVerb == cmd.GetActionVerb() {
+			NormVerbs[cmd.GetActionVerb()] = cmd.GetActionVerb()
 		}
 	}
 	// Add directions

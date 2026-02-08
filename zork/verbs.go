@@ -2,7 +2,6 @@ package zork
 
 import (
 	"encoding/binary"
-	"os"
 )
 
 type RndSelect struct {
@@ -1361,9 +1360,8 @@ func VPutBehind(arg ActArg) bool {
 }
 
 func VPutOn(arg ActArg) bool {
-	if IndirObj == &Ground {
-		Perform(ActionVerb{Norm: "drop", Orig: "drop"}, DirObj, nil)
-		return true
+	if IndirObj == nil || IndirObj == &Ground {
+		return VDrop(ActUnk)
 	}
 	if IndirObj.Has(FlgSurf) {
 		return VPut(ActUnk)
@@ -1414,8 +1412,7 @@ func VRead(arg ActArg) bool {
 }
 
 func VReadPage(arg ActArg) bool {
-	Perform(ActionVerb{Norm: "read", Orig: "read"}, DirObj, nil)
-	return true
+	return VRead(ActUnk)
 }
 
 func VRepent(arg ActArg) bool {
@@ -2082,7 +2079,7 @@ func VQuit(arg ActArg) bool {
 	VScore(arg)
 	Print("Do you wish to leave the game? (Y is affirmative): ", NoNewline)
 	if IsYes() {
-		os.Exit(0)
+		Quit()
 	} else {
 		Print("Ok.", Newline)
 	}
@@ -2408,7 +2405,7 @@ func IsInGlobal(obj1, obj2 *Object) bool {
 
 func IsHeld(obj *Object) bool {
 	for {
-		obj := obj.Location()
+		obj = obj.Location()
 		if obj == nil {
 			return false
 		}
@@ -2465,6 +2462,9 @@ func ITake(vb bool) bool {
 		if vb {
 			Print("Your hand passes through its object.", Newline)
 		}
+		return false
+	}
+	if DirObj == nil {
 		return false
 	}
 	if !DirObj.Has(FlgTake) {

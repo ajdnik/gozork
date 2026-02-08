@@ -92,6 +92,9 @@ const (
 	FlgDrink
 	FlgFood
 	FlgTurn
+	FlgRMung
+	FlgRLand
+	FlgActor
 )
 
 // In function checks if the current flag is in the flag slice.
@@ -175,7 +178,7 @@ func (dp DirProps) IsSet() bool {
 		(dp.UExit && dp.RExit != nil) ||
 		dp.FExit != nil ||
 		(dp.CExit != nil && dp.RExit != nil) ||
-		(dp.DExit != nil && len(dp.DExitStr) > 0 && dp.RExit != nil)
+		(dp.DExit != nil && dp.RExit != nil)
 }
 
 // Object represents a game object which can be a character, room, vehicle etc.
@@ -366,9 +369,68 @@ func (o *Object) IsIn(loc *Object) bool {
 	return o.In == loc
 }
 
-// BuildObjectTree populates each objects
-// childrens present in the Objects global variable.
+// objectSnapshot holds the original state of an object for test resets.
+type objectSnapshot struct {
+	In       *Object
+	Flags    []Flag
+	Strength int
+	Value    int
+	TValue   int
+	Text     string
+}
+
+// originalState stores the initial state for each object, set once during
+// the first BuildObjectTree call. Used by ResetObjectTree to restore the
+// object tree to its initial state for tests.
+var originalState map[*Object]objectSnapshot
+
+// BuildObjectTree populates each object's
+// children present in the Objects global variable.
 func BuildObjectTree() {
+	saveOriginals := originalState == nil
+	if saveOriginals {
+		originalState = make(map[*Object]objectSnapshot, len(Objects))
+	}
+	for _, obj := range Objects {
+		if saveOriginals {
+			flags := make([]Flag, len(obj.Flags))
+			copy(flags, obj.Flags)
+			originalState[obj] = objectSnapshot{
+				In:       obj.In,
+				Flags:    flags,
+				Strength: obj.Strength,
+				Value:    obj.Value,
+				TValue:   obj.TValue,
+				Text:     obj.Text,
+			}
+		}
+		if obj.Location() != nil {
+			obj.Location().AddChild(obj)
+		}
+	}
+}
+
+// ResetObjectTree restores every object to its original state and rebuilds
+// the children tree. Used by tests to get a fresh game state.
+func ResetObjectTree() {
+	if originalState == nil {
+		return
+	}
+	// Clear all children first
+	for _, obj := range Objects {
+		obj.Children = nil
+	}
+	// Restore original state
+	for obj, snap := range originalState {
+		obj.In = snap.In
+		obj.Flags = make([]Flag, len(snap.Flags))
+		copy(obj.Flags, snap.Flags)
+		obj.Strength = snap.Strength
+		obj.Value = snap.Value
+		obj.TValue = snap.TValue
+		obj.Text = snap.Text
+	}
+	// Rebuild the tree from restored In pointers
 	for _, obj := range Objects {
 		if obj.Location() != nil {
 			obj.Location().AddChild(obj)
