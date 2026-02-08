@@ -140,6 +140,81 @@ type PseudoObj struct {
 type FDir func() *Object
 type CDir func() bool
 
+// Direction represents a compass direction or vertical movement.
+type Direction int
+
+const (
+	North Direction = iota
+	South
+	East
+	West
+	NorthEast
+	NorthWest
+	SouthEast
+	SouthWest
+	Up
+	Down
+	In
+	Out
+	Land
+	NumDirections // sentinel — must be last
+)
+
+// dirNames maps Direction values to their canonical string representation.
+var dirNames = [NumDirections]string{
+	North:     "north",
+	South:     "south",
+	East:      "east",
+	West:      "west",
+	NorthEast: "northeast",
+	NorthWest: "northwest",
+	SouthEast: "southeast",
+	SouthWest: "southwest",
+	Up:        "up",
+	Down:      "down",
+	In:        "in",
+	Out:       "out",
+	Land:      "land",
+}
+
+// String returns the canonical name of the direction.
+func (d Direction) String() string {
+	if d >= 0 && d < NumDirections {
+		return dirNames[d]
+	}
+	return "unknown"
+}
+
+// StringToDir maps a direction name to a Direction value.
+// Returns the direction and true if found, or -1 and false if not.
+func StringToDir(s string) (Direction, bool) {
+	d, ok := strToDir[s]
+	return d, ok
+}
+
+var strToDir = map[string]Direction{
+	"north":     North,
+	"south":     South,
+	"east":      East,
+	"west":      West,
+	"northeast": NorthEast,
+	"northwest": NorthWest,
+	"southeast": SouthEast,
+	"southwest": SouthWest,
+	"up":        Up,
+	"down":      Down,
+	"in":        In,
+	"out":       Out,
+	"land":      Land,
+}
+
+// AllDirections is the list of all valid directions.
+var AllDirections = []Direction{
+	North, South, East, West,
+	NorthEast, NorthWest, SouthEast, SouthWest,
+	Up, Down, In, Out, Land,
+}
+
 type DirProps struct {
 	// NExit represents a non-exit direction where
 	// the game outputs NExit string and doesn't
@@ -194,19 +269,7 @@ type Object struct {
 	Desc       string
 	LongDesc   string
 	FirstDesc  string
-	North      DirProps
-	South      DirProps
-	West       DirProps
-	East       DirProps
-	NorthWest  DirProps
-	NorthEast  DirProps
-	SouthWest  DirProps
-	SouthEast  DirProps
-	Up         DirProps
-	Down       DirProps
-	Into       DirProps
-	Out        DirProps
-	Land       DirProps
+	Exits map[Direction]DirProps
 }
 
 // HasChildren checks if the game object has any children
@@ -214,37 +277,24 @@ func (o *Object) HasChildren() bool {
 	return len(o.Children) > 0
 }
 
-// GetDir returns game object's direction properties if they are set
-func (o *Object) GetDir(dir string) *DirProps {
-	switch {
-	case dir == "north" && o.North.IsSet():
-		return &o.North
-	case dir == "east" && o.East.IsSet():
-		return &o.East
-	case dir == "west" && o.West.IsSet():
-		return &o.West
-	case dir == "south" && o.South.IsSet():
-		return &o.South
-	case dir == "northeast" && o.NorthEast.IsSet():
-		return &o.NorthEast
-	case dir == "northwest" && o.NorthWest.IsSet():
-		return &o.NorthWest
-	case dir == "southeast" && o.SouthEast.IsSet():
-		return &o.SouthEast
-	case dir == "southwest" && o.SouthWest.IsSet():
-		return &o.SouthWest
-	case dir == "up" && o.Up.IsSet():
-		return &o.Up
-	case dir == "down" && o.Down.IsSet():
-		return &o.Down
-	case dir == "in" && o.Into.IsSet():
-		return &o.Into
-	case dir == "out" && o.Out.IsSet():
-		return &o.Out
-	case dir == "land" && o.Land.IsSet():
-		return &o.Land
+// GetExit returns the direction properties for the given direction, or nil.
+func (o *Object) GetExit(d Direction) *DirProps {
+	if o.Exits == nil {
+		return nil
 	}
-	return nil
+	dp, ok := o.Exits[d]
+	if !ok || !dp.IsSet() {
+		return nil
+	}
+	return &dp
+}
+
+// SetExit sets exit properties for a direction, initializing the map if needed.
+func (o *Object) SetExit(d Direction, dp DirProps) {
+	if o.Exits == nil {
+		o.Exits = make(map[Direction]DirProps)
+	}
+	o.Exits[d] = dp
 }
 
 func (o *Object) Remove() {

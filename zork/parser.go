@@ -90,7 +90,8 @@ type ParseProps struct {
 	Continue       int
 	InQuotes       bool
 	BufLen         int
-	WalkDir        string
+	WalkDir        Direction
+	HasWalkDir     bool
 }
 
 type FindTyp int
@@ -114,8 +115,9 @@ type OopsProps struct {
 }
 
 type AgainProps struct {
-	Buf []LexItm
-	Dir string
+	Buf    []LexItm
+	Dir    Direction
+	HasDir bool
 }
 
 type ActionVerb struct {
@@ -204,7 +206,8 @@ func Parse() bool {
 	} else if !G.LexRes[beg].IsAny("again", "g") {
 		G.Params.Number = 0
 	}
-	var dir string
+	var dir Direction
+	hasDir := false
 	if G.LexRes[beg].IsAny("again", "g") {
 		if len(G.Again.Buf) == 0 {
 			Print("Beg pardon?", Newline)
@@ -241,6 +244,7 @@ func Parse() bool {
 		G.Params.HasMerged = bakMerg
 		G.LexRes = append([]LexItm{}, G.Again.Buf...)
 		dir = G.Again.Dir
+		hasDir = G.Again.HasDir
 		G.ParsedSyntx.Set(G.OrphanedSyntx)
 	} else {
 		G.Again.Buf = append([]LexItm{}, G.LexRes...)
@@ -292,7 +296,8 @@ func Parse() bool {
 					(nw.IsAny("then", ".", "\"") && ln >= 2) ||
 					(G.Params.InQuotes && ln == 2 && nw.Is("\"")) ||
 					(ln > 2 && nw.IsAny(",", "and"))) {
-				dir = wrd.Norm
+				dir, _ = StringToDir(wrd.Norm)
+			hasDir = true
 				if nw.IsAny(",", "and") {
 					G.LexRes[i+1].Set(mkBuzz("then"))
 				}
@@ -348,19 +353,21 @@ func Parse() bool {
 		}
 	}
 	G.Oops.UnkSet = false
-	if len(dir) != 0 {
+	if hasDir {
 		G.ActVerb.Norm = "walk"
 		G.ActVerb.Orig = "walk"
-		G.DirObj = ToDirObj(dir)
+		G.DirObj = nil
 		G.Params.ShldOrphan = false
 		G.Params.WalkDir = dir
+		G.Params.HasWalkDir = true
 		G.Again.Dir = dir
+		G.Again.HasDir = true
 	} else {
 		if G.Params.ShldOrphan {
 			OrphanMerge()
 		}
-		G.Params.WalkDir = ""
-		G.Again.Dir = ""
+		G.Params.HasWalkDir = false
+		G.Again.HasDir = false
 		if !SyntaxCheck() {
 			return false
 		}

@@ -239,11 +239,6 @@ var (
 		"scream":     "yell",
 		"shout":      "yell",
 	}
-	Directions = []string{
-		"north", "east", "west", "south", "northeast",
-		"northwest", "southeast", "southwest", "up",
-		"down", "in", "out", "land",
-	}
 	Commands = []Syntx{
 		{
 			Verb:   "verbose",
@@ -1967,8 +1962,8 @@ func BuildVocabulary() {
 		}
 	}
 	// Add directions
-	for _, dir := range Directions {
-		addToVocab(dir, WordDir)
+	for _, d := range AllDirections {
+		addToVocab(d.String(), WordDir)
 	}
 	// Add objects
 	for _, obj := range Objects {

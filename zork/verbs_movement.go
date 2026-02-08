@@ -39,11 +39,11 @@ func VBoard(arg ActArg) bool {
 }
 
 func VClimbDown(arg ActArg) bool {
-	return VClimbFcn("down", G.DirObj)
+	return VClimbFcn(Down, G.DirObj)
 }
 
 func VClimbFoo(arg ActArg) bool {
-	return VClimbFcn("up", G.DirObj)
+	return VClimbFcn(Up, G.DirObj)
 }
 
 func VClimbOn(arg ActArg) bool {
@@ -58,14 +58,14 @@ func VClimbOn(arg ActArg) bool {
 }
 
 func VClimbUp(arg ActArg) bool {
-	return VClimbFcn("up", nil)
+	return VClimbFcn(Up, nil)
 }
 
-func VClimbFcn(dir string, obj *Object) bool {
+func VClimbFcn(dir Direction, obj *Object) bool {
 	if obj != nil && G.DirObj != &Rooms {
 		obj = G.DirObj
 	}
-	if tx := G.Here.GetDir(dir); tx != nil {
+	if tx := G.Here.GetExit(dir); tx != nil {
 		if obj != nil {
 			if len(tx.NExit) > 0 || ((tx.CExit != nil || tx.DExit != nil || tx.UExit) && !IsInGlobal(G.DirObj, tx.RExit)) {
 				Print("The ", NoNewline)
@@ -75,7 +75,7 @@ func VClimbFcn(dir string, obj *Object) bool {
 					Print("es", NoNewline)
 				}
 				Print("n't lead ", NoNewline)
-				if dir == "up" {
+				if dir == Up {
 					Print("up", NoNewline)
 				} else {
 					Print("down", NoNewline)
@@ -123,7 +123,7 @@ func VDisembark(arg ActArg) bool {
 }
 
 func VEnter(arg ActArg) bool {
-	return DoWalk("in")
+	return DoWalk(In)
 }
 
 func VExit(arg ActArg) bool {
@@ -135,7 +135,7 @@ func VExit(arg ActArg) bool {
 		Perform(ActionVerb{Norm: "disembark", Orig: "disembark"}, G.DirObj, nil)
 		return true
 	}
-	return DoWalk("out")
+	return DoWalk(Out)
 }
 
 func VFollow(arg ActArg) bool {
@@ -157,8 +157,8 @@ func VLeap(arg ActArg) bool {
 		}
 		return VSkip(ActUnk)
 	}
-	tx := G.Here.GetDir("down")
-	if tx.IsSet() {
+	tx := G.Here.GetExit(Down)
+	if tx != nil && tx.IsSet() {
 		if len(tx.NExit) > 0 || (tx.CExit != nil && !tx.CExit()) {
 			Print("This was not a very safe place to try jumping.", Newline)
 			return JigsUp(PickOne(JumpLoss), false)
@@ -166,7 +166,7 @@ func VLeap(arg ActArg) bool {
 		if G.Here == &UpATree {
 			Print("In a feat of unaccustomed daring, you manage to land on your feet without killing yourself.", Newline)
 			NewLine()
-			DoWalk("down")
+			DoWalk(Down)
 			return true
 		}
 	}
@@ -174,7 +174,7 @@ func VLeap(arg ActArg) bool {
 }
 
 func VLeave(arg ActArg) bool {
-	return DoWalk("out")
+	return DoWalk(Out)
 }
 
 func VStand(arg ActArg) bool {
@@ -212,8 +212,8 @@ func VThrough(arg ActArg) bool {
 }
 
 func Through(obj *Object) bool {
-	m := OtherSide(G.DirObj)
-	if G.DirObj.Has(FlgDoor) && len(m) > 0 {
+	m, ok := OtherSide(G.DirObj)
+	if G.DirObj.Has(FlgDoor) && ok {
 		DoWalk(m)
 		return true
 	}
@@ -235,26 +235,25 @@ func Through(obj *Object) bool {
 	return true
 }
 
-func OtherSide(dobj *Object) string {
-	dirs := []string{"north", "east", "west", "south", "northeast", "northwest", "southeast", "southwest", "up", "down", "in", "out", "land"}
-	for _, d := range dirs {
-		dirObj := G.Here.GetDir(d)
-		if dirObj == nil {
+func OtherSide(dobj *Object) (Direction, bool) {
+	for _, d := range AllDirections {
+		dp := G.Here.GetExit(d)
+		if dp == nil {
 			continue
 		}
-		if dirObj.DExit == dobj {
-			return d
+		if dp.DExit == dobj {
+			return d, true
 		}
 	}
-	return ""
+	return 0, false
 }
 
 func VWalk(arg ActArg) bool {
-	if len(G.Params.WalkDir) == 0 {
+	if !G.Params.HasWalkDir {
 		Perform(ActionVerb{Norm: "walk to", Orig: "walk to"}, G.DirObj, nil)
 		return true
 	}
-	props := G.Here.GetDir(G.Params.WalkDir)
+	props := G.Here.GetExit(G.Params.WalkDir)
 	if props == nil {
 		if !G.Lit && Prob(80, false) && G.Winner == &Adventurer && !G.Here.Has(FlgNonLand) {
 			if G.IsSprayed {
@@ -326,10 +325,10 @@ func VWalkTo(arg ActArg) bool {
 	return true
 }
 
-func DoWalk(dir string) bool {
+func DoWalk(dir Direction) bool {
 	G.Params.WalkDir = dir
-	dirObj := ToDirObj(dir)
-	if Perform(ActionVerb{Norm: "walk", Orig: "walk"}, dirObj, nil) == PerfHndld {
+	G.Params.HasWalkDir = true
+	if Perform(ActionVerb{Norm: "walk", Orig: "walk"}, nil, nil) == PerfHndld {
 		return true
 	}
 	return false
@@ -428,6 +427,3 @@ func VCross(arg ActArg) bool {
 	return true
 }
 
-func ToDirObj(dir string) *Object {
-	return nil
-}

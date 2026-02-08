@@ -436,13 +436,9 @@ func ISword() bool {
 			ng = 2
 		} else {
 			// Check adjacent rooms for monsters
-			dirs := []*DirProps{
-				&G.Here.North, &G.Here.South, &G.Here.East, &G.Here.West,
-				&G.Here.NorthEast, &G.Here.NorthWest, &G.Here.SouthEast, &G.Here.SouthWest,
-				&G.Here.Up, &G.Here.Down, &G.Here.Into, &G.Here.Out,
-			}
-			for _, dp := range dirs {
-				if dp.IsSet() && dp.RExit != nil {
+			for _, d := range AllDirections {
+				dp := G.Here.GetExit(d)
+				if dp != nil && dp.RExit != nil {
 					if Infested(dp.RExit) {
 						ng = 1
 						break

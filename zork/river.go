@@ -281,14 +281,14 @@ func RBoatFcn(arg ActArg) bool {
 		return false
 	}
 	if arg == ActBegin {
-		if G.ActVerb.Norm == "walk" {
-			if G.DirObj == ToDirObj("land") || G.DirObj == ToDirObj("east") || G.DirObj == ToDirObj("west") {
+		if G.ActVerb.Norm == "walk" && G.Params.HasWalkDir {
+			if G.Params.WalkDir == Land || G.Params.WalkDir == East || G.Params.WalkDir == West {
 				return false
 			}
-			if G.Here == &Reservoir && (G.DirObj == ToDirObj("north") || G.DirObj == ToDirObj("south")) {
+			if G.Here == &Reservoir && (G.Params.WalkDir == North || G.Params.WalkDir == South) {
 				return false
 			}
-			if G.Here == &InStream && G.DirObj == ToDirObj("south") {
+			if G.Here == &InStream && G.Params.WalkDir == South {
 				return false
 			}
 			Print("Read the label for the boat's instructions.", Newline)

@@ -526,9 +526,9 @@ func KitchenWindowFcn(arg ActArg) bool {
 	}
 	if G.ActVerb.Norm == "walk" || G.ActVerb.Norm == "board" || G.ActVerb.Norm == "through" {
 		if G.Here == &Kitchen {
-			DoWalk("east")
+			DoWalk(East)
 		} else {
-			DoWalk("west")
+			DoWalk(West)
 		}
 		return true
 	}
@@ -753,7 +753,7 @@ func BarrowDoorFcn(arg ActArg) bool {
 
 func BarrowFcn(arg ActArg) bool {
 	if G.ActVerb.Norm == "through" {
-		DoWalk("west")
+		DoWalk(West)
 		return true
 	}
 	return false
@@ -1237,7 +1237,7 @@ func SlideFcn(arg ActArg) bool {
 	if G.ActVerb.Norm == "through" || G.ActVerb.Norm == "climb up" || G.ActVerb.Norm == "climb down" || G.ActVerb.Norm == "climb" ||
 		(G.ActVerb.Norm == "put" && G.DirObj == &Me) {
 		if G.Here == &Cellar {
-			DoWalk("west")
+			DoWalk(West)
 			return true
 		}
 		Print("You tumble down the slide....", Newline)
@@ -1934,7 +1934,7 @@ func RopeFcn(arg ActArg) bool {
 		return false
 	}
 	if G.ActVerb.Norm == "climb down" && (G.DirObj == &Rope || G.DirObj == &Rooms) && G.DomeFlag {
-		DoWalk("down")
+		DoWalk(Down)
 		return true
 	}
 	if G.ActVerb.Norm == "tie up" && G.IndirObj == &Rope {
@@ -2133,7 +2133,7 @@ func KitchenFcn(arg ActArg) bool {
 	}
 	if arg == ActBegin {
 		if G.ActVerb.Norm == "climb up" && G.DirObj == &Stairs {
-			DoWalk("up")
+			DoWalk(Up)
 			return true
 		}
 	}
@@ -2193,7 +2193,7 @@ func CellarFcn(arg ActArg) bool {
 
 func StoneBarrowFcn(arg ActArg) bool {
 	if arg == ActBegin {
-		if G.ActVerb.Norm == "enter" || (G.ActVerb.Norm == "walk" && (G.DirObj == ToDirObj("west") || G.DirObj == ToDirObj("in"))) || (G.ActVerb.Norm == "through" && G.DirObj == &Barrow) {
+		if G.ActVerb.Norm == "enter" || (G.ActVerb.Norm == "walk" && G.Params.HasWalkDir && (G.Params.WalkDir == West || G.Params.WalkDir == In)) || (G.ActVerb.Norm == "through" && G.DirObj == &Barrow) {
 			Print("Inside the Barrow\nAs you enter the barrow, the door closes inexorably behind you. Around you it is dark, but ahead is an enormous cavern, brightly lit. Through its center runs a wide stream. Spanning the stream is a small wooden footbridge, and beyond a path leads into a dark tunnel. Above the bridge, floating in the air, is a large sign. It reads:  All ye who stand before this bridge have completed a great and perilous adventure which has tested your wit and courage. You have mastered the first part of the ZORK trilogy. Those who pass over this bridge must be prepared to undertake an even greater adventure that will severely test your skill and bravery!\n\nThe ZORK trilogy continues with \"ZORK II: The Wizard of Frobozz\" and is completed in \"ZORK III: The Dungeon Master.\"", Newline)
 			Finish()
 			return true
@@ -2613,7 +2613,7 @@ func ForestRoomFcn(arg ActArg) bool {
 	}
 	if arg == ActBegin {
 		if (G.ActVerb.Norm == "climb" || G.ActVerb.Norm == "climb up") && G.DirObj == &Tree {
-			DoWalk("up")
+			DoWalk(Up)
 			return true
 		}
 	}
@@ -2632,11 +2632,11 @@ func TreeRoomFcn(arg ActArg) bool {
 	}
 	if arg == ActBegin {
 		if (G.ActVerb.Norm == "climb down") && (G.DirObj == &Tree || G.DirObj == &Rooms) {
-			DoWalk("down")
+			DoWalk(Down)
 			return true
 		}
 		if (G.ActVerb.Norm == "climb up" || G.ActVerb.Norm == "climb") && G.DirObj == &Tree {
-			DoWalk("up")
+			DoWalk(Up)
 			return true
 		}
 		if G.ActVerb.Norm == "drop" {
@@ -2673,7 +2673,7 @@ func TreeRoomFcn(arg ActArg) bool {
 
 func DeadFunction(arg ActArg) bool {
 	if G.ActVerb.Norm == "walk" {
-		if G.Here == &TimberRoom && G.DirObj == ToDirObj("west") {
+		if G.Here == &TimberRoom && G.Params.HasWalkDir && G.Params.WalkDir == West {
 			Print("You cannot enter in your condition.", Newline)
 			return true
 		}
@@ -3034,7 +3034,7 @@ func DomePseudo(arg ActArg) bool {
 
 func GatePseudo(arg ActArg) bool {
 	if G.ActVerb.Norm == "through" {
-		DoWalk("in")
+		DoWalk(In)
 		return true
 	}
 	Print("The gate is protected by an invisible force. It makes your teeth ache to touch it.", Newline)
@@ -3047,7 +3047,7 @@ func DoorPseudo(arg ActArg) bool {
 		return true
 	}
 	if G.ActVerb.Norm == "through" {
-		DoWalk("south")
+		DoWalk(South)
 		return true
 	}
 	return false

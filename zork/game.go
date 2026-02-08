@@ -153,7 +153,7 @@ func MainLoop() {
 			obj = G.IndirObjPossibles[0]
 		}
 		var res PerfRet
-		if G.ActVerb.Norm == "walk" && len(G.Params.WalkDir) != 0 {
+		if G.ActVerb.Norm == "walk" && G.Params.HasWalkDir {
 			res = Perform(G.ActVerb, G.DirObj, nil)
 		} else if numObj == 0 {
 			if G.DetectedSyntx.NumObjects() == 0 {
