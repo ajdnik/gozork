@@ -106,7 +106,7 @@ Key item categories:
 NPCs are objects with `FlgPerson` or `FlgActor` and an `Action` function that handles multiple modes:
 
 - **Normal verb handling**: responds to examine, talk, give, etc.
-- **Combat callbacks**: `FBusy`, `FDead`, `FUnconscious`, `FConscious`, `FFirst` — called by the combat system
+- **Combat callbacks**: `ActBusy`, `ActDead`, `ActUnconscious`, `ActConscious`, `ActFirst` — called by the combat system
 
 Major NPCs: Troll, Thief, Cyclops, Bat, Ghosts
 
@@ -198,7 +198,7 @@ IFight()
   │    ├─ Unconscious? → maybe wake up (probability increases each turn)
   │    ├─ Staggered? → recover
   │    ├─ Fighting? → VillainBlow() — attack the player
-  │    └─ Not in room? → call FBusy handler (villain acts alone)
+  │    └─ Not in room? → call ActBusy handler (villain acts alone)
   └─ DoFight() orchestrates multi-villain rounds
 ```
 

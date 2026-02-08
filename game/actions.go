@@ -1477,7 +1477,7 @@ func TrollFcn(arg ActArg) bool {
 		Printf("The troll isn't much of a conversationalist.\n")
 		return true
 	}
-	if arg == ActArg(FBusy) {
+	if arg == ActBusy {
 		if Axe.IsIn(&Troll) {
 			return false
 		}
@@ -1498,7 +1498,7 @@ func TrollFcn(arg ActArg) bool {
 		}
 		return false
 	}
-	if arg == ActArg(FDead) {
+	if arg == ActDead {
 		if Axe.IsIn(&Troll) {
 			Axe.MoveTo(G.Here)
 			Axe.Take(FlgNoDesc)
@@ -1507,7 +1507,7 @@ func TrollFcn(arg ActArg) bool {
 		GD().TrollFlag = true
 		return true
 	}
-	if arg == ActArg(FUnconscious) {
+	if arg == ActUnconscious {
 		Troll.Take(FlgFight)
 		if Axe.IsIn(&Troll) {
 			Axe.MoveTo(G.Here)
@@ -1518,7 +1518,7 @@ func TrollFcn(arg ActArg) bool {
 		GD().TrollFlag = true
 		return true
 	}
-	if arg == ActArg(FConscious) {
+	if arg == ActConscious {
 		if Troll.IsIn(G.Here) {
 			Troll.Give(FlgFight)
 			Printf("The troll stirs, quickly resuming a fighting stance.\n")
@@ -1536,7 +1536,7 @@ func TrollFcn(arg ActArg) bool {
 		GD().TrollFlag = false
 		return true
 	}
-	if arg == ActArg(FFirst) {
+	if arg == ActFirst {
 		if Prob(33, false) {
 			Troll.Give(FlgFight)
 			G.Params.Continue = NumUndef
@@ -1571,7 +1571,7 @@ func TrollFcn(arg ActArg) bool {
 				RemoveCarefully(G.DirObj)
 				Printf(" and eats it hungrily. Poor troll, he dies from an internal hemorrhage and his carcass disappears in a sinister black fog.\n")
 				RemoveCarefully(&Troll)
-				TrollFcn(ActArg(FDead))
+				TrollFcn(ActDead)
 				GD().TrollFlag = true
 			} else if G.DirObj == &Knife || G.DirObj == &Sword || G.DirObj == &Axe {
 				G.DirObj.MoveTo(G.Here)

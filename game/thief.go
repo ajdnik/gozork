@@ -119,7 +119,7 @@ func RobberFcn(arg ActArg) bool {
 		G.Params.Continue = NumUndef
 		return true
 	}
-	if arg == ActArg(FBusy) {
+	if arg == ActBusy {
 		if Stiletto.IsIn(&Thief) {
 			return false
 		}
@@ -133,7 +133,7 @@ func RobberFcn(arg ActArg) bool {
 		}
 		return false
 	}
-	if arg == ActArg(FDead) {
+	if arg == ActDead {
 		Stiletto.MoveTo(G.Here)
 		Stiletto.Take(FlgNoDesc)
 		x := DepositBooty(G.Here)
@@ -164,7 +164,7 @@ func RobberFcn(arg ActArg) bool {
 		QueueInt("IThief", false).Run = false
 		return true
 	}
-	if arg == ActArg(FFirst) {
+	if arg == ActFirst {
 		if GD().ThiefHere && !Thief.Has(FlgInvis) && Prob(20, false) {
 			Thief.Give(FlgFight)
 			G.Params.Continue = NumUndef
@@ -172,7 +172,7 @@ func RobberFcn(arg ActArg) bool {
 		}
 		return false
 	}
-	if arg == ActArg(FUnconscious) {
+	if arg == ActUnconscious {
 		QueueInt("IThief", false).Run = false
 		Thief.Take(FlgFight)
 		Stiletto.MoveTo(G.Here)
@@ -180,7 +180,7 @@ func RobberFcn(arg ActArg) bool {
 		Thief.LongDesc = RobberUDesc
 		return true
 	}
-	if arg == ActArg(FConscious) {
+	if arg == ActConscious {
 		if Thief.Location() == G.Here {
 			Thief.Give(FlgFight)
 			Printf("The robber revives, briefly feigning continued unconsciousness, and, when he sees his moment, scrambles away from you.\n")

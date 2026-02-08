@@ -127,6 +127,13 @@ const (
 	ActFlash
 	ActObjDesc
 	ActEnd
+
+	// Combat modes — passed to NPC Action handlers by the fight system.
+	ActBusy        // villain acts alone (player not present)
+	ActDead        // villain has been killed
+	ActUnconscious // villain knocked unconscious
+	ActConscious   // villain regains consciousness
+	ActFirst       // villain's first-strike check
 )
 
 // Action is a handler function attached to a game object, invoked with a context argument.

@@ -21,14 +21,8 @@ const (
 	BlowSitDuck
 )
 
-// Combat mode constants
-const (
-	FBusy        = 1
-	FDead        = 2
-	FUnconscious = 3
-	FConscious   = 4
-	FFirst       = 5
-)
+// Combat mode constants are defined in engine as ActArg values:
+// ActBusy, ActDead, ActUnconscious, ActConscious, ActFirst.
 
 // Combat strength constants
 const (
@@ -372,7 +366,7 @@ func Awaken(o *Object) bool {
 	if s < 0 {
 		o.SetStrength(-s)
 		if o.Action != nil {
-			o.Action(ActArg(FConscious))
+			o.Action(ActConscious)
 		}
 	}
 	return true
@@ -398,14 +392,14 @@ func IFight() bool {
 				} else {
 					oo.Prob = p + 25
 				}
-			} else if o.Has(FlgFight) || (o.Action != nil && o.Action(ActArg(FFirst))) {
+			} else if o.Has(FlgFight) || (o.Action != nil && o.Action(ActFirst)) {
 				fightQ = true
 			}
 		} else {
 			if o.Has(FlgFight) {
-				if o.Action != nil {
-					o.Action(ActArg(FBusy))
-				}
+			if o.Action != nil {
+				o.Action(ActBusy)
+			}
 			}
 			if o == &Thief {
 				GD().ThiefEngrossed = false
@@ -514,13 +508,13 @@ func VillainResult(villain *Object, def int, res BlowRes) BlowRes {
 		Printf("Almost as soon as the %s breathes his last breath, a cloud of sinister black fog envelops him, and when the fog lifts, the carcass has disappeared.\n", villain.Desc)
 		RemoveCarefully(villain)
 		if villain.Action != nil {
-			villain.Action(ActArg(FDead))
+			villain.Action(ActDead)
 		}
 		return res
 	}
 	if res == BlowUncon {
 		if villain.Action != nil {
-			villain.Action(ActArg(FUnconscious))
+			villain.Action(ActUnconscious)
 		}
 		return res
 	}
@@ -695,7 +689,7 @@ func DoFight(numVillains int) bool {
 			if !o.Has(FlgFight) {
 				continue
 			}
-			if o.Action != nil && o.Action(ActArg(FBusy)) {
+			if o.Action != nil && o.Action(ActBusy) {
 				continue
 			}
 			res = VillainBlow(oo, out)
