@@ -13,7 +13,7 @@ Zork I is a 1980 interactive fiction game written by Marc Blank, Dave Lebling, B
 ## Prerequisites
 
 - **Go 1.25+** &mdash; <https://go.dev/dl/>
-- **golangci-lint** (optional, for linting) &mdash; <https://golangci-lint.run/welcome/install/>
+- **golangci-lint v2** (optional, for linting) &mdash; <https://golangci-lint.run/welcome/install/>
 
 ## Quick start
 
@@ -31,7 +31,7 @@ make run
 | `make run`   | Build and launch the game                          |
 | `make test`  | Run all tests (verbose, no cache)                  |
 | `make vet`   | Run `go vet` static analysis                       |
-| `make lint`  | Run `golangci-lint` (requires installation)        |
+| `make lint`  | Run `golangci-lint v2` (requires installation)     |
 | `make fmt`   | Format all Go source files with `gofmt`            |
 | `make cover` | Run tests and print per-package coverage summary   |
 | `make check` | Run fmt, vet, lint, and test in sequence            |

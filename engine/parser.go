@@ -1,5 +1,7 @@
 package engine
 
+import "slices"
+
 const (
 	// NumUndef is the sentinel value for "no continuation index".
 	NumUndef int = -1
@@ -20,11 +22,11 @@ type ParseTbl struct {
 func (pt *ParseTbl) Set(tbl ParseTbl) {
 	pt.Verb.Set(tbl.Verb)
 	pt.Prep1.Set(tbl.Prep1)
-	pt.ObjOrClause1 = append([]LexItem{}, tbl.ObjOrClause1...)
+	pt.ObjOrClause1 = slices.Clone(tbl.ObjOrClause1)
 	pt.Obj1Start = tbl.Obj1Start
 	pt.Obj1End = tbl.Obj1End
 	pt.Prep2.Set(tbl.Prep2)
-	pt.ObjOrClause2 = append([]LexItem{}, tbl.ObjOrClause2...)
+	pt.ObjOrClause2 = slices.Clone(tbl.ObjOrClause2)
 }
 
 // Clear resets the ParseTbl to its zero state.
@@ -165,7 +167,7 @@ func Parse() bool {
 	beg := 0
 	if G.Reserv.IdxSet {
 		beg = G.Reserv.Idx
-		G.LexRes = append([]LexItem{}, G.Reserv.Buf...)
+		G.LexRes = slices.Clone(G.Reserv.Buf)
 		if !G.SuperBrief && G.Player == G.Winner {
 			Printf("\n")
 		}
@@ -215,7 +217,7 @@ func Parse() bool {
 			}
 			G.Again.Buf[G.Oops.Unk].Set(G.LexRes[beg+1])
 			G.Winner = bakWin
-			G.LexRes = append([]LexItem{}, G.Again.Buf...)
+			G.LexRes = slices.Clone(G.Again.Buf)
 			G.Params.BufLen = len(G.LexRes)
 			beg = G.Oops.Idx
 		} else {
@@ -255,18 +257,18 @@ func Parse() bool {
 		if tmpLen > 0 {
 			G.Reserv.Idx = beg
 			G.Reserv.IdxSet = true
-			G.Reserv.Buf = append([]LexItem{}, G.LexRes...)
+			G.Reserv.Buf = slices.Clone(G.LexRes)
 		} else {
 			G.Reserv.IdxSet = false
 		}
 		G.Winner = bakWin
 		G.Params.HasMerged = bakMerg
-		G.LexRes = append([]LexItem{}, G.Again.Buf...)
+		G.LexRes = slices.Clone(G.Again.Buf)
 		dir = G.Again.Dir
 		hasDir = G.Again.HasDir
 		G.ParsedSyntx.Set(G.OrphanedSyntx)
 	} else {
-		G.Again.Buf = append([]LexItem{}, G.LexRes...)
+		G.Again.Buf = slices.Clone(G.LexRes)
 		G.Oops.Idx = beg
 		G.Reserv.IdxSet = false
 		G.Params.ObjOrClauseCnt = 0
@@ -458,9 +460,9 @@ func Clause(idx int, wrd LexItem) (bool, int) {
 		} else if cw.IsAny("then", ".") || (cw.Types.Has(WordPrep) && G.ParsedSyntx.Verb.IsSet() && !isFirst) {
 			G.Params.BufLen++
 			if G.Params.ObjOrClauseCnt == 1 {
-				G.ParsedSyntx.ObjOrClause1 = append([]LexItem{}, G.LexRes[cpyStart:i]...)
+				G.ParsedSyntx.ObjOrClause1 = slices.Clone(G.LexRes[cpyStart:i])
 			} else if G.Params.ObjOrClauseCnt == 2 {
-				G.ParsedSyntx.ObjOrClause2 = append([]LexItem{}, G.LexRes[cpyStart:i]...)
+				G.ParsedSyntx.ObjOrClause2 = slices.Clone(G.LexRes[cpyStart:i])
 			}
 			return true, i - 1
 		} else if cw.Types.Has(WordObj) {
@@ -476,9 +478,9 @@ func Clause(idx int, wrd LexItem) (bool, int) {
 			}
 			if !isAnd && !nw.IsAny("but", "except", "and", ",") {
 				if G.Params.ObjOrClauseCnt == 1 {
-					G.ParsedSyntx.ObjOrClause1 = append([]LexItem{}, G.LexRes[cpyStart:i+1]...)
+					G.ParsedSyntx.ObjOrClause1 = slices.Clone(G.LexRes[cpyStart : i+1])
 				} else if G.Params.ObjOrClauseCnt == 2 {
-					G.ParsedSyntx.ObjOrClause2 = append([]LexItem{}, G.LexRes[cpyStart:i+1]...)
+					G.ParsedSyntx.ObjOrClause2 = slices.Clone(G.LexRes[cpyStart : i+1])
 				}
 				return true, i
 			}
@@ -504,9 +506,9 @@ func Clause(idx int, wrd LexItem) (bool, int) {
 		isFirst = false
 	}
 	if G.Params.ObjOrClauseCnt == 1 {
-		G.ParsedSyntx.ObjOrClause1 = append([]LexItem{}, G.LexRes[cpyStart:i]...)
+		G.ParsedSyntx.ObjOrClause1 = slices.Clone(G.LexRes[cpyStart:i])
 	} else if G.Params.ObjOrClauseCnt == 2 {
-		G.ParsedSyntx.ObjOrClause2 = append([]LexItem{}, G.LexRes[cpyStart:i]...)
+		G.ParsedSyntx.ObjOrClause2 = slices.Clone(G.LexRes[cpyStart:i])
 	}
 	return true, -1
 }
@@ -597,7 +599,7 @@ func OrphanMerge() {
 				G.OrphanedSyntx.ObjOrClause1 = G.LexRes[0:G.ParsedSyntx.Obj1End]
 			}
 		} else {
-			G.OrphanedSyntx.ObjOrClause1 = append([]LexItem{}, G.ParsedSyntx.ObjOrClause1...)
+			G.OrphanedSyntx.ObjOrClause1 = slices.Clone(G.ParsedSyntx.ObjOrClause1)
 		}
 	} else if G.OrphanedSyntx.ObjOrClause2 != nil && len(G.OrphanedSyntx.ObjOrClause2) == 0 {
 		if !G.ParsedSyntx.Prep1.Matches(G.OrphanedSyntx.Prep2) && G.ParsedSyntx.Prep1.IsSet() {
@@ -610,7 +612,7 @@ func OrphanMerge() {
 				G.OrphanedSyntx.ObjOrClause2 = G.LexRes[0:G.ParsedSyntx.Obj1End]
 			}
 		} else {
-			G.OrphanedSyntx.ObjOrClause2 = append([]LexItem{}, G.ParsedSyntx.ObjOrClause1...)
+			G.OrphanedSyntx.ObjOrClause2 = slices.Clone(G.ParsedSyntx.ObjOrClause1)
 		}
 		G.Params.ObjOrClauseCnt = 2
 	} else if G.Params.AdjClause.Type != ClauseUnk {
@@ -686,11 +688,11 @@ func AclauseWin(adj LexItem) {
 // NclauseWin resolves a noun clause by replacing the orphaned clause with new tokens.
 func NclauseWin() {
 	if G.Params.AdjClause.Type == Clause1 {
-		G.OrphanedSyntx.ObjOrClause1 = append([]LexItem{}, G.ParsedSyntx.ObjOrClause1...)
+		G.OrphanedSyntx.ObjOrClause1 = slices.Clone(G.ParsedSyntx.ObjOrClause1)
 		G.OrphanedSyntx.Obj1Start = G.ParsedSyntx.Obj1Start
 		G.OrphanedSyntx.Obj1End = G.ParsedSyntx.Obj1End
 	} else if G.Params.AdjClause.Type == Clause2 {
-		G.OrphanedSyntx.ObjOrClause2 = append([]LexItem{}, G.ParsedSyntx.ObjOrClause1...)
+		G.OrphanedSyntx.ObjOrClause2 = slices.Clone(G.ParsedSyntx.ObjOrClause1)
 	}
 	if G.OrphanedSyntx.ObjOrClause2 != nil {
 		G.Params.ObjOrClauseCnt = 2
