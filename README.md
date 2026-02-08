@@ -10,24 +10,45 @@
 
 Zork I is a 1980 interactive fiction game written by Marc Blank, Dave Lebling, Bruce Daniels and Tim Anderson and published by Infocom. To learn more about the history of the game feel free to read [Zork I: The Great Underground Empire](https://medium.com/@r.ajdnik/zork-the-great-underground-empire-cda94623861c) on Medium.
 
-## Usage
+## Prerequisites
 
-Clone the git repository and build the go binary.
+- **Go 1.25+** &mdash; <https://go.dev/dl/>
+- **golangci-lint v2** (optional, for linting) &mdash; <https://golangci-lint.run/welcome/install/>
+
+## Quick start
 
 ```bash
-$ git clone https://github.com/ajdnik/gozork.git
-Cloning into 'gozork'...
-remote: Enumerating objects: 153, done.
-remote: Counting objects: 100% (153/153), done.
-remote: Compressing objects: 100% (109/109), done.
-remote: Total 153 (delta 100), reused 92 (delta 43), pack-reused 0
-Receiving objects: 100% (153/153), 1.16 MiB | 4.46 MiB/s, done.
-Resolving deltas: 100% (100/100), done.
+git clone https://github.com/ajdnik/gozork.git
+cd gozork
+make run
+```
 
-$ cd gozork
+## Makefile targets
 
-$ go build
+| Target       | Description                                       |
+|--------------|---------------------------------------------------|
+| `make build` | Compile the `gozork` binary                       |
+| `make run`   | Build and launch the game                          |
+| `make test`  | Run all tests (verbose, no cache)                  |
+| `make vet`   | Run `go vet` static analysis                       |
+| `make lint`  | Run `golangci-lint v2` (requires installation)     |
+| `make fmt`   | Format all Go source files with `gofmt`            |
+| `make cover` | Run tests and print per-package coverage summary   |
+| `make check` | Run fmt, vet, lint, and test in sequence            |
+| `make clean` | Remove build artifacts                             |
 
+## Project structure
+
+```
+gozork/
+  engine/   # Reusable text-adventure engine (parser, objects, clock, I/O)
+  game/     # Zork I game content (rooms, items, NPCs, action handlers)
+  main.go   # Entry point
+```
+
+## Usage
+
+```
 $ ./gozork
 ZORK I: The Great Underground Empire
 Infocom interactive fiction - a fantasy story
@@ -41,18 +62,3 @@ There is a small mailbox here.
 
 >
 ```
-
-## TODO
-
-The project is still a work in progress. Feel free to compile it and test it out, but a lot of the game objects are still unimplemented.
-
-- [x] Input parser
-- [x] Syntax definition
-- [x] Verb actions
-- [ ] Game objects
-- [ ] Game object actions
-- [ ] Testing
-- [ ] Refactoring to idiomatic Go
-- [ ] GitHub Actions CI/CD
-- [ ] Homebrew package
-- [ ] Chocolatey package

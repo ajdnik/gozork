@@ -1,7 +1,7 @@
 package main
 
-import "github.com/ajdnik/gozork/zork"
+import "github.com/ajdnik/gozork/game"
 
 func main() {
-	zork.Run()
+	game.Run()
 }

@@ -1,0 +1,262 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master, "feature/**"]
+  pull_request:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Install golangci-lint
+        run: go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest
+
+      - name: Run golangci-lint
+        run: |
+          set +e
+          golangci-lint run ./... > lint-output.txt 2>&1
+          echo "$?" > lint-exit-code.txt
+
+      - name: Write lint summary
+        if: always()
+        run: |
+          EXIT_CODE=$(cat lint-exit-code.txt 2>/dev/null || echo 1)
+          {
+            echo "## Lint"
+            echo ""
+            if [ "$EXIT_CODE" = "0" ]; then
+              echo ":white_check_mark: **golangci-lint passed** — no issues found."
+            else
+              echo ":x: **golangci-lint found issues:**"
+              echo ""
+              echo '```'
+              head -100 lint-output.txt
+              echo '```'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit "$EXIT_CODE"
+
+  vet:
+    name: Vet
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Run go vet
+        run: |
+          set +e
+          go vet ./... > vet-output.txt 2>&1
+          echo "$?" > vet-exit-code.txt
+
+      - name: Write vet summary
+        if: always()
+        run: |
+          EXIT_CODE=$(cat vet-exit-code.txt 2>/dev/null || echo 1)
+          {
+            echo "## Vet"
+            echo ""
+            if [ "$EXIT_CODE" = "0" ]; then
+              echo ":white_check_mark: **go vet passed** — no issues found."
+            else
+              echo ":x: **go vet found issues:**"
+              echo ""
+              echo '```'
+              cat vet-output.txt
+              echo '```'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit "$EXIT_CODE"
+
+  test:
+    name: Test & Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Run tests with coverage
+        run: |
+          set +e
+          go test -json -v -cover -count=1 -timeout 300s -coverprofile=coverage.out ./... > test-output.json 2> test-stderr.txt
+          echo "$?" > test-exit-code.txt
+          awk -F'"Output":"' '/"Action":"output"/{
+            out=$2
+            sub(/".*$/,"",out)
+            gsub(/\\\\/,"\\",out)
+            gsub(/\\n/,"\n",out)
+            printf "%s", out
+          }' test-output.json > test-output.txt
+          cat test-stderr.txt >> test-output.txt
+
+      - name: Generate coverage report
+        if: always()
+        run: |
+          if [ -f coverage.out ]; then
+            go tool cover -func=coverage.out > coverage-func.txt 2>&1
+            awk '/^total:/ { print $NF }' coverage-func.txt > coverage-total.txt
+          else
+            echo "N/A" > coverage-total.txt
+            echo "No coverage profile generated." > coverage-func.txt
+          fi
+
+      - name: Write test & coverage summary
+        if: always()
+        run: |
+          TEST_EXIT=$(cat test-exit-code.txt 2>/dev/null || echo 1)
+          {
+            echo "## Tests"
+            echo ""
+
+            # --- Count results ---
+            PASSED=$(awk '/"Action":"pass"/ && /"Test":/ {c++} END{print c+0}' test-output.json 2>/dev/null)
+            FAILED=$(awk '/"Action":"fail"/ && /"Test":/ {c++} END{print c+0}' test-output.json 2>/dev/null)
+            SKIPPED=$(awk '/"Action":"skip"/ && /"Test":/ {c++} END{print c+0}' test-output.json 2>/dev/null)
+
+            if [ "$TEST_EXIT" = "0" ]; then
+              echo ":white_check_mark: **All tests passed**"
+            else
+              echo ":x: **Some tests failed**"
+            fi
+            echo ""
+            echo "| Result | Count |"
+            echo "|--------|------:|"
+            echo "| :white_check_mark: Passed  | $PASSED |"
+            echo "| :x: Failed  | $FAILED |"
+            echo "| :fast_forward: Skipped | $SKIPPED |"
+            echo ""
+
+            # --- Failed test details ---
+            if [ "$FAILED" -gt 0 ] 2>/dev/null; then
+              echo "<details>"
+              echo "<summary>:x: Failed test output</summary>"
+              echo ""
+              awk -F'"' '/"Action":"fail"/ && /"Test":/ {for (i=1;i<=NF;i++) if ($i=="Test") {print $(i+2)}}' test-output.json | sort -u > failed-tests.txt
+              echo "Failed tests:"
+              echo ""
+              echo '```'
+              head -50 failed-tests.txt
+              echo '```'
+              echo ""
+              echo "Output:"
+              echo ""
+              echo '```'
+              awk -F'"' '
+                FNR==NR {fail[$0]=1; next}
+                /"Action":"output"/ && /"Test":/ {
+                  for (i=1;i<=NF;i++) if ($i=="Test") test=$(i+2)
+                  if (fail[test]) {
+                    out=""
+                    for (i=1;i<=NF;i++) if ($i=="Output") {out=$(i+2); break}
+                    gsub(/\\\\/,"\\",out)
+                    gsub(/\\n/,"\n",out)
+                    printf "%s", out
+                  }
+                }
+              ' failed-tests.txt test-output.json | head -80
+              echo '```'
+              echo ""
+              echo "</details>"
+              echo ""
+            fi
+
+            # --- Package results ---
+            echo "<details>"
+            echo "<summary>Package results</summary>"
+            echo ""
+            echo "| Package | Status | Duration | Coverage |"
+            echo "|---------|--------|----------|----------|"
+            awk '
+              {
+                line=$0
+                pkg=""; action=""; elapsed=""
+                if (match(line, /"Package":"[^"]+"/)) {
+                  pkg=substr(line, RSTART, RLENGTH)
+                  sub(/^"Package":"?/, "", pkg)
+                  sub(/"$/, "", pkg)
+                }
+                if (match(line, /"Action":"[^"]+"/)) {
+                  action=substr(line, RSTART, RLENGTH)
+                  sub(/^"Action":"?/, "", action)
+                  sub(/"$/, "", action)
+                }
+                if (match(line, /"Elapsed":[0-9.]+/)) {
+                  elapsed=substr(line, RSTART, RLENGTH)
+                  sub(/^"Elapsed":/, "", elapsed)
+                }
+                if (action=="pass" || action=="fail" || action=="skip") {
+                  if (pkg!="") {
+                    status[pkg]=(action=="fail" ? "FAIL" : "ok")
+                    if (elapsed!="") durmap[pkg]=elapsed "s"
+                  }
+                }
+                if (action=="output") {
+                  if (pkg!="" && match(line, /coverage: [0-9.]+%/)) {
+                    cov=substr(line, RSTART, RLENGTH)
+                    sub(/^coverage: /, "", cov)
+                    covmap[pkg]=cov
+                  }
+                }
+              }
+              END {
+                for (p in status) {
+                  s=status[p];
+                  d=durmap[p]; if (d=="") d="—";
+                  c=covmap[p]; if (c=="") c="—";
+                  if (s=="ok") {
+                    printf "| `%s` | :white_check_mark: ok | %s | %s |\n", p, d, c;
+                  } else {
+                    printf "| `%s` | :x: FAIL | %s | — |\n", p, d;
+                  }
+                }
+              }
+            ' test-output.json | sort
+            echo ""
+            echo "</details>"
+            echo ""
+
+            # --- Coverage ---
+            echo "## Coverage"
+            echo ""
+            TOTAL=$(cat coverage-total.txt 2>/dev/null || echo "N/A")
+            if [ -z "$TOTAL" ] || [ "$TOTAL" = "N/A" ]; then
+              echo ":warning: No coverage data available."
+            else
+              NUM=$(echo "$TOTAL" | tr -d '%')
+              if awk "BEGIN {exit !($NUM >= 80)}"; then
+                echo ":green_circle: **Total coverage: $TOTAL**"
+              elif awk "BEGIN {exit !($NUM >= 50)}"; then
+                echo ":yellow_circle: **Total coverage: $TOTAL**"
+              else
+                echo ":red_circle: **Total coverage: $TOTAL**"
+              fi
+              echo ""
+              echo "<details>"
+              echo "<summary>Per-function coverage</summary>"
+              echo ""
+              echo '```'
+              cat coverage-func.txt
+              echo '```'
+              echo ""
+              echo "</details>"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit "$TEST_EXIT"

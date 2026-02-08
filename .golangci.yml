@@ -1,0 +1,59 @@
+version: "2"
+linters:
+  enable:
+    - misspell
+    - revive
+  settings:
+    revive:
+      rules:
+        - name: exported
+          arguments:
+            - checkPrivateReceivers
+            - disableStutteringCheck
+          severity: warning
+        - name: blank-imports
+        - name: context-as-argument
+        - name: dot-imports
+          disabled: true          # game/ uses dot-import for engine by design
+        - name: error-return
+        - name: increment-decrement
+        - name: var-naming
+        - name: range
+        - name: receiver-naming
+        - name: indent-error-flow
+        - name: superfluous-else
+        - name: unreachable-code
+    staticcheck:
+      checks:
+        - "all"
+        - "-QF*"              # quickfix suggestions are too noisy for this codebase
+        - "-ST1001"           # dot-imports used by design in game/
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - revive
+        path: game/
+        text: dot-imports
+      - linters:
+          - revive
+        path: _test\.go
+        text: exported
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gofmt
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
