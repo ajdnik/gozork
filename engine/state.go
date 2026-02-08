@@ -20,6 +20,10 @@ type RNG interface {
 // save/restore without relying on scattered global variables.
 var G *GameState
 
+const (
+	MaxQueueEvents = 30
+)
+
 // GameState holds all mutable state for a single game session.
 // Engine-generic fields live here directly; game-specific extensions
 // are stored in the GameData field.
@@ -65,7 +69,7 @@ type GameState struct {
 	Oops          OopsProps
 
 	// ---- Clock / interrupt queue ----
-	QueueItms [30]ClockEvent
+	QueueItms [MaxQueueEvents]ClockEvent
 	QueueInts int
 	QueueDmns int
 	ClockWait bool

@@ -18,6 +18,8 @@ const (
 	LocMany
 	// LocHave means the object must already be possessed.
 	LocHave
+
+	NumLocFlags = 7
 )
 
 // In returns true if this flag appears in the given flag set.
@@ -41,7 +43,7 @@ func (lfs *LocFlags) All() LocFlags {
 
 // HasAll returns true if all LocFlag values are present.
 func (lfs LocFlags) HasAll() bool {
-	return len(lfs) == 7
+	return len(lfs) == NumLocFlags
 }
 
 // VerbAction is a handler function invoked when a verb is performed.

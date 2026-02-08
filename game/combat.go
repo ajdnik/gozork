@@ -316,10 +316,10 @@ func weaponFunction(w, v *Object) bool {
 }
 
 func fightStrength(adjust bool) int {
-	if scoreMax == 0 {
+	if ScoreMax == 0 {
 		return strengthMin
 	}
-	s := strengthMin + G.Score/(scoreMax/(strengthMax-strengthMin))
+	s := strengthMin + G.Score/(ScoreMax/(strengthMax-strengthMin))
 	if adjust {
 		s += G.Winner.GetStrength()
 	}

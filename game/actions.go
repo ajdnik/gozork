@@ -114,7 +114,7 @@ func forestRoomQ() bool {
 // ================================================================
 
 func vScore(arg ActionArg) bool {
-	Printf("Your score is %d (total of 350 points), in %d", G.Score, G.Moves)
+	Printf("Your score is %d (total of %d points), in %d", G.Score, ScoreMax, G.Moves)
 	if G.Moves == 1 {
 		Printf(" move.")
 	} else {
@@ -122,7 +122,7 @@ func vScore(arg ActionArg) bool {
 	}
 	Printf("\nThis gives you the rank of ")
 	switch {
-	case G.Score == 350:
+	case G.Score == ScoreMax:
 		Printf("Master adventurer")
 	case G.Score > 330:
 		Printf("Wizard")

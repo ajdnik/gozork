@@ -1565,7 +1565,7 @@ func thisIsIt(obj *Object) {
 func scoreUpd(num int) bool {
 	G.BaseScore += num
 	G.Score += num
-	if G.Score == 350 && !gD().WonGame {
+	if G.Score == ScoreMax && !gD().WonGame {
 		gD().WonGame = true
 		mapObj.Take(FlgInvis)
 		westOfHouse.Take(FlgTouch)

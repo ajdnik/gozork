@@ -94,7 +94,7 @@ var (
 		0,
 	}
 
-	scoreMax = 350
+	ScoreMax = 350
 )
 
 var (
