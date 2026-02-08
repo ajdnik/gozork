@@ -1,4 +1,6 @@
-package zork
+package game
+
+import . "github.com/ajdnik/gozork/engine"
 
 
 func PreBoard(arg ActArg) bool {
@@ -238,7 +240,7 @@ func VWalk(arg ActArg) bool {
 	props := G.Here.GetExit(G.Params.WalkDir)
 	if props == nil {
 		if !G.Lit && Prob(80, false) && G.Winner == &Adventurer && !G.Here.Has(FlgNonLand) {
-			if G.IsSprayed {
+			if GD().IsSprayed {
 				Printf("There are odd noises in the darkness, and there is no exit in that direction.\n")
 				return RFatal()
 			}
@@ -347,7 +349,7 @@ func Goto(rm *Object, isV bool) bool {
 		Printf("%s\n", rm.LongDesc)
 		return false
 	}
-	if lb && !G.Here.Has(FlgLand) && !G.Dead && wloc.Has(FlgVeh) {
+	if lb && !G.Here.Has(FlgLand) && !GD().Dead && wloc.Has(FlgVeh) {
 		Printf("The %s comes to a rest on the shore.\n\n", wloc.Desc)
 	}
 	if av != FlgUnk {
@@ -358,7 +360,7 @@ func Goto(rm *Object, isV bool) bool {
 	G.Here = rm
 	G.Lit = IsLit(G.Here, true)
 	if !olit && !G.Lit && Prob(80, false) {
-		if !G.IsSprayed {
+		if !GD().IsSprayed {
 			Printf("Oh, no! A lurking grue slithered into the ")
 			if G.Winner.Location().Has(FlgVeh) {
 				Printf("%s", G.Winner.Location().Desc)

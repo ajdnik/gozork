@@ -1,4 +1,4 @@
-package zork
+package engine
 
 // Flags represents a bitfield of properties that game objects can have.
 type Flags uint64
@@ -131,7 +131,7 @@ const (
 
 type Action func(ActArg) bool
 
-// PseudoObject are special game objects which only have a single synonym and an action.
+// PseudoObj are special game objects which only have a single synonym and an action.
 type PseudoObj struct {
 	Synonym string
 	Action  Action
@@ -216,26 +216,13 @@ var AllDirections = []Direction{
 }
 
 type DirProps struct {
-	// NExit represents a non-exit direction where
-	// the game outputs NExit string and doesn't
-	// move in direction
-	NExit string
-	// UExit represents a flag which means the user moves to
-	// the room in RExit unconditionally
-	UExit bool
-	// RExit contains a room object where the user should move
-	RExit *Object
-	// FExit represents a function which executes and if it
-	// evaluates to a room object the player moves to that room
-	FExit FDir
-	// CExit represents a conditional direction where the player moves
-	// if it evaluates to true the player is moved to RExit
-	CExit CDir
-	// CExitStr represents a message printed if the CExit evaluates to false
+	NExit    string
+	UExit    bool
+	RExit    *Object
+	FExit    FDir
+	CExit    CDir
 	CExitStr string
-	// DExit represents a game object which if it's open moves the player to RExit
-	DExit *Object
-	// DExitStr represents a message printed if the DExit is closed
+	DExit    *Object
 	DExitStr string
 }
 
@@ -269,7 +256,7 @@ type Object struct {
 	Desc       string
 	LongDesc   string
 	FirstDesc  string
-	Exits map[Direction]DirProps
+	Exits      map[Direction]DirProps
 }
 
 // HasChildren checks if the game object has any children
@@ -326,9 +313,6 @@ func (o *Object) RemoveChild(obj *Object) {
 	o.Children = o.Children[:len(o.Children)-1]
 }
 
-// AddChild adds the game object as a child of the current
-// game object. If the child is already present the function
-// doesn't add it again.
 func (o *Object) AddChild(child *Object) {
 	if o.Children == nil {
 		o.Children = []*Object{}
@@ -341,10 +325,6 @@ func (o *Object) AddChild(child *Object) {
 	o.Children = append(o.Children, child)
 }
 
-// MoveTo moves the game object to the destination
-// supplied. This means the current game object will become
-// its child. It also removes the object from its previous
-// parent's children list.
 func (o *Object) MoveTo(dest *Object) {
 	if o.In != nil {
 		o.In.RemoveChild(o)
@@ -353,23 +333,18 @@ func (o *Object) MoveTo(dest *Object) {
 	dest.AddChild(o)
 }
 
-// Has checks if the current game object has a certain flag set.
 func (o *Object) Has(f Flags) bool {
 	return o.Flags&f != 0
 }
 
-// Give sets a flag on the game object.
 func (o *Object) Give(f Flags) {
 	o.Flags |= f
 }
 
-// Take clears a flag from the game object.
 func (o *Object) Take(f Flags) {
 	o.Flags &^= f
 }
 
-// Is checks if the word is present amongst object's
-// synonyms or adjectives. If present it returns true.
 func (o *Object) Is(wrd string) bool {
 	for _, syn := range o.Synonyms {
 		if syn == wrd {
@@ -384,13 +359,10 @@ func (o *Object) Is(wrd string) bool {
 	return false
 }
 
-// Location returns the objects parent.
 func (o *Object) Location() *Object {
 	return o.In
 }
 
-// In returns true if the object's parent
-// is the same as the object supplied.
 func (o *Object) IsIn(loc *Object) bool {
 	return o.In == loc
 }
@@ -405,19 +377,15 @@ type objectSnapshot struct {
 	Text     string
 }
 
-// originalState stores the initial state for each object, set once during
-// the first BuildObjectTree call. Used by ResetObjectTree to restore the
-// object tree to its initial state for tests.
 var originalState map[*Object]objectSnapshot
 
-// BuildObjectTree populates each object's
-// children present in the Objects global variable.
+// BuildObjectTree populates each object's children from G.AllObjects.
 func BuildObjectTree() {
 	saveOriginals := originalState == nil
 	if saveOriginals {
-		originalState = make(map[*Object]objectSnapshot, len(Objects))
+		originalState = make(map[*Object]objectSnapshot, len(G.AllObjects))
 	}
-	for _, obj := range Objects {
+	for _, obj := range G.AllObjects {
 		if saveOriginals {
 			originalState[obj] = objectSnapshot{
 				In:       obj.In,
@@ -440,11 +408,9 @@ func ResetObjectTree() {
 	if originalState == nil {
 		return
 	}
-	// Clear all children first
-	for _, obj := range Objects {
+	for _, obj := range G.AllObjects {
 		obj.Children = nil
 	}
-	// Restore original state
 	for obj, snap := range originalState {
 		obj.In = snap.In
 		obj.Flags = snap.Flags
@@ -453,8 +419,7 @@ func ResetObjectTree() {
 		obj.TValue = snap.TValue
 		obj.Text = snap.Text
 	}
-	// Rebuild the tree from restored In pointers
-	for _, obj := range Objects {
+	for _, obj := range G.AllObjects {
 		if obj.Location() != nil {
 			obj.Location().AddChild(obj)
 		}

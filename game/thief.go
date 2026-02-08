@@ -1,4 +1,6 @@
-package zork
+package game
+
+import . "github.com/ajdnik/gozork/engine"
 
 
 
@@ -59,7 +61,7 @@ func DepositBooty(rm *Object) bool {
 			toMove = append(toMove, x)
 			flg = true
 			if x == &Egg {
-				G.EggSolve = true
+				GD().EggSolve = true
 				Egg.Give(FlgOpen)
 			}
 		}
@@ -168,7 +170,7 @@ func RobberFcn(arg ActArg) bool {
 		return true
 	}
 	if arg == ActArg(FFirst) {
-		if G.ThiefHere && !Thief.Has(FlgInvis) && Prob(20, false) {
+		if GD().ThiefHere && !Thief.Has(FlgInvis) && Prob(20, false) {
 			Thief.Give(FlgFight)
 			G.Params.Continue = NumUndef
 			return true
@@ -237,7 +239,7 @@ func RobberFcn(arg ActArg) bool {
 		}
 		G.DirObj.MoveTo(&Thief)
 		if G.DirObj.TValue > 0 {
-			G.ThiefEngrossed = true
+			GD().ThiefEngrossed = true
 			Printf("The thief is taken aback by your unexpected generosity, but accepts the %s and stops to admire its beauty.\n", G.DirObj.Desc)
 		} else {
 			Printf("The thief places the %s in his bag and thanks you politely.\n", G.DirObj.Desc)
@@ -338,7 +340,7 @@ func IThief() bool {
 					Thief.MoveTo(r)
 					Thief.Take(FlgFight)
 					Thief.Give(FlgInvis)
-					G.ThiefHere = false
+					GD().ThiefHere = false
 					rm = r
 					found = true
 					break
@@ -358,15 +360,15 @@ func IThief() bool {
 }
 
 func ThiefVsAdventurer(hereQ bool) bool {
-	if !G.Dead && G.Here == &TreasureRoom {
+	if !GD().Dead && G.Here == &TreasureRoom {
 		return false
 	}
-	if !G.ThiefHere {
-		if !G.Dead && !hereQ && Prob(30, false) {
+	if !GD().ThiefHere {
+		if !GD().Dead && !hereQ && Prob(30, false) {
 			if Stiletto.IsIn(&Thief) {
 				Thief.Take(FlgInvis)
 				Printf("Someone carrying a large bag is casually leaning against one of the walls here. He does not speak, but it is clear from his aspect that the bag will be taken only over his dead body.\n")
-				G.ThiefHere = true
+				GD().ThiefHere = true
 				return true
 			}
 		}
@@ -415,7 +417,7 @@ func StealJunk(rm *Object) bool {
 				x.Give(FlgTouch)
 				x.Give(FlgInvis)
 				if x == &Rope {
-					G.DomeFlag = false
+					GD().DomeFlag = false
 				}
 				if rm == G.Here {
 					Printf("You suddenly notice that the %s vanished.\n", x.Desc)

@@ -1,4 +1,6 @@
-package zork
+package game
+
+import . "github.com/ajdnik/gozork/engine"
 
 func OpenClose(obj *Object, strOpn, strCls string) {
 	if G.ActVerb.Norm == "open" {
@@ -19,14 +21,14 @@ func OpenClose(obj *Object, strOpn, strCls string) {
 }
 
 func LeavesAppear() bool {
-	if !Grate.Has(FlgOpen) && !G.GrateRevealed {
+	if !Grate.Has(FlgOpen) && !GD().GrateRevealed {
 		if G.ActVerb.Norm == "move" || G.ActVerb.Norm == "take" {
 			Printf("In disturbing the pile of leaves, a grating is revealed.\n")
 		} else {
 			Printf("With the leaves moved, a grating is revealed.\n")
 		}
 		Grate.Take(FlgInvis)
-		G.GrateRevealed = true
+		GD().GrateRevealed = true
 	}
 	return false
 }
@@ -205,9 +207,9 @@ func VDiagnose(arg ActArg) bool {
 		Printf("survive several wounds")
 	}
 	Printf(".\n")
-	if G.Deaths > 0 {
+	if GD().Deaths > 0 {
 		Printf("You have been killed ")
-		if G.Deaths == 1 {
+		if GD().Deaths == 1 {
 			Printf("once")
 		} else {
 			Printf("twice")
@@ -223,7 +225,7 @@ func VDiagnose(arg ActArg) bool {
 
 func JigsUp(desc string, isPlyr bool) bool {
 	G.Winner = &Adventurer
-	if G.Dead {
+	if GD().Dead {
 		Printf("\nIt takes a talented person to be killed while already dead. YOU are such a talent. Unfortunately, it takes a talented person to deal with it. I am not such a talent. Sorry.\n")
 		return Finish()
 	}
@@ -236,16 +238,16 @@ func JigsUp(desc string, isPlyr bool) bool {
 	if G.Winner.Location().Has(FlgVeh) {
 		G.Winner.MoveTo(G.Here)
 	}
-	if G.Deaths >= 2 {
+	if GD().Deaths >= 2 {
 		Printf("You clearly are a suicidal maniac. We don't allow psychotics in the cave, since they may harm other adventurers. Your remains will be installed in the Land of the Living Dead, where your fellow adventurers may gloat over them.\n")
 		return Finish()
 	}
-	G.Deaths++
+	GD().Deaths++
 	G.Winner.MoveTo(G.Here)
 	if SouthTemple.Has(FlgTouch) {
 		Printf("As you take your last breath, you feel relieved of your burdens. The feeling passes as you find yourself before the gates of Hell, where the spirits jeer at you and deny you entry. Your senses are disturbed. The objects in the dungeon appear indistinct, bleached of color, even unreal.\n\n")
-		G.Dead = true
-		G.TrollFlag = true
+		GD().Dead = true
+		GD().TrollFlag = true
 		G.AlwaysLit = true
 		G.Winner.Action = DeadFunction
 		Goto(&EnteranceToHades, true)
@@ -305,7 +307,7 @@ func KillInterrupts() bool {
 func WestHouseFcn(arg ActArg) bool {
 	if arg == ActLook {
 		Printf("You are standing in an open field west of a white house, with a boarded front door.")
-		if G.WonGame {
+		if GD().WonGame {
 			Printf(" A secret path leads southwest into the forest.")
 		}
 		Printf("\n")
@@ -494,13 +496,13 @@ func ForestFcn(arg ActArg) bool {
 
 func KitchenWindowFcn(arg ActArg) bool {
 	if G.ActVerb.Norm == "open" || G.ActVerb.Norm == "close" {
-		G.KitchenWindowFlag = true
+		GD().KitchenWindowFlag = true
 		OpenClose(&KitchenWindow,
 			"With great effort, you open the window far enough to allow entry.",
 			"The window closes (more easily than it opened).")
 		return true
 	}
-	if G.ActVerb.Norm == "examine" && !G.KitchenWindowFlag {
+	if G.ActVerb.Norm == "examine" && !GD().KitchenWindowFlag {
 		Printf("The window is slightly ajar, but not enough to allow entry.\n")
 		return true
 	}
@@ -558,26 +560,26 @@ func GhostsFcn(arg ActArg) bool {
 
 func BasketFcn(arg ActArg) bool {
 	if G.ActVerb.Norm == "raise" {
-		if G.CageTop {
+		if GD().CageTop {
 			Printf("%s\n", PickOne(Dummy))
 		} else {
 			RaisedBasket.MoveTo(&ShaftRoom)
 			LoweredBasket.MoveTo(&LowerShaft)
-			G.CageTop = true
+			GD().CageTop = true
 			ThisIsIt(&RaisedBasket)
 			Printf("The basket is raised to the top of the shaft.\n")
 		}
 		return true
 	}
 	if G.ActVerb.Norm == "lower" {
-		if !G.CageTop {
+		if !GD().CageTop {
 			Printf("%s\n", PickOne(Dummy))
 		} else {
 			RaisedBasket.MoveTo(&LowerShaft)
 			LoweredBasket.MoveTo(&ShaftRoom)
 			ThisIsIt(&LoweredBasket)
 			Printf("The basket is lowered to the bottom of the shaft.\n")
-			G.CageTop = false
+			GD().CageTop = false
 			if G.Lit && !IsLit(G.Here, true) {
 				G.Lit = false
 				Printf("It is now pitch black.\n")
@@ -615,7 +617,7 @@ func BatFcn(arg ActArg) bool {
 
 func BellFcn(arg ActArg) bool {
 	if G.ActVerb.Norm == "ring" {
-		if G.Here == &EnteranceToHades && !G.LLDFlag {
+		if G.Here == &EnteranceToHades && !GD().LLDFlag {
 			return false
 		}
 		Printf("Ding, dong.\n")
@@ -657,7 +659,7 @@ func HotBellFcn(arg ActArg) bool {
 }
 
 func AxeFcn(arg ActArg) bool {
-	if G.TrollFlag {
+	if GD().TrollFlag {
 		return false
 	}
 	return WeaponFunction(&Axe, &Troll)
@@ -778,7 +780,7 @@ func GrateFcn(arg ActArg) bool {
 	}
 	if G.ActVerb.Norm == "lock" {
 		if G.Here == &GratingRoom {
-			G.GrUnlock = false
+			GD().GrUnlock = false
 			Printf("The grate is locked.\n")
 			return true
 		}
@@ -789,7 +791,7 @@ func GrateFcn(arg ActArg) bool {
 	}
 	if G.ActVerb.Norm == "unlock" && G.DirObj == &Grate {
 		if G.Here == &GratingRoom && G.IndirObj == &Keys {
-			G.GrUnlock = true
+			GD().GrUnlock = true
 			Printf("The grate is unlocked.\n")
 			return true
 		}
@@ -805,7 +807,7 @@ func GrateFcn(arg ActArg) bool {
 		return true
 	}
 	if G.ActVerb.Norm == "open" || G.ActVerb.Norm == "close" {
-		if G.GrUnlock {
+		if GD().GrUnlock {
 			var openStr string
 			if G.Here == &Clearing {
 				openStr = "The grating opens."
@@ -814,9 +816,9 @@ func GrateFcn(arg ActArg) bool {
 			}
 			OpenClose(&Grate, openStr, "The grating is closed.")
 			if Grate.Has(FlgOpen) {
-				if G.Here != &Clearing && !G.GrateRevealed {
+				if G.Here != &Clearing && !GD().GrateRevealed {
 					Printf("A pile of leaves falls onto your head and to the ground.\n")
-					G.GrateRevealed = true
+					GD().GrateRevealed = true
 					Leaves.MoveTo(G.Here)
 				}
 				GratingRoom.Give(FlgOn)
@@ -916,7 +918,7 @@ func LeafPileFcn(arg ActArg) bool {
 		if G.ActVerb.Norm == "move" {
 			Printf("Done.\n")
 		}
-		if G.GrateRevealed {
+		if GD().GrateRevealed {
 			return false
 		}
 		LeavesAppear()
@@ -925,7 +927,7 @@ func LeafPileFcn(arg ActArg) bool {
 		}
 		return true
 	}
-	if G.ActVerb.Norm == "look under" && !G.GrateRevealed {
+	if G.ActVerb.Norm == "look under" && !GD().GrateRevealed {
 		Printf("Underneath the pile of leaves is a grating. As you release the leaves, the grating is once again concealed from view.\n")
 		return true
 	}
@@ -934,10 +936,10 @@ func LeafPileFcn(arg ActArg) bool {
 
 func MatchFcn(arg ActArg) bool {
 	if (G.ActVerb.Norm == "lamp on" || G.ActVerb.Norm == "burn") && G.DirObj == &Match {
-		if G.MatchCount > 0 {
-			G.MatchCount--
+		if GD().MatchCount > 0 {
+			GD().MatchCount--
 		}
-		if G.MatchCount <= 0 {
+		if GD().MatchCount <= 0 {
 			Printf("I'm afraid that you have run out of matches.\n")
 			return true
 		}
@@ -968,7 +970,7 @@ func MatchFcn(arg ActArg) bool {
 	}
 	if G.ActVerb.Norm == "count" || G.ActVerb.Norm == "open" {
 		Printf("You have ")
-		cnt := G.MatchCount - 1
+		cnt := GD().MatchCount - 1
 		if cnt <= 0 {
 			Printf("no")
 		} else {
@@ -996,7 +998,7 @@ func MatchFcn(arg ActArg) bool {
 
 func MirrorMirrorFcn(arg ActArg) bool {
 	rm2 := &MirrorRoom2
-	if !G.MirrorMung && G.ActVerb.Norm == "rub" {
+	if !GD().MirrorMung && G.ActVerb.Norm == "rub" {
 		if G.IndirObj != nil && G.IndirObj != &Hands {
 			Printf("You feel a faint tingling transmitted through the %s.\n", G.IndirObj.Desc)
 			return true
@@ -1023,7 +1025,7 @@ func MirrorMirrorFcn(arg ActArg) bool {
 		return true
 	}
 	if G.ActVerb.Norm == "look inside" || G.ActVerb.Norm == "examine" {
-		if G.MirrorMung {
+		if GD().MirrorMung {
 			Printf("The mirror is broken into many pieces.\n")
 		} else {
 			Printf("There is an ugly person staring back at you.\n")
@@ -1035,10 +1037,10 @@ func MirrorMirrorFcn(arg ActArg) bool {
 		return true
 	}
 	if G.ActVerb.Norm == "mung" || G.ActVerb.Norm == "throw" || G.ActVerb.Norm == "attack" {
-		if G.MirrorMung {
+		if GD().MirrorMung {
 			Printf("Haven't you done enough damage already?\n")
 		} else {
-			G.MirrorMung = true
+			GD().MirrorMung = true
 			G.Lucky = false
 			Printf("You have broken the mirror. I hope you have a seven years' supply of good luck handy.\n")
 		}
@@ -1179,23 +1181,23 @@ func BlackBookFcn(arg ActArg) bool {
 func SceptreFcn(arg ActArg) bool {
 	if G.ActVerb.Norm == "wave" || G.ActVerb.Norm == "raise" {
 		if G.Here == &AragainFalls || G.Here == &EndOfRainbow {
-			if !G.RainbowFlag {
+			if !GD().RainbowFlag {
 				PotOfGold.Take(FlgInvis)
 				Printf("Suddenly, the rainbow appears to become solid and, I venture, walkable (I think the giveaway was the stairs and bannister).\n")
 				if G.Here == &EndOfRainbow && PotOfGold.IsIn(&EndOfRainbow) {
 					Printf("A shimmering pot of gold appears at the end of the rainbow.\n")
 				}
-				G.RainbowFlag = true
+				GD().RainbowFlag = true
 			} else {
 				Rob(&OnRainbow, &Wall, 0)
 				Printf("The rainbow seems to have become somewhat run-of-the-mill.\n")
-				G.RainbowFlag = false
+				GD().RainbowFlag = false
 				return true
 			}
 			return true
 		}
 		if G.Here == &OnRainbow {
-			G.RainbowFlag = false
+			GD().RainbowFlag = false
 			JigsUp("The structural integrity of the rainbow is severely compromised, leaving you hanging in midair, supported only by water vapor. Bye.", false)
 			return true
 		}
@@ -1251,10 +1253,10 @@ func ButtonFcn(arg ActArg) bool {
 	}
 	if G.ActVerb.Norm == "push" {
 		if G.DirObj == &BlueButton {
-			if G.WaterLevel == 0 {
+			if GD().WaterLevel == 0 {
 				Leak.Take(FlgInvis)
 				Printf("There is a rumbling sound and a stream of water appears to burst from the east wall of the room (apparently, a leak has occurred in a pipe).\n")
-				G.WaterLevel = 1
+				GD().WaterLevel = 1
 				Queue("IMaintRoom", -1).Run = true
 				return true
 			}
@@ -1274,13 +1276,13 @@ func ButtonFcn(arg ActArg) bool {
 		}
 		if G.DirObj == &BrownButton {
 			DamRoom.Take(FlgTouch)
-			G.GateFlag = false
+			GD().GateFlag = false
 			Printf("Click.\n")
 			return true
 		}
 		if G.DirObj == &YellowButton {
 			DamRoom.Take(FlgTouch)
-			G.GateFlag = true
+			GD().GateFlag = true
 			Printf("Click.\n")
 			return true
 		}
@@ -1290,7 +1292,7 @@ func ButtonFcn(arg ActArg) bool {
 }
 
 func LeakFcn(arg ActArg) bool {
-	if G.WaterLevel > 0 {
+	if GD().WaterLevel > 0 {
 		if (G.ActVerb.Norm == "put" || G.ActVerb.Norm == "put on") && G.DirObj == &Putty {
 			FixMaintLeak()
 			return true
@@ -1514,7 +1516,7 @@ func TrollFcn(arg ActArg) bool {
 			Axe.Take(FlgNoDesc)
 			Axe.Give(FlgWeapon)
 		}
-		G.TrollFlag = true
+		GD().TrollFlag = true
 		return true
 	}
 	if arg == ActArg(FUnconscious) {
@@ -1525,7 +1527,7 @@ func TrollFcn(arg ActArg) bool {
 			Axe.Give(FlgWeapon)
 		}
 		Troll.LongDesc = "An unconscious troll is sprawled on the floor. All passages out of the room are open."
-		G.TrollFlag = true
+		GD().TrollFlag = true
 		return true
 	}
 	if arg == ActArg(FConscious) {
@@ -1543,7 +1545,7 @@ func TrollFcn(arg ActArg) bool {
 		} else {
 			Troll.LongDesc = "A troll is here."
 		}
-		G.TrollFlag = false
+		GD().TrollFlag = false
 		return true
 	}
 	if arg == ActArg(FFirst) {
@@ -1582,7 +1584,7 @@ func TrollFcn(arg ActArg) bool {
 				Printf(" and eats it hungrily. Poor troll, he dies from an internal hemorrhage and his carcass disappears in a sinister black fog.\n")
 				RemoveCarefully(&Troll)
 				TrollFcn(ActArg(FDead))
-				G.TrollFlag = true
+				GD().TrollFlag = true
 			} else if G.DirObj == &Knife || G.DirObj == &Sword || G.DirObj == &Axe {
 				G.DirObj.MoveTo(G.Here)
 				Printf(" and, being for the moment sated, throws it back. Fortunately, the troll has poor control, and the %s falls to the floor. He does not look pleased.\n", G.DirObj.Desc)
@@ -1610,7 +1612,7 @@ func TrollFcn(arg ActArg) bool {
 		Printf("Every so often the troll says something, probably uncomplimentary, in his guttural tongue.\n")
 		return true
 	}
-	if G.TrollFlag && G.ActVerb.Norm == "hello" {
+	if GD().TrollFlag && G.ActVerb.Norm == "hello" {
 		Printf("Unfortunately, the troll can't hear you.\n")
 		return true
 	}
@@ -1622,9 +1624,9 @@ func TrollFcn(arg ActArg) bool {
 // ================================================================
 
 func CyclopsFcn(arg ActArg) bool {
-	count := G.CycloWrath
+	count := GD().CycloWrath
 	if G.Winner == &Cyclops {
-		if G.CyclopsFlag {
+		if GD().CyclopsFlag {
 			Printf("No use talking to him. He's fast asleep.\n")
 			return true
 		}
@@ -1636,19 +1638,19 @@ func CyclopsFcn(arg ActArg) bool {
 		Printf("The cyclops prefers eating to making conversation.\n")
 		return true
 	}
-	if G.CyclopsFlag {
+	if GD().CyclopsFlag {
 		if G.ActVerb.Norm == "examine" {
 			Printf("The cyclops is sleeping like a baby, albeit a very ugly one.\n")
 			return true
 		}
 		if G.ActVerb.Norm == "alarm" || G.ActVerb.Norm == "kick" || G.ActVerb.Norm == "attack" || G.ActVerb.Norm == "burn" || G.ActVerb.Norm == "mung" {
 			Printf("The cyclops yawns and stares at the thing that woke him up.\n")
-			G.CyclopsFlag = false
+			GD().CyclopsFlag = false
 			Cyclops.Give(FlgFight)
 			if count < 0 {
-				G.CycloWrath = -count
+				GD().CycloWrath = -count
 			} else {
-				G.CycloWrath = count
+				GD().CycloWrath = count
 			}
 			return true
 		}
@@ -1663,7 +1665,7 @@ func CyclopsFcn(arg ActArg) bool {
 			if count >= 0 {
 				RemoveCarefully(&Lunch)
 				Printf("The cyclops says \"Mmm Mmm. I love hot peppers! But oh, could I use a drink. Perhaps I could drink the blood of that thing.\"  From the gleam in his eye, it could be surmised that you are \"that thing\".\n")
-				G.CycloWrath = MinInt(-1, -count)
+				GD().CycloWrath = MinInt(-1, -count)
 			}
 			Queue("ICyclops", -1).Run = true
 			return true
@@ -1675,7 +1677,7 @@ func CyclopsFcn(arg ActArg) bool {
 				Bottle.Give(FlgOpen)
 				Cyclops.Take(FlgFight)
 				Printf("The cyclops takes the bottle, checks that it's open, and drinks the water. A moment later, he lets out a yawn that nearly blows you over, and then falls fast asleep (what did you put in that drink, anyway?).\n")
-				G.CyclopsFlag = true
+				GD().CyclopsFlag = true
 			} else {
 				Printf("The cyclops apparently is not thirsty and refuses your generous offer.\n")
 			}
@@ -1846,7 +1848,7 @@ func RainbowFcn(arg ActArg) bool {
 			Printf("From here?!?\n")
 			return true
 		}
-		if G.RainbowFlag {
+		if GD().RainbowFlag {
 			if G.Here == &AragainFalls {
 				Goto(&EndOfRainbow, true)
 			} else if G.Here == &EndOfRainbow {
@@ -1868,7 +1870,7 @@ func RainbowFcn(arg ActArg) bool {
 
 func RopeFcn(arg ActArg) bool {
 	if G.Here != &DomeRoom {
-		G.DomeFlag = false
+		GD().DomeFlag = false
 		if G.ActVerb.Norm == "tie" {
 			Printf("You can't tie the rope to that.\n")
 			return true
@@ -1877,11 +1879,11 @@ func RopeFcn(arg ActArg) bool {
 	}
 	if G.ActVerb.Norm == "tie" {
 		if G.IndirObj == &Railing {
-			if G.DomeFlag {
+			if GD().DomeFlag {
 				Printf("The rope is already tied to it.\n")
 			} else {
 				Printf("The rope drops over the side and comes within ten feet of the floor.\n")
-				G.DomeFlag = true
+				GD().DomeFlag = true
 				Rope.Give(FlgNoDesc)
 				rloc := Rope.Location()
 				if rloc == nil || !rloc.IsIn(&Rooms) {
@@ -1892,7 +1894,7 @@ func RopeFcn(arg ActArg) bool {
 		}
 		return false
 	}
-	if G.ActVerb.Norm == "climb down" && (G.DirObj == &Rope || G.DirObj == &Rooms) && G.DomeFlag {
+	if G.ActVerb.Norm == "climb down" && (G.DirObj == &Rope || G.DirObj == &Rooms) && GD().DomeFlag {
 		DoWalk(Down)
 		return true
 	}
@@ -1910,8 +1912,8 @@ func RopeFcn(arg ActArg) bool {
 		return true
 	}
 	if G.ActVerb.Norm == "untie" {
-		if G.DomeFlag {
-			G.DomeFlag = false
+		if GD().DomeFlag {
+			GD().DomeFlag = false
 			Rope.Take(FlgNoDesc)
 			Printf("The rope is now untied.\n")
 		} else {
@@ -1919,13 +1921,13 @@ func RopeFcn(arg ActArg) bool {
 		}
 		return true
 	}
-	if G.ActVerb.Norm == "drop" && G.Here == &DomeRoom && !G.DomeFlag {
+	if G.ActVerb.Norm == "drop" && G.Here == &DomeRoom && !GD().DomeFlag {
 		Rope.MoveTo(&TorchRoom)
 		Printf("The rope drops gently to the floor below.\n")
 		return true
 	}
 	if G.ActVerb.Norm == "take" {
-		if G.DomeFlag {
+		if GD().DomeFlag {
 			Printf("The rope is tied to the railing.\n")
 			return true
 		}
@@ -1982,9 +1984,9 @@ func EggObjectFcn(arg ActArg) bool {
 func CanaryObjectFcn(arg ActArg) bool {
 	if G.ActVerb.Norm == "wind" {
 		if G.DirObj == &Canary {
-			if !G.SingSong && ForestRoomQ() {
+			if !GD().SingSong && ForestRoomQ() {
 				Printf("The canary chirps, slightly off-key, an aria from a forgotten opera. From out of the greenery flies a lovely songbird. It perches on a limb just over your head and opens its beak to sing. As it does so a beautiful brass bauble drops from its mouth, bounces off the top of your head, and lands glimmering in the grass. As the canary winds down, the songbird flies away.\n")
-				G.SingSong = true
+				GD().SingSong = true
 				dest := G.Here
 				if G.Here == &UpATree {
 					dest = &Path
@@ -2004,7 +2006,7 @@ func CanaryObjectFcn(arg ActArg) bool {
 func RugFcn(arg ActArg) bool {
 	if G.ActVerb.Norm == "raise" {
 		Printf("The rug is too heavy to lift")
-		if G.RugMoved {
+		if GD().RugMoved {
 			Printf(".\n")
 		} else {
 			Printf(", but in trying to take it you have noticed an irregularity beneath it.\n")
@@ -2012,13 +2014,13 @@ func RugFcn(arg ActArg) bool {
 		return true
 	}
 	if G.ActVerb.Norm == "move" || G.ActVerb.Norm == "push" {
-		if G.RugMoved {
+		if GD().RugMoved {
 			Printf("Having moved the carpet previously, you find it impossible to move it again.\n")
 		} else {
 			Printf("With a great effort, the rug is moved to one side of the room, revealing the dusty cover of a closed trap door.\n")
 			TrapDoor.Take(FlgInvis)
 			ThisIsIt(&TrapDoor)
-			G.RugMoved = true
+			GD().RugMoved = true
 		}
 		return true
 	}
@@ -2026,12 +2028,12 @@ func RugFcn(arg ActArg) bool {
 		Printf("The rug is extremely heavy and cannot be carried.\n")
 		return true
 	}
-	if G.ActVerb.Norm == "look under" && !G.RugMoved && !TrapDoor.Has(FlgOpen) {
+	if G.ActVerb.Norm == "look under" && !GD().RugMoved && !TrapDoor.Has(FlgOpen) {
 		Printf("Underneath the rug is a closed trap door. As you drop the corner of the rug, the trap door is once again concealed from view.\n")
 		return true
 	}
 	if G.ActVerb.Norm == "climb on" {
-		if !G.RugMoved && !TrapDoor.Has(FlgOpen) {
+		if !GD().RugMoved && !TrapDoor.Has(FlgOpen) {
 			Printf("As you sit, you notice an irregularity underneath it. Rather than be uncomfortable, you stand up again.\n")
 		} else {
 			Printf("I suppose you think it's a magic carpet?\n")
@@ -2043,23 +2045,23 @@ func RugFcn(arg ActArg) bool {
 
 func SandFunction(arg ActArg) bool {
 	if G.ActVerb.Norm == "dig" && G.IndirObj == &Shovel {
-		G.BeachDig++
-		if G.BeachDig > 3 {
-			G.BeachDig = -1
+		GD().BeachDig++
+		if GD().BeachDig > 3 {
+			GD().BeachDig = -1
 			if Scarab.IsIn(G.Here) {
 				Scarab.Give(FlgInvis)
 			}
 			JigsUp("The hole collapses, smothering you.", false)
 			return true
 		}
-		if G.BeachDig == 3 {
+		if GD().BeachDig == 3 {
 			if Scarab.Has(FlgInvis) {
 				Printf("You can see a scarab here in the sand.\n")
 				ThisIsIt(&Scarab)
 				Scarab.Take(FlgInvis)
 			}
 		} else {
-			Printf("%s\n", BDigs[G.BeachDig])
+			Printf("%s\n", BDigs[GD().BeachDig])
 		}
 		return true
 	}
@@ -2092,15 +2094,15 @@ func KitchenFcn(arg ActArg) bool {
 func LivingRoomFcn(arg ActArg) bool {
 	if arg == ActLook {
 		Printf("You are in the living room. There is a doorway to the east")
-		if G.MagicFlag {
+		if GD().MagicFlag {
 			Printf(". To the west is a cyclops-shaped opening in an old wooden door, above which is some strange gothic lettering, ")
 		} else {
 			Printf(", a wooden door with strange gothic lettering to the west, which appears to be nailed shut, ")
 		}
 		Printf("a trophy case, ")
-		if G.RugMoved && TrapDoor.Has(FlgOpen) {
+		if GD().RugMoved && TrapDoor.Has(FlgOpen) {
 			Printf("and a rug lying beside an open trap door.")
-		} else if G.RugMoved {
+		} else if GD().RugMoved {
 			Printf("and a closed trap door at your feet.")
 		} else if TrapDoor.Has(FlgOpen) {
 			Printf("and an open trap door at your feet.")
@@ -2159,7 +2161,7 @@ func TrollRoomFcn(arg ActArg) bool {
 
 func ClearingFcn(arg ActArg) bool {
 	if arg == ActEnter {
-		if !G.GrateRevealed {
+		if !GD().GrateRevealed {
 			Grate.Give(FlgInvis)
 		}
 		return false
@@ -2168,7 +2170,7 @@ func ClearingFcn(arg ActArg) bool {
 		Printf("You are in a clearing, with a forest surrounding you on all sides. A path leads south.")
 		if Grate.Has(FlgOpen) {
 			Printf("\nThere is an open grating, descending into darkness.")
-		} else if G.GrateRevealed {
+		} else if GD().GrateRevealed {
 			Printf("\nThere is a grating securely fastened into the ground.")
 		}
 		Printf("\n")
@@ -2186,7 +2188,7 @@ func Maze11Fcn(arg ActArg) bool {
 		Printf("You are in a small room near the maze. There are twisty passages in the immediate vicinity.\n")
 		if Grate.Has(FlgOpen) {
 			Printf("Above you is an open grating with sunlight pouring in.")
-		} else if G.GrUnlock {
+		} else if GD().GrUnlock {
 			Printf("Above you is a grating.")
 		} else {
 			Printf("Above you is a grating locked with a skull-and-crossbones lock.")
@@ -2200,13 +2202,13 @@ func Maze11Fcn(arg ActArg) bool {
 func CyclopsRoomFcn(arg ActArg) bool {
 	if arg == ActLook {
 		Printf("This room has an exit on the northwest, and a staircase leading up.\n")
-		if G.CyclopsFlag && !G.MagicFlag {
+		if GD().CyclopsFlag && !GD().MagicFlag {
 			Printf("The cyclops is sleeping blissfully at the foot of the stairs.\n")
-		} else if G.MagicFlag {
+		} else if GD().MagicFlag {
 			Printf("The east wall, previously solid, now has a cyclops-sized opening in it.\n")
-		} else if G.CycloWrath == 0 {
+		} else if GD().CycloWrath == 0 {
 			Printf("A cyclops, who looks prepared to eat horses (much less mere adventurers), blocks the staircase. From his state of health, and the bloodstains on the walls, you gather that he is not very friendly, though he likes people.\n")
-		} else if G.CycloWrath > 0 {
+		} else if GD().CycloWrath > 0 {
 			Printf("The cyclops is standing in the corner, eyeing you closely. I don't think he likes you very much. He looks extremely hungry, even for a cyclops.\n")
 		} else {
 			Printf("The cyclops, having eaten the hot peppers, appears to be gasping. His enflamed tongue protrudes from his man-sized mouth.\n")
@@ -2214,7 +2216,7 @@ func CyclopsRoomFcn(arg ActArg) bool {
 		return true
 	}
 	if arg == ActEnter {
-		if G.CycloWrath == 0 {
+		if GD().CycloWrath == 0 {
 			return false
 		}
 		Queue("ICyclops", -1).Run = true
@@ -2224,7 +2226,7 @@ func CyclopsRoomFcn(arg ActArg) bool {
 }
 
 func TreasureRoomFcn(arg ActArg) bool {
-	if arg == ActEnter && !G.Dead {
+	if arg == ActEnter && !GD().Dead {
 		if !Thief.IsIn(G.Here) {
 			Printf("You hear a scream of anguish as you violate the robber's hideaway. Using passages unknown to you, he rushes to its defense.\n")
 			Thief.MoveTo(G.Here)
@@ -2239,11 +2241,11 @@ func TreasureRoomFcn(arg ActArg) bool {
 
 func ReservoirSouthFcn(arg ActArg) bool {
 	if arg == ActLook {
-		if G.LowTide && G.GatesOpen {
+		if GD().LowTide && GD().GatesOpen {
 			Printf("You are in a long room, to the north of which was formerly a lake. However, with the water level lowered, there is merely a wide stream running through the center of the room.")
-		} else if G.GatesOpen {
+		} else if GD().GatesOpen {
 			Printf("You are in a long room. To the north is a large lake, too deep to cross. You notice, however, that the water level appears to be dropping at a rapid rate. Before long, it might be possible to cross to the other side from here.")
-		} else if G.LowTide {
+		} else if GD().LowTide {
 			Printf("You are in a long room, to the north of which is a wide area which was formerly a reservoir, but now is merely a stream. You notice, however, that the level of the stream is rising quickly and that before long it will be impossible to cross here.")
 		} else {
 			Printf("You are in a long room on the south shore of a large lake, far too deep and wide for crossing.")
@@ -2255,12 +2257,12 @@ func ReservoirSouthFcn(arg ActArg) bool {
 }
 
 func ReservoirFcn(arg ActArg) bool {
-	if arg == ActEnd && !G.Winner.Location().Has(FlgVeh) && !G.GatesOpen && G.LowTide {
+	if arg == ActEnd && !G.Winner.Location().Has(FlgVeh) && !GD().GatesOpen && GD().LowTide {
 		Printf("You notice that the water level here is rising rapidly. The currents are also becoming stronger. Staying here seems quite perilous!\n")
 		return true
 	}
 	if arg == ActLook {
-		if G.LowTide {
+		if GD().LowTide {
 			Printf("You are on what used to be a large lake, but which is now a large mud pile. There are \"shores\" to the north and south.")
 		} else {
 			Printf("You are on the lake. Beaches can be seen north and south. Upstream a small stream enters the lake through a narrow cleft in the rocks. The dam can be seen downstream.")
@@ -2273,11 +2275,11 @@ func ReservoirFcn(arg ActArg) bool {
 
 func ReservoirNorthFcn(arg ActArg) bool {
 	if arg == ActLook {
-		if G.LowTide && G.GatesOpen {
+		if GD().LowTide && GD().GatesOpen {
 			Printf("You are in a large cavernous room, the south of which was formerly a lake. However, with the water level lowered, there is merely a wide stream running through there.")
-		} else if G.GatesOpen {
+		} else if GD().GatesOpen {
 			Printf("You are in a large cavernous area. To the south is a wide lake, whose water level appears to be falling rapidly.")
-		} else if G.LowTide {
+		} else if GD().LowTide {
 			Printf("You are in a cavernous area, to the south of which is a very wide stream. The level of the stream is rising rapidly, and it appears that before long it will be impossible to cross to the other side.")
 		} else {
 			Printf("You are in a large cavernous room, north of a large lake.")
@@ -2291,7 +2293,7 @@ func ReservoirNorthFcn(arg ActArg) bool {
 func MirrorRoomFcn(arg ActArg) bool {
 	if arg == ActLook {
 		Printf("You are in a large square room with tall ceilings. On the south wall is an enormous mirror which fills the entire wall. There are exits on the other three sides of the room.\n")
-		if G.MirrorMung {
+		if GD().MirrorMung {
 			Printf("Unfortunately, the mirror has been destroyed by your recklessness.\n")
 		}
 		return true
@@ -2318,13 +2320,13 @@ func Cave2RoomFcn(arg ActArg) bool {
 func LLDRoomFcn(arg ActArg) bool {
 	if arg == ActLook {
 		Printf("You are outside a large gateway, on which is inscribed\n\n  Abandon every hope\nall ye who enter here!\n\nThe gate is open; through it you can see a desolation, with a pile of mangled bodies in one corner. Thousands of voices, lamenting some hideous fate, can be heard.\n")
-		if !G.LLDFlag && !G.Dead {
+		if !GD().LLDFlag && !GD().Dead {
 			Printf("The way through the gate is barred by evil spirits, who jeer at your attempts to pass.\n")
 		}
 		return true
 	}
 	if arg == ActBegin {
-		if G.ActVerb.Norm == "exorcise" && !G.LLDFlag {
+		if G.ActVerb.Norm == "exorcise" && !GD().LLDFlag {
 			if Bell.IsIn(G.Winner) && Book.IsIn(G.Winner) && Candles.IsIn(G.Winner) {
 				Printf("You must perform the ceremony.\n")
 			} else {
@@ -2332,8 +2334,8 @@ func LLDRoomFcn(arg ActArg) bool {
 			}
 			return true
 		}
-		if !G.LLDFlag && G.ActVerb.Norm == "ring" && G.DirObj == &Bell {
-			G.XB = true
+		if !GD().LLDFlag && G.ActVerb.Norm == "ring" && G.DirObj == &Bell {
+			GD().XB = true
 			RemoveCarefully(&Bell)
 			ThisIsIt(&HotBell)
 			HotBell.MoveTo(G.Here)
@@ -2348,17 +2350,17 @@ func LLDRoomFcn(arg ActArg) bool {
 			Queue("IXbh", 20).Run = true
 			return true
 		}
-		if G.XC && G.ActVerb.Norm == "read" && G.DirObj == &Book && !G.LLDFlag {
+		if GD().XC && G.ActVerb.Norm == "read" && G.DirObj == &Book && !GD().LLDFlag {
 			Printf("Each word of the prayer reverberates through the hall in a deafening confusion. As the last word fades, a voice, loud and commanding, speaks: \"Begone, fiends!\" A heart-stopping scream fills the cavern, and the spirits, sensing a greater power, flee through the walls.\n")
 			RemoveCarefully(&Ghosts)
-			G.LLDFlag = true
+			GD().LLDFlag = true
 			QueueInt("IXc", false).Run = false
 			return true
 		}
 	}
 	if arg == ActEnd {
-		if G.XB && Candles.IsIn(G.Winner) && Candles.Has(FlgOn) && !G.XC {
-			G.XC = true
+		if GD().XB && Candles.IsIn(G.Winner) && Candles.Has(FlgOn) && !GD().XC {
+			GD().XC = true
 			Printf("The flames flicker wildly and appear to dance. The earth beneath your feet trembles, and your legs nearly buckle beneath you. The spirits cower at your unearthly power.\n")
 			QueueInt("IXb", false).Run = false
 			Queue("IXc", 3).Run = true
@@ -2370,13 +2372,13 @@ func LLDRoomFcn(arg ActArg) bool {
 func DomeRoomFcn(arg ActArg) bool {
 	if arg == ActLook {
 		Printf("You are at the periphery of a large dome, which forms the ceiling of another room below. Protecting you from a precipitous drop is a wooden railing which circles the dome.\n")
-		if G.DomeFlag {
+		if GD().DomeFlag {
 			Printf("Hanging down from the railing is a rope which ends about ten feet from the floor below.\n")
 		}
 		return true
 	}
 	if arg == ActEnter {
-		if G.Dead {
+		if GD().Dead {
 			Printf("As you enter the dome you feel a strong pull as if from a wind drawing you over the railing and down.\n")
 			G.Winner.MoveTo(&TorchRoom)
 			G.Here = &TorchRoom
@@ -2393,7 +2395,7 @@ func DomeRoomFcn(arg ActArg) bool {
 func TorchRoomFcn(arg ActArg) bool {
 	if arg == ActLook {
 		Printf("This is a large room with a prominent doorway leading to a down staircase. Above you is a large dome. Up around the edge of the dome (20 feet up) is a wooden railing. In the center of the room sits a white marble pedestal.\n")
-		if G.DomeFlag {
+		if GD().DomeFlag {
 			Printf("A piece of rope descends from the railing above, ending some five feet above your head.\n")
 		}
 		return true
@@ -2403,7 +2405,7 @@ func TorchRoomFcn(arg ActArg) bool {
 
 func SouthTempleFcn(arg ActArg) bool {
 	if arg == ActBegin {
-		G.CoffinCure = !Coffin.IsIn(G.Winner)
+		GD().CoffinCure = !Coffin.IsIn(G.Winner)
 		return false
 	}
 	return false
@@ -2425,7 +2427,7 @@ func MachineRoomFcn(arg ActArg) bool {
 func LoudRoomFcn(arg ActArg) bool {
 	if arg == ActLook {
 		Printf("This is a large room with a ceiling which cannot be detected from the ground. There is a narrow passage from east to west and a stone stairway leading upward.")
-		if G.LoudFlag || (!G.GatesOpen && G.LowTide) {
+		if GD().LoudFlag || (!GD().GatesOpen && GD().LowTide) {
 			Printf(" The room is eerie in its quietness.")
 		} else {
 			Printf(" The room is deafeningly loud with an undetermined rushing sound. The sound seems to reverberate from all of the walls, making it difficult even to think.")
@@ -2433,17 +2435,17 @@ func LoudRoomFcn(arg ActArg) bool {
 		Printf("\n")
 		return true
 	}
-	if arg == ActEnd && G.GatesOpen && !G.LowTide {
+	if arg == ActEnd && GD().GatesOpen && !GD().LowTide {
 		Printf("It is unbearably loud here, with an ear-splitting roar seeming to come from all around you. There is a pounding in your head which won't stop. With a tremendous effort, you scramble out of the room.\n\n")
 		dest := LoudRuns[G.Rand.Intn(len(LoudRuns))]
 		Goto(dest, true)
 		return false
 	}
 	if arg == ActEnter {
-		if G.LoudFlag || (!G.GatesOpen && G.LowTide) {
+		if GD().LoudFlag || (!GD().GatesOpen && GD().LowTide) {
 			return false
 		}
-		if G.GatesOpen && !G.LowTide {
+		if GD().GatesOpen && !GD().LowTide {
 			return false
 		}
 		// Room is loud - special input handling
@@ -2456,13 +2458,13 @@ func LoudRoomFcn(arg ActArg) bool {
 		return false
 	}
 	if G.ActVerb.Norm == "echo" {
-		if G.LoudFlag || (!G.GatesOpen && G.LowTide) {
+		if GD().LoudFlag || (!GD().GatesOpen && GD().LowTide) {
 			// Room is already quiet
 			Printf("echo echo ...\n")
 			return true
 		}
 		Printf("The acoustics of the room change subtly.\n")
-		G.LoudFlag = true
+		GD().LoudFlag = true
 		return true
 	}
 	return false
@@ -2471,9 +2473,9 @@ func LoudRoomFcn(arg ActArg) bool {
 func DeepCanyonFcn(arg ActArg) bool {
 	if arg == ActLook {
 		Printf("You are on the south edge of a deep canyon. Passages lead off to the east, northwest and southwest. A stairway leads down.")
-		if G.GatesOpen && !G.LowTide {
+		if GD().GatesOpen && !GD().LowTide {
 			Printf(" You can hear a loud roaring sound, like that of rushing water, from below.")
-		} else if !G.GatesOpen && G.LowTide {
+		} else if !GD().GatesOpen && GD().LowTide {
 			Printf("\n")
 			return true
 		} else {
@@ -2513,7 +2515,7 @@ func BatsRoomFcn(arg ActArg) bool {
 		Printf("You are in a small room which has doors only to the east and south.\n")
 		return true
 	}
-	if arg == ActEnter && !G.Dead {
+	if arg == ActEnter && !GD().Dead {
 		if Garlic.Location() != G.Winner && !Garlic.IsIn(G.Here) {
 			VLook(ActUnk)
 			Printf("\n")
@@ -2527,16 +2529,16 @@ func BatsRoomFcn(arg ActArg) bool {
 func NoObjsFcn(arg ActArg) bool {
 	if arg == ActBegin {
 		f := G.Winner.Children
-		G.EmptyHanded = true
+		GD().EmptyHanded = true
 		for _, child := range f {
 			if Weight(child) > 4 {
-				G.EmptyHanded = false
+				GD().EmptyHanded = false
 				break
 			}
 		}
 		if G.Here == &LowerShaft && G.Lit {
-			ScoreUpd(G.LightShaft)
-			G.LightShaft = 0
+			ScoreUpd(GD().LightShaft)
+			GD().LightShaft = 0
 		}
 		return false
 	}
@@ -2674,9 +2676,9 @@ func DeadFunction(arg ActArg) bool {
 			Lamp.Take(FlgInvis)
 			G.Winner.Action = nil
 			G.AlwaysLit = false
-			G.Dead = false
+			GD().Dead = false
 			if Troll.IsIn(&TrollRoom) {
-				G.TrollFlag = false
+				GD().TrollFlag = false
 			}
 			Printf("From the distance the sound of a lone trumpet is heard. The room becomes very bright and you feel disembodied. In a moment, the brightness fades and you find yourself rising as if from a long sleep, deep in the woods. In the distance you can faintly hear a songbird and the sounds of the forest.\n\n")
 			Goto(&Forest1, true)
@@ -2696,27 +2698,27 @@ func DeadFunction(arg ActArg) bool {
 
 func ICandles() bool {
 	Candles.Give(FlgTouch)
-	if G.CandleTableIdx >= len(CandleTable) {
+	if GD().CandleTableIdx >= len(CandleTable) {
 		return true
 	}
-	tick := CandleTable[G.CandleTableIdx].(int)
+	tick := CandleTable[GD().CandleTableIdx].(int)
 	Queue("ICandles", tick).Run = true
-	LightInt(&Candles, G.CandleTableIdx, tick)
+	LightInt(&Candles, GD().CandleTableIdx, tick)
 	if tick != 0 {
-		G.CandleTableIdx += 2
+		GD().CandleTableIdx += 2
 	}
 	return true
 }
 
 func ILantern() bool {
-	if G.LampTableIdx >= len(LampTable) {
+	if GD().LampTableIdx >= len(LampTable) {
 		return true
 	}
-	tick := LampTable[G.LampTableIdx].(int)
+	tick := LampTable[GD().LampTableIdx].(int)
 	Queue("ILantern", tick).Run = true
-	LightInt(&Lamp, G.LampTableIdx, tick)
+	LightInt(&Lamp, GD().LampTableIdx, tick)
 	if tick != 0 {
-		G.LampTableIdx += 2
+		GD().LampTableIdx += 2
 	}
 	return true
 }
@@ -2758,12 +2760,12 @@ func ICure() bool {
 		G.Winner.Strength = s
 	}
 	if s < 0 {
-		if G.LoadAllowed < G.LoadMax {
-			G.LoadAllowed += 10
+		if GD().LoadAllowed < GD().LoadMax {
+			GD().LoadAllowed += 10
 		}
 		Queue("ICure", CureWait).Run = true
 	} else {
-		G.LoadAllowed = G.LoadMax
+		GD().LoadAllowed = GD().LoadMax
 		QueueInt("ICure", false).Run = false
 	}
 	return false
@@ -2778,12 +2780,12 @@ func IMatch() bool {
 }
 
 func IXb() bool {
-	if !G.XC {
+	if !GD().XC {
 		if G.Here == &EnteranceToHades {
 			Printf("The tension of this ceremony is broken, and the wraiths, amused but shaken at your clumsy attempt, resume their hideous jeering.\n")
 		}
 	}
-	G.XB = false
+	GD().XB = false
 	return true
 }
 
@@ -2797,31 +2799,31 @@ func IXbh() bool {
 }
 
 func IXc() bool {
-	G.XC = false
+	GD().XC = false
 	IXb()
 	return true
 }
 
 func ICyclops() bool {
-	if G.CyclopsFlag || G.Dead {
+	if GD().CyclopsFlag || GD().Dead {
 		return true
 	}
 	if G.Here != &CyclopsRoom {
 		QueueInt("ICyclops", false).Run = false
 		return false
 	}
-	if AbsInt(G.CycloWrath) > 5 {
+	if AbsInt(GD().CycloWrath) > 5 {
 		QueueInt("ICyclops", false).Run = false
 		JigsUp("The cyclops, tired of all of your games and trickery, grabs you firmly. As he licks his chops, he says \"Mmm. Just like Mom used to make 'em.\" It's nice to be appreciated.", false)
 		return true
 	}
-	if G.CycloWrath < 0 {
-		G.CycloWrath--
+	if GD().CycloWrath < 0 {
+		GD().CycloWrath--
 	} else {
-		G.CycloWrath++
+		GD().CycloWrath++
 	}
-	if !G.CyclopsFlag {
-		idx := AbsInt(G.CycloWrath) - 2
+	if !GD().CyclopsFlag {
+		idx := AbsInt(GD().CycloWrath) - 2
 		if idx >= 0 && idx < len(Cyclomad) {
 			Printf("%s\n", Cyclomad[idx])
 		}
@@ -2845,7 +2847,7 @@ func IForestRandom() bool {
 // ================================================================
 
 func GratingExitFcn() *Object {
-	if G.GrateRevealed {
+	if GD().GrateRevealed {
 		if Grate.Has(FlgOpen) {
 			return &GratingRoom
 		}
@@ -2858,7 +2860,7 @@ func GratingExitFcn() *Object {
 }
 
 func TrapDoorExitFcn() *Object {
-	if G.RugMoved {
+	if GD().RugMoved {
 		if TrapDoor.Has(FlgOpen) {
 			return &Cellar
 		}
@@ -2930,7 +2932,7 @@ func ChasmPseudo(arg ActArg) bool {
 }
 
 func LakePseudo(arg ActArg) bool {
-	if G.LowTide {
+	if GD().LowTide {
 		Printf("There's not much lake left....\n")
 		return true
 	}

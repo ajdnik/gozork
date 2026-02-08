@@ -1,4 +1,6 @@
-package zork
+package game
+
+import . "github.com/ajdnik/gozork/engine"
 
 // ================================================================
 // COMBAT SYSTEM TYPES AND TABLES
@@ -380,17 +382,17 @@ func Awaken(o *Object) bool {
 }
 
 func IFight() bool {
-	if G.Dead {
+	if GD().Dead {
 		return false
 	}
 	fightQ := false
-	numVillains := len(G.Villains)
+	numVillains := len(GD().Villains)
 	for cnt := 0; cnt < numVillains; cnt++ {
-		oo := G.Villains[cnt]
+		oo := GD().Villains[cnt]
 		o := oo.Villain
 		if o.IsIn(G.Here) && !o.Has(FlgInvis) {
-			if o == &Thief && G.ThiefEngrossed {
-				G.ThiefEngrossed = false
+			if o == &Thief && GD().ThiefEngrossed {
+				GD().ThiefEngrossed = false
 			} else if o.Strength < 0 {
 				p := oo.Prob
 				if p != 0 && Prob(p, false) {
@@ -409,7 +411,7 @@ func IFight() bool {
 				}
 			}
 			if o == &Thief {
-				G.ThiefEngrossed = false
+				GD().ThiefEngrossed = false
 			}
 			G.Winner.Take(FlgStagg)
 			o.Take(FlgStagg)
@@ -490,11 +492,11 @@ func RandomMeleeMsg(set MeleeSet) MeleeMsg {
 func VillainStrength(oo *VillainEntry) int {
 	od := oo.Villain.Strength
 	if od >= 0 {
-		if oo.Villain == &Thief && G.ThiefEngrossed {
+		if oo.Villain == &Thief && GD().ThiefEngrossed {
 			if od > 2 {
 				od = 2
 			}
-			G.ThiefEngrossed = false
+			GD().ThiefEngrossed = false
 		}
 		if G.IndirObj != nil && G.IndirObj.Has(FlgWeapon) && oo.Best == G.IndirObj {
 			tmp := od - oo.BestAdv
@@ -656,16 +658,16 @@ func VillainBlow(oo *VillainEntry, out bool) BlowRes {
 		if def < 0 {
 			def = 0
 		}
-		if G.LoadAllowed > 50 {
-			G.LoadAllowed -= 10
+		if GD().LoadAllowed > 50 {
+			GD().LoadAllowed -= 10
 		}
 	case res == BlowHeavyWnd:
 		def -= 2
 		if def < 0 {
 			def = 0
 		}
-		if G.LoadAllowed > 50 {
-			G.LoadAllowed -= 20
+		if GD().LoadAllowed > 50 {
+			GD().LoadAllowed -= 20
 		}
 	case res == BlowStag:
 		G.Winner.Give(FlgStagg)
@@ -690,7 +692,7 @@ func DoFight(numVillains int) bool {
 		var res BlowRes
 		out := false
 		for cnt < numVillains {
-			oo := G.Villains[cnt]
+			oo := GD().Villains[cnt]
 			cnt++
 			o := oo.Villain
 			if !o.Has(FlgFight) {
@@ -726,7 +728,7 @@ func HeroBlow() bool {
 	}
 	// Find the villain entry for the target
 	var oo *VillainEntry
-	for _, v := range G.Villains {
+	for _, v := range GD().Villains {
 		if v.Villain == G.DirObj {
 			oo = v
 			break

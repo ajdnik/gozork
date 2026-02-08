@@ -1,4 +1,6 @@
-package zork
+package game
+
+import . "github.com/ajdnik/gozork/engine"
 
 
 
@@ -9,7 +11,7 @@ func FixBoat() {
 }
 
 func FixMaintLeak() {
-	G.WaterLevel = -1
+	GD().WaterLevel = -1
 	QueueInt("IMaintRoom", false).Run = false
 	Printf("By some miracle of Zorkian technology, you have managed to stop the leak in the dam.\n")
 }
@@ -77,16 +79,16 @@ func WaterFcn(arg ActArg) bool {
 func BoltFcn(arg ActArg) bool {
 	if G.ActVerb.Norm == "turn" {
 		if G.IndirObj == &Wrench {
-			if G.GateFlag {
+			if GD().GateFlag {
 				ReservoirSouth.Take(FlgTouch)
-				if G.GatesOpen {
-					G.GatesOpen = false
+				if GD().GatesOpen {
+					GD().GatesOpen = false
 					LoudRoom.Take(FlgTouch)
 					Printf("The sluice gates close and water starts to collect behind the dam.\n")
 					Queue("IRfill", 8).Run = true
 					QueueInt("IRempty", false).Run = false
 				} else {
-					G.GatesOpen = true
+					GD().GatesOpen = true
 					Printf("The sluice gates open and water pours through the dam.\n")
 					Queue("IRempty", 8).Run = true
 					QueueInt("IRfill", false).Run = false
@@ -165,7 +167,7 @@ func InflatableBoatFcn(arg ActArg) bool {
 			if !BoatLabel.Has(FlgTouch) {
 				Printf("A tan label is lying inside the boat.\n")
 			}
-			G.Deflate = false
+			GD().Deflate = false
 			RemoveCarefully(&InflatableBoat)
 			InflatedBoat.MoveTo(G.Here)
 			ThisIsIt(&InflatedBoat)
@@ -210,17 +212,17 @@ func RiverFcn(arg ActArg) bool {
 func DamRoomFcn(arg ActArg) bool {
 	if arg == ActLook {
 		Printf("You are standing on the top of the Flood Control Dam #3, which was quite a tourist attraction in times far distant. There are paths to the north, south, and west, and a scramble down.\n")
-		if G.LowTide && G.GatesOpen {
+		if GD().LowTide && GD().GatesOpen {
 			Printf("The water level behind the dam is low: The sluice gates have been opened. Water rushes through the dam and downstream.\n")
-		} else if G.GatesOpen {
+		} else if GD().GatesOpen {
 			Printf("The sluice gates are open, and water rushes through the dam. The water level behind the dam is still high.\n")
-		} else if G.LowTide {
+		} else if GD().LowTide {
 			Printf("The sluice gates are closed. The water level in the reservoir is quite low, but the level is rising quickly.\n")
 		} else {
 			Printf("The sluice gates on the dam are closed. Behind the dam, there can be seen a wide reservoir. Water is pouring over the top of the now abandoned dam.\n")
 		}
 		Printf("There is a control panel here, on which a large metal bolt is mounted. Directly above the bolt is a small green plastic bubble")
-		if G.GateFlag {
+		if GD().GateFlag {
 			Printf(" which is glowing serenely")
 		}
 		Printf(".\n")
@@ -232,9 +234,9 @@ func DamRoomFcn(arg ActArg) bool {
 func WhiteCliffsFcn(arg ActArg) bool {
 	if arg == ActEnd {
 		if InflatedBoat.IsIn(G.Winner) {
-			G.Deflate = false
+			GD().Deflate = false
 		} else {
-			G.Deflate = true
+			GD().Deflate = true
 		}
 	}
 	return false
@@ -243,7 +245,7 @@ func WhiteCliffsFcn(arg ActArg) bool {
 func FallsRoomFcn(arg ActArg) bool {
 	if arg == ActLook {
 		Printf("You are at the top of Aragain Falls, an enormous waterfall with a drop of about 450 feet. The only path here is on the north end.\n")
-		if G.RainbowFlag {
+		if GD().RainbowFlag {
 			Printf("A solid rainbow spans the falls.\n")
 		} else {
 			Printf("A beautiful rainbow can be seen over the falls and to the west.\n")
@@ -255,9 +257,9 @@ func FallsRoomFcn(arg ActArg) bool {
 
 func Rivr4RoomFcn(arg ActArg) bool {
 	if arg == ActEnd {
-		if Buoy.IsIn(G.Winner) && G.BuoyFlag {
+		if Buoy.IsIn(G.Winner) && GD().BuoyFlag {
 			Printf("You notice something funny about the feel of the buoy.\n")
-			G.BuoyFlag = false
+			GD().BuoyFlag = false
 		}
 	}
 	return false
@@ -359,7 +361,7 @@ func RBoatFcn(arg ActArg) bool {
 			return true
 		}
 		Printf("The boat deflates.\n")
-		G.Deflate = true
+		GD().Deflate = true
 		RemoveCarefully(&InflatedBoat)
 		InflatableBoat.MoveTo(G.Here)
 		ThisIsIt(&InflatableBoat)
@@ -376,7 +378,7 @@ func IRfill() bool {
 	if Trunk.IsIn(&Reservoir) {
 		Trunk.Give(FlgInvis)
 	}
-	G.LowTide = false
+	GD().LowTide = false
 	if G.Here == &Reservoir {
 		if G.Winner.Location().Has(FlgVeh) {
 			Printf("The boat lifts gently out of the mud and is now floating on the reservoir.\n")
@@ -401,7 +403,7 @@ func IRempty() bool {
 	DeepCanyon.Take(FlgTouch)
 	LoudRoom.Take(FlgTouch)
 	Trunk.Take(FlgInvis)
-	G.LowTide = true
+	GD().LowTide = true
 	if G.Here == &Reservoir && G.Winner.Location().Has(FlgVeh) {
 		Printf("The water level has dropped to the point at which the boat can no longer stay afloat. It sinks into the mud.\n")
 	} else if G.Here == &DeepCanyon {
@@ -416,14 +418,14 @@ func IMaintRoom() bool {
 	hereQ := G.Here == &MaintenanceRoom
 	if hereQ {
 		Printf("The water level here is now ")
-		idx := G.WaterLevel / 2
+		idx := GD().WaterLevel / 2
 		if idx >= 0 && idx < len(Drownings) {
 			Printf("%s", Drownings[idx])
 		}
 		Printf("\n")
 	}
-	G.WaterLevel++
-	if G.WaterLevel >= 14 {
+	GD().WaterLevel++
+	if GD().WaterLevel >= 14 {
 		MungRoom(&MaintenanceRoom, "The room is full of water and cannot be entered.")
 		QueueInt("IMaintRoom", false).Run = false
 		if hereQ {

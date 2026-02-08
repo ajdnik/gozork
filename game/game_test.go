@@ -1,6 +1,7 @@
-package zork
+package game
 
 import (
+	. "github.com/ajdnik/gozork/engine"
 	"bytes"
 	"math/rand"
 	"strings"

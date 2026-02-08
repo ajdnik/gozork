@@ -1,4 +1,6 @@
-package zork
+package game
+
+import . "github.com/ajdnik/gozork/engine"
 
 var (
 	GlobalObjects = Object{
@@ -175,10 +177,10 @@ func SailorFcn(arg ActArg) bool {
 		return true
 	}
 	if G.ActVerb.Norm == "hello" {
-		G.HelloSailor++
-		if G.HelloSailor%20 == 0 {
+		GD().HelloSailor++
+		if GD().HelloSailor%20 == 0 {
 			Printf("You seem to be repeating yourself.\n")
-		} else if G.HelloSailor%10 == 0 {
+		} else if GD().HelloSailor%10 == 0 {
 			Printf("I think that phrase is getting a bit worn out.\n")
 		} else {
 			Printf("Nothing happens here.\n")

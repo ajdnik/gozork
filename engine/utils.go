@@ -1,4 +1,4 @@
-package zork
+package engine
 
 func PickOne(data RndSelect) string {
 	if len(data.Unselected) == 0 {
@@ -22,8 +22,6 @@ func Random(tbl []*Object) *Object {
 }
 
 // Prob returns true with the given probability (0-100).
-// ZIL's PROB macro: <G? .BASE? <RANDOM 100>> where RANDOM returns 1..100.
-// We use G.Rand.Intn(100)+1 to match the 1..100 range.
 func Prob(base int, isLooser bool) bool {
 	if isLooser {
 		return Zprob(base)
@@ -32,7 +30,6 @@ func Prob(base int, isLooser bool) bool {
 }
 
 // Zprob is the "loser" version of Prob that accounts for the Lucky flag.
-// ZIL: <G? .BASE <RANDOM 100>> when lucky, <G? .BASE <RANDOM 300>> otherwise.
 func Zprob(base int) bool {
 	if G.Lucky {
 		return base > G.Rand.Intn(100)+1

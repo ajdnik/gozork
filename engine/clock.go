@@ -1,4 +1,4 @@
-package zork
+package engine
 
 // ClockEvent represents a timed or daemon interrupt in the game's event queue.
 type ClockEvent struct {
@@ -18,21 +18,19 @@ func Queue(key string, tick int) *ClockEvent {
 // QueueInt finds an existing clock event by key, or allocates a new slot.
 // If dmn is true, the event is a daemon (always ticked, even on bad parses).
 func QueueInt(key string, dmn bool) *ClockEvent {
-	// Search existing entries for a matching key.
 	for i := len(G.QueueItms) - 1; i >= G.QueueInts; i-- {
 		if G.QueueItms[i].Key == key {
 			return &G.QueueItms[i]
 		}
 	}
 	if G.QueueInts <= 0 {
-		// Queue is full, reuse the last slot.
 		return &G.QueueItms[0]
 	}
 	G.QueueInts--
 	if dmn {
 		G.QueueDmns--
 	}
-	G.QueueItms[G.QueueInts] = ClockEvent{Key: key, Fn: clockFuncs[key]}
+	G.QueueItms[G.QueueInts] = ClockEvent{Key: key, Fn: G.ClockFuncs[key]}
 	return &G.QueueItms[G.QueueInts]
 }
 
@@ -64,29 +62,4 @@ func Clocker() bool {
 	}
 	G.Moves++
 	return flg
-}
-
-// clockFuncs maps event keys to their handler functions.
-// Populated once by initClockFuncs (called from InitGame).
-var clockFuncs map[string]func() bool
-
-func initClockFuncs() {
-	clockFuncs = map[string]func() bool{
-		"IFight":        IFight,
-		"ISword":        ISword,
-		"IThief":        IThief,
-		"ICandles":      ICandles,
-		"ILantern":      ILantern,
-		"ICure":         ICure,
-		"ICyclops":      ICyclops,
-		"IForestRandom": IForestRandom,
-		"IMaintRoom":    IMaintRoom,
-		"IMatch":        IMatch,
-		"IRempty":       IRempty,
-		"IRfill":        IRfill,
-		"IRiver":        IRiver,
-		"IXb":           IXb,
-		"IXbh":          IXbh,
-		"IXc":           IXc,
-	}
 }

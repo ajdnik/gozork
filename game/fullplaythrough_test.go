@@ -1,8 +1,6 @@
-package zork
+package game
 
-import (
-	"testing"
-)
+import "testing"
 
 // TestFullPlaythrough runs a near-complete game based on playthrough.txt.
 // Combat sections use extra rounds to handle RNG variation with seed 1.

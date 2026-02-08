@@ -1,6 +1,9 @@
-package zork
+package game
 
-import "encoding/binary"
+import (
+	. "github.com/ajdnik/gozork/engine"
+	"encoding/binary"
+)
 
 
 func VVerbose(arg ActArg) bool {

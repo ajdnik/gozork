@@ -1,4 +1,6 @@
-package zork
+package game
+
+import . "github.com/ajdnik/gozork/engine"
 
 var (
 	// RndSelect tables
@@ -195,7 +197,7 @@ var (
 		&SmellyRoom, &GasRoom, &LadderTop, &LadderBottom, &DeadEnd5,
 		&TimberRoom, &LowerShaft, &MachineRoom,
 		&Mine1, &Mine2, &Mine3, &Mine4, &SlideRoom,
-		// Objects in rooms
+		// G.AllObjects in rooms
 		&MountainRange, &FrontDoor, &Mailbox, &BarrowDoor, &Barrow,
 		&TrophyCase, &Rug, &TrapDoor, &WoodenDoor, &Sword, &Lamp,
 		&KitchenTable, &AtticTable, &Rope,
@@ -213,7 +215,7 @@ var (
 		&Mirror1, &Mirror2, &Railing, &Pedestal, &Engravings,
 		&Bar, &PotOfGold, &Buoy, &Bracelet, &Coal, &Timbers,
 		&Bones, &BurnedOutLantern, &BagOfCoins, &RustyKnife, &Keys,
-		// Objects in objects
+		// G.AllObjects in objects
 		&Map, &Advertisement, &Bottle, &SandwichBag, &Knife,
 		&Water, &Lunch, &Garlic, &Book, &Sceptre,
 		&Egg, &Canary, &Putty, &Axe,
@@ -234,8 +236,8 @@ func InitRoomExits() {
 	WestOfHouse.SetExit(SouthEast, DirProps{UExit: true, RExit: &SouthOfHouse})
 	WestOfHouse.SetExit(West, DirProps{UExit: true, RExit: &Forest1})
 	WestOfHouse.SetExit(East, DirProps{NExit: "The door is boarded and you can't remove the boards."})
-	WestOfHouse.SetExit(SouthWest, DirProps{CExit: func() bool { return G.WonGame }, RExit: &StoneBarrow})
-	WestOfHouse.SetExit(In, DirProps{CExit: func() bool { return G.WonGame }, RExit: &StoneBarrow})
+	WestOfHouse.SetExit(SouthWest, DirProps{CExit: func() bool { return GD().WonGame }, RExit: &StoneBarrow})
+	WestOfHouse.SetExit(In, DirProps{CExit: func() bool { return GD().WonGame }, RExit: &StoneBarrow})
 
 	// Stone Barrow
 	StoneBarrow.SetExit(NorthEast, DirProps{UExit: true, RExit: &WestOfHouse})
@@ -331,7 +333,7 @@ func InitRoomExits() {
 
 	// Living Room
 	LivingRoom.SetExit(East, DirProps{UExit: true, RExit: &Kitchen})
-	LivingRoom.SetExit(West, DirProps{CExit: func() bool { return G.MagicFlag }, RExit: &StrangePassage, CExitStr: "The door is nailed shut."})
+	LivingRoom.SetExit(West, DirProps{CExit: func() bool { return GD().MagicFlag }, RExit: &StrangePassage, CExitStr: "The door is nailed shut."})
 	LivingRoom.SetExit(Down, DirProps{FExit: TrapDoorExitFcn})
 
 	// Cellar
@@ -342,8 +344,8 @@ func InitRoomExits() {
 
 	// Troll Room
 	TrollRoom.SetExit(South, DirProps{UExit: true, RExit: &Cellar})
-	TrollRoom.SetExit(East, DirProps{CExit: func() bool { return G.TrollFlag }, RExit: &EWPassage, CExitStr: "The troll fends you off with a menacing gesture."})
-	TrollRoom.SetExit(West, DirProps{CExit: func() bool { return G.TrollFlag }, RExit: &Maze1, CExitStr: "The troll fends you off with a menacing gesture."})
+	TrollRoom.SetExit(East, DirProps{CExit: func() bool { return GD().TrollFlag }, RExit: &EWPassage, CExitStr: "The troll fends you off with a menacing gesture."})
+	TrollRoom.SetExit(West, DirProps{CExit: func() bool { return GD().TrollFlag }, RExit: &Maze1, CExitStr: "The troll fends you off with a menacing gesture."})
 
 	// East of Chasm
 	EastOfChasm.SetExit(North, DirProps{UExit: true, RExit: &Cellar})
@@ -463,8 +465,8 @@ func InitRoomExits() {
 
 	// Cyclops Room
 	CyclopsRoom.SetExit(NorthWest, DirProps{UExit: true, RExit: &Maze15})
-	CyclopsRoom.SetExit(East, DirProps{CExit: func() bool { return G.MagicFlag }, RExit: &StrangePassage, CExitStr: "The east wall is solid rock."})
-	CyclopsRoom.SetExit(Up, DirProps{CExit: func() bool { return G.CyclopsFlag }, RExit: &TreasureRoom, CExitStr: "The cyclops doesn't look like he'll let you past."})
+	CyclopsRoom.SetExit(East, DirProps{CExit: func() bool { return GD().MagicFlag }, RExit: &StrangePassage, CExitStr: "The east wall is solid rock."})
+	CyclopsRoom.SetExit(Up, DirProps{CExit: func() bool { return GD().CyclopsFlag }, RExit: &TreasureRoom, CExitStr: "The cyclops doesn't look like he'll let you past."})
 
 	// Strange Passage
 	StrangePassage.SetExit(West, DirProps{UExit: true, RExit: &CyclopsRoom})
@@ -479,7 +481,7 @@ func InitRoomExits() {
 	ReservoirSouth.SetExit(SouthWest, DirProps{UExit: true, RExit: &ChasmRoom})
 	ReservoirSouth.SetExit(East, DirProps{UExit: true, RExit: &DamRoom})
 	ReservoirSouth.SetExit(West, DirProps{UExit: true, RExit: &StreamView})
-	ReservoirSouth.SetExit(North, DirProps{CExit: func() bool { return G.LowTide }, RExit: &Reservoir, CExitStr: "You would drown."})
+	ReservoirSouth.SetExit(North, DirProps{CExit: func() bool { return GD().LowTide }, RExit: &Reservoir, CExitStr: "You would drown."})
 
 	// Reservoir
 	Reservoir.SetExit(North, DirProps{UExit: true, RExit: &ReservoirNorth})
@@ -490,7 +492,7 @@ func InitRoomExits() {
 
 	// Reservoir North
 	ReservoirNorth.SetExit(North, DirProps{UExit: true, RExit: &AtlantisRoom})
-	ReservoirNorth.SetExit(South, DirProps{CExit: func() bool { return G.LowTide }, RExit: &Reservoir, CExitStr: "You would drown."})
+	ReservoirNorth.SetExit(South, DirProps{CExit: func() bool { return GD().LowTide }, RExit: &Reservoir, CExitStr: "You would drown."})
 
 	// Stream View
 	StreamView.SetExit(East, DirProps{UExit: true, RExit: &ReservoirSouth})
@@ -587,8 +589,8 @@ func InitRoomExits() {
 
 	// Entrance to Hades
 	EnteranceToHades.SetExit(Up, DirProps{UExit: true, RExit: &TinyCave})
-	EnteranceToHades.SetExit(In, DirProps{CExit: func() bool { return G.LLDFlag }, RExit: &LandOfLivingDead, CExitStr: "Some invisible force prevents you from passing through the gate."})
-	EnteranceToHades.SetExit(South, DirProps{CExit: func() bool { return G.LLDFlag }, RExit: &LandOfLivingDead, CExitStr: "Some invisible force prevents you from passing through the gate."})
+	EnteranceToHades.SetExit(In, DirProps{CExit: func() bool { return GD().LLDFlag }, RExit: &LandOfLivingDead, CExitStr: "Some invisible force prevents you from passing through the gate."})
+	EnteranceToHades.SetExit(South, DirProps{CExit: func() bool { return GD().LLDFlag }, RExit: &LandOfLivingDead, CExitStr: "Some invisible force prevents you from passing through the gate."})
 
 	// Land of Living Dead
 	LandOfLivingDead.SetExit(Out, DirProps{UExit: true, RExit: &EnteranceToHades})
@@ -604,7 +606,7 @@ func InitRoomExits() {
 
 	// Dome Room
 	DomeRoom.SetExit(West, DirProps{UExit: true, RExit: &EngravingsCave})
-	DomeRoom.SetExit(Down, DirProps{CExit: func() bool { return G.DomeFlag }, RExit: &TorchRoom, CExitStr: "You cannot go down without fracturing many bones."})
+	DomeRoom.SetExit(Down, DirProps{CExit: func() bool { return GD().DomeFlag }, RExit: &TorchRoom, CExitStr: "You cannot go down without fracturing many bones."})
 
 	// Torch Room
 	TorchRoom.SetExit(Up, DirProps{NExit: "You cannot reach the rope."})
@@ -621,7 +623,7 @@ func InitRoomExits() {
 
 	// South Temple
 	SouthTemple.SetExit(North, DirProps{UExit: true, RExit: &NorthTemple})
-	SouthTemple.SetExit(Down, DirProps{CExit: func() bool { return G.CoffinCure }, RExit: &TinyCave, CExitStr: "You haven't a prayer of getting the coffin down there."})
+	SouthTemple.SetExit(Down, DirProps{CExit: func() bool { return GD().CoffinCure }, RExit: &TinyCave, CExitStr: "You haven't a prayer of getting the coffin down there."})
 
 	// Dam Room
 	DamRoom.SetExit(South, DirProps{UExit: true, RExit: &DeepCanyon})
@@ -664,11 +666,11 @@ func InitRoomExits() {
 	River3.SetExit(West, DirProps{UExit: true, RExit: &WhiteCliffsNorth})
 
 	// White Cliffs North
-	WhiteCliffsNorth.SetExit(South, DirProps{CExit: func() bool { return G.DeflateFlag }, RExit: &WhiteCliffsSouth, CExitStr: "The path is too narrow."})
-	WhiteCliffsNorth.SetExit(West, DirProps{CExit: func() bool { return G.DeflateFlag }, RExit: &DampCave, CExitStr: "The path is too narrow."})
+	WhiteCliffsNorth.SetExit(South, DirProps{CExit: func() bool { return GD().DeflateFlag }, RExit: &WhiteCliffsSouth, CExitStr: "The path is too narrow."})
+	WhiteCliffsNorth.SetExit(West, DirProps{CExit: func() bool { return GD().DeflateFlag }, RExit: &DampCave, CExitStr: "The path is too narrow."})
 
 	// White Cliffs South
-	WhiteCliffsSouth.SetExit(North, DirProps{CExit: func() bool { return G.DeflateFlag }, RExit: &WhiteCliffsNorth, CExitStr: "The path is too narrow."})
+	WhiteCliffsSouth.SetExit(North, DirProps{CExit: func() bool { return GD().DeflateFlag }, RExit: &WhiteCliffsNorth, CExitStr: "The path is too narrow."})
 
 	// River 4
 	River4.SetExit(Up, DirProps{NExit: "You cannot go upstream due to strong currents."})
@@ -694,19 +696,19 @@ func InitRoomExits() {
 	SandyCave.SetExit(SouthWest, DirProps{UExit: true, RExit: &SandyBeach})
 
 	// Aragain Falls
-	AragainFalls.SetExit(West, DirProps{CExit: func() bool { return G.RainbowFlag }, RExit: &OnRainbow})
+	AragainFalls.SetExit(West, DirProps{CExit: func() bool { return GD().RainbowFlag }, RExit: &OnRainbow})
 	AragainFalls.SetExit(Down, DirProps{NExit: "It's a long way..."})
 	AragainFalls.SetExit(North, DirProps{UExit: true, RExit: &Shore})
-	AragainFalls.SetExit(Up, DirProps{CExit: func() bool { return G.RainbowFlag }, RExit: &OnRainbow})
+	AragainFalls.SetExit(Up, DirProps{CExit: func() bool { return GD().RainbowFlag }, RExit: &OnRainbow})
 
 	// On Rainbow
 	OnRainbow.SetExit(West, DirProps{UExit: true, RExit: &EndOfRainbow})
 	OnRainbow.SetExit(East, DirProps{UExit: true, RExit: &AragainFalls})
 
 	// End of Rainbow
-	EndOfRainbow.SetExit(Up, DirProps{CExit: func() bool { return G.RainbowFlag }, RExit: &OnRainbow})
-	EndOfRainbow.SetExit(NorthEast, DirProps{CExit: func() bool { return G.RainbowFlag }, RExit: &OnRainbow})
-	EndOfRainbow.SetExit(East, DirProps{CExit: func() bool { return G.RainbowFlag }, RExit: &OnRainbow})
+	EndOfRainbow.SetExit(Up, DirProps{CExit: func() bool { return GD().RainbowFlag }, RExit: &OnRainbow})
+	EndOfRainbow.SetExit(NorthEast, DirProps{CExit: func() bool { return GD().RainbowFlag }, RExit: &OnRainbow})
+	EndOfRainbow.SetExit(East, DirProps{CExit: func() bool { return GD().RainbowFlag }, RExit: &OnRainbow})
 	EndOfRainbow.SetExit(SouthWest, DirProps{UExit: true, RExit: &CanyonBottom})
 
 	// Canyon Bottom
@@ -764,12 +766,12 @@ func InitRoomExits() {
 
 	// Timber Room
 	TimberRoom.SetExit(East, DirProps{UExit: true, RExit: &LadderBottom})
-	TimberRoom.SetExit(West, DirProps{CExit: func() bool { return G.EmptyHanded }, RExit: &LowerShaft, CExitStr: "You cannot fit through this passage with that load."})
+	TimberRoom.SetExit(West, DirProps{CExit: func() bool { return GD().EmptyHanded }, RExit: &LowerShaft, CExitStr: "You cannot fit through this passage with that load."})
 
 	// Lower Shaft
 	LowerShaft.SetExit(South, DirProps{UExit: true, RExit: &MachineRoom})
-	LowerShaft.SetExit(Out, DirProps{CExit: func() bool { return G.EmptyHanded }, RExit: &TimberRoom, CExitStr: "You cannot fit through this passage with that load."})
-	LowerShaft.SetExit(East, DirProps{CExit: func() bool { return G.EmptyHanded }, RExit: &TimberRoom, CExitStr: "You cannot fit through this passage with that load."})
+	LowerShaft.SetExit(Out, DirProps{CExit: func() bool { return GD().EmptyHanded }, RExit: &TimberRoom, CExitStr: "You cannot fit through this passage with that load."})
+	LowerShaft.SetExit(East, DirProps{CExit: func() bool { return GD().EmptyHanded }, RExit: &TimberRoom, CExitStr: "You cannot fit through this passage with that load."})
 
 	// Machine Room
 	MachineRoom.SetExit(North, DirProps{UExit: true, RExit: &LowerShaft})
@@ -943,7 +945,7 @@ func FinalizeGameObjects() {
 	Ground.Action = GroundFunction
 
 	// Initialize villain table
-	G.Villains = []*VillainEntry{
+	GD().Villains = []*VillainEntry{
 		{Villain: &Troll, Best: &Sword, BestAdv: 1, Prob: 0, Msgs: &TrollMelee},
 		{Villain: &Thief, Best: &Knife, BestAdv: 1, Prob: 0, Msgs: &ThiefMelee},
 		{Villain: &Cyclops, Best: nil, BestAdv: 0, Prob: 0, Msgs: &CyclopsMelee},

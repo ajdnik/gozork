@@ -1,4 +1,4 @@
-package zork
+package engine
 
 import (
 	"bufio"
@@ -20,6 +20,8 @@ type RNG interface {
 var G *GameState
 
 // GameState holds all mutable state for a single game session.
+// Engine-generic fields live here directly; game-specific extensions
+// are stored in the GameData field.
 type GameState struct {
 	// ---- Core references ----
 	Here   *Object
@@ -38,22 +40,12 @@ type GameState struct {
 	Moves     int
 	Score     int
 	BaseScore int
-	Dead      bool
-	Deaths    int
 	Lit       bool
-	WonGame   bool
 
 	// ---- Settings ----
 	SuperBrief bool
 	Verbose    bool
 	Lucky      bool
-
-	// ---- Misc counters ----
-	HelloSailor  int
-	IsSprayed    bool
-	FumbleNumber int
-	FumbleProb   int
-	DescObj      *Object
 
 	// ---- Parser internals ----
 	ParserOk      bool
@@ -77,47 +69,6 @@ type GameState struct {
 	QueueDmns int
 	ClockWait bool
 
-	// ---- Dungeon flags ----
-	TrollFlag         bool
-	CyclopsFlag       bool
-	MagicFlag         bool
-	LowTide           bool
-	DomeFlag          bool
-	EmptyHanded       bool
-	LLDFlag           bool
-	RainbowFlag       bool
-	DeflateFlag       bool
-	CoffinCure        bool
-	GrateRevealed     bool
-	KitchenWindowFlag bool
-	CageTop           bool
-	RugMoved          bool
-	GrUnlock          bool
-	CycloWrath        int
-	MirrorMung        bool
-	GateFlag          bool
-	GatesOpen         bool
-	WaterLevel        int
-	MatchCount        int
-	EggSolve          bool
-	ThiefHere         bool
-	ThiefEngrossed    bool
-	LoudFlag          bool
-	SingSong          bool
-	BuoyFlag          bool
-	BeachDig          int
-	LightShaft        int
-	LampTableIdx      int
-	CandleTableIdx    int
-	XB                bool
-	XC                bool
-	Deflate           bool
-	LoadAllowed       int
-	LoadMax           int
-
-	// ---- Combat ----
-	Villains []*VillainEntry
-
 	// ---- I/O ----
 	GameOutput     io.Writer
 	GameInput      io.Reader
@@ -131,24 +82,43 @@ type GameState struct {
 	Save    func() bool
 	Restore func() bool
 	Restart func() bool
+
+	// ---- Well-known objects (set by game during init) ----
+	AllObjects     []*Object // complete list of all game objects
+	RoomsObj       *Object   // container for all rooms
+	GlobalObj      *Object   // global objects container
+	LocalGlobalObj *Object   // local globals container
+	NotHereObj     *Object   // sentinel for "not here" objects
+	PseudoObj      *Object   // pseudo object for pseudo-object actions
+	ItPronounObj   *Object   // the "it" pronoun object
+	MeObj          *Object   // the "me" player-reference object
+	HandsObj       *Object   // the player's hands object
+
+	// ---- Vocabulary registries (populated by BuildVocabulary) ----
+	Actions    map[string]VrbAction
+	PreActions map[string]VrbAction
+	NormVerbs  map[string]string
+
+	// ---- Clock function registry (populated by game) ----
+	ClockFuncs map[string]func() bool
+
+	// ---- Game-specific callbacks (set by game during init) ----
+	// ITakeFunc is the implicit-take handler called by the parser.
+	ITakeFunc func(vb bool) bool
+
+	// ---- Game-specific extension data ----
+	// The game package stores its own state struct here and accesses
+	// it via a type assertion (e.g. G.GameData.(*ZorkData)).
+	GameData interface{}
 }
 
 // NewGameState creates a fresh GameState with all default values set.
 func NewGameState() *GameState {
 	return &GameState{
 		// Non-zero defaults
-		Lucky:        true,
-		FumbleNumber: 7,
-		FumbleProb:   8,
-		CageTop:      true,
-		MatchCount:   6,
-		BuoyFlag:     true,
-		BeachDig:     -1,
-		LightShaft:   13,
-		LoadAllowed:  100,
-		LoadMax:      100,
-		QueueInts:    30,
-		QueueDmns:    30,
+		Lucky:     true,
+		QueueInts: 30,
+		QueueDmns: 30,
 
 		// I/O defaults
 		GameOutput: os.Stdout,
@@ -157,9 +127,15 @@ func NewGameState() *GameState {
 		// RNG default: time-seeded source
 		Rand: rand.New(rand.NewSource(time.Now().UnixNano())),
 
-		// Stub function hooks (replaced by initSaveSystem)
+		// Stub function hooks (replaced by game's initSaveSystem)
 		Save:    func() bool { return false },
 		Restore: func() bool { return false },
 		Restart: func() bool { return false },
+
+		// Initialize maps
+		Actions:    make(map[string]VrbAction),
+		PreActions: make(map[string]VrbAction),
+		NormVerbs:  make(map[string]string),
+		ClockFuncs: make(map[string]func() bool),
 	}
 }

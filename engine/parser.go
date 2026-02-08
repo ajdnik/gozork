@@ -1,4 +1,4 @@
-package zork
+package engine
 
 const (
 	NumUndef int = -1
@@ -117,12 +117,6 @@ type AgainProps struct {
 	Dir    Direction
 	HasDir bool
 }
-
-type ActionVerb struct {
-	Norm string
-	Orig string
-}
-
 
 func Parse() bool {
 	if G.Params.ShldOrphan {
@@ -683,7 +677,7 @@ func ITakeCheck(tbl []*Object, ibits LocFlags) bool {
 		return true
 	}
 	for _, obj := range tbl {
-		if obj == &It {
+		if obj == G.ItPronounObj {
 			if !IsAccessible(G.Params.ItObj) {
 				Printf("I don't see what you're referring to.\n")
 				return false
@@ -691,26 +685,26 @@ func ITakeCheck(tbl []*Object, ibits LocFlags) bool {
 			obj = G.Params.ItObj
 		}
 		var taken bool
-		if !IsHeld(obj) && obj != &Hands && obj != &Me {
+		if !IsHeld(obj) && obj != G.HandsObj && obj != G.MeObj {
 			G.DirObjPossibles = []*Object{obj}
 			if obj.Has(FlgTryTake) {
 				taken = true
-			} else if G.Winner != &Adventurer {
+			} else if G.Winner != G.Player {
 				taken = false
-			} else if LocTake.In(ibits) && ITake(false) {
+			} else if LocTake.In(ibits) && G.ITakeFunc != nil && G.ITakeFunc(false) {
 				taken = false
 			} else {
 				taken = true
 			}
-			if taken && LocHave.In(ibits) && G.Winner == &Adventurer {
-				if obj == &NotHereObject {
+			if taken && LocHave.In(ibits) && G.Winner == G.Player {
+				if obj == G.NotHereObj {
 					Printf("You don't have that!\n")
 					return false
 				}
 				Printf("You don't have the %s.\n", obj.Desc)
 				return false
 			}
-			if !taken && G.Winner == &Adventurer {
+			if !taken && G.Winner == G.Player {
 				Printf("(Taken)\n")
 			}
 		}
@@ -993,7 +987,7 @@ func CanNotOrphan() {
 
 func FindWhatIMean(objFlags Flags, locFlags LocFlags, prep string) *Object {
 	if objFlags&FlgKludge != 0 {
-		return &Rooms
+		return G.RoomsObj
 	}
 	G.Search.ObjFlags = objFlags
 	G.Search.LocFlags = locFlags
@@ -1011,7 +1005,7 @@ func FindWhatIMean(objFlags Flags, locFlags LocFlags, prep string) *Object {
 	if prep == "out" {
 		Printf(" of")
 	}
-	if res[0] == &Hands {
+	if res[0] == G.HandsObj {
 		Printf(" your hands")
 	} else {
 		Printf(" the %s", res[0].Desc)
@@ -1102,7 +1096,7 @@ func GetObject(isDirect, vrb bool) []*Object {
 			if vrb {
 				G.Search.LocFlags = xbits
 				if G.Lit || G.ActVerb.Norm == "tell" {
-					res = append(res, &NotHereObject)
+					res = append(res, G.NotHereObj)
 					G.NotHere.Syn.Set(G.Search.Syn)
 					G.NotHere.Adj.Set(G.Search.Adj)
 					G.Search.Syn.Clear()
@@ -1174,19 +1168,19 @@ func GlobalCheck() []*Object {
 	if len(G.Here.Pseudo) != 0 {
 		for _, obj := range G.Here.Pseudo {
 			if G.Search.Syn.Is(obj.Synonym) {
-				PseudoObject.Action = obj.Action
-				res = append(res, &PseudoObject)
+				G.PseudoObj.Action = obj.Action
+				res = append(res, G.PseudoObj)
 				break
 			}
 		}
 	}
 	if len(res) == 0 {
-		if g := SearchList(&GlobalObjects, FindAll); g != nil {
+		if g := SearchList(G.GlobalObj, FindAll); g != nil {
 			res = append(res, g...)
 		}
 		if len(res) == 0 && (G.ActVerb.Norm == "look inside" || G.ActVerb.Norm == "search" || G.ActVerb.Norm == "examine") {
 			if LocHave.In(G.Search.LocFlags) {
-				if r := SearchList(&Rooms, FindAll); r != nil {
+				if r := SearchList(G.RoomsObj, FindAll); r != nil {
 					res = append(res, r...)
 				}
 			}
@@ -1213,7 +1207,7 @@ func ThingPrint(isDirect, isThe bool) {
 		if wrd.IsAny(".", ",") {
 			nsp = true
 		} else if wrd.Is("me") {
-			Printf("%s", Me.Desc)
+			Printf("%s", G.MeObj.Desc)
 			pn = true
 		} else if wrd.Is("intnum") {
 			Printf("%d", G.Params.Number)
@@ -1340,10 +1334,10 @@ func IsAccessible(obj *Object) bool {
 	if l == nil {
 		return false
 	}
-	if l == &GlobalObjects {
+	if l == G.GlobalObj {
 		return true
 	}
-	if l == &LocalGlobals && IsInGlobal(obj, G.Here) {
+	if l == G.LocalGlobalObj && IsInGlobal(obj, G.Here) {
 		return true
 	}
 	ml := MetaLoc(obj)
@@ -1367,10 +1361,10 @@ func MetaLoc(obj *Object) *Object {
 		if obj == nil {
 			return nil
 		}
-		if obj.IsIn(&GlobalObjects) {
-			return &GlobalObjects
+		if obj.IsIn(G.GlobalObj) {
+			return G.GlobalObj
 		}
-		if obj.IsIn(&Rooms) {
+		if obj.IsIn(G.RoomsObj) {
 			return obj
 		}
 		obj = obj.Location()

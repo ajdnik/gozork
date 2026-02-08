@@ -1,92 +1,6 @@
-package zork
+package game
 
-type LocFlag int
-
-const (
-	LocHeld LocFlag = iota
-	LocCarried
-	LocInRoom
-	LocOnGrnd
-	LocTake
-	LocMany
-	LocHave
-)
-
-func (lf LocFlag) In(flgs LocFlags) bool {
-	for _, flg := range flgs {
-		if flg == lf {
-			return true
-		}
-	}
-	return false
-}
-
-type LocFlags []LocFlag
-
-func (lfs *LocFlags) All() LocFlags {
-	*lfs = LocFlags{LocHeld, LocCarried, LocInRoom, LocOnGrnd, LocTake, LocMany, LocHave}
-	return *lfs
-}
-
-func (lfs LocFlags) HasAll() bool {
-	return len(lfs) == 7
-}
-
-type VrbAction func(ActArg) bool
-
-type ObjProp struct {
-	ObjFlags Flags
-	LocFlags LocFlags
-	HasObj   bool
-}
-
-type Syntx struct {
-	NormVerb  string
-	Verb      string
-	VrbPrep   string
-	Obj1      ObjProp
-	ObjPrep   string
-	Obj2      ObjProp
-	Action    VrbAction
-	PreAction VrbAction
-}
-
-func (s *Syntx) NumObjects() int {
-	if !s.Obj1.HasObj {
-		return 0
-	}
-	if !s.Obj2.HasObj {
-		return 1
-	}
-	return 2
-}
-
-func (s *Syntx) IsVrbPrep(prep string) bool {
-	return s.VrbPrep == prep
-}
-
-func (s *Syntx) IsObjPrep(prep string) bool {
-	return s.ObjPrep == prep
-}
-
-func (s *Syntx) GetActionVerb() string {
-	av := s.Verb
-	if len(s.VrbPrep) > 0 {
-		av += " " + s.VrbPrep
-	}
-	return av
-}
-
-func (s *Syntx) GetNormVerb() string {
-	// Use the entry's own NormVerb if specified
-	if len(s.NormVerb) > 0 {
-		return s.NormVerb
-	}
-	if vrb, ok := NormVerbs[s.GetActionVerb()]; ok {
-		return vrb
-	}
-	return s.GetActionVerb()
-}
+import . "github.com/ajdnik/gozork/engine"
 
 var (
 	BuzzWords = []string{
@@ -239,7 +153,7 @@ var (
 		"scream":     "yell",
 		"shout":      "yell",
 	}
-	Commands = []Syntx{
+	GameCommands = []Syntx{
 		{
 			Verb:   "verbose",
 			Action: VVerbose,
@@ -1903,94 +1817,4 @@ var (
 			Action: VZork,
 		},
 	}
-	Actions    = make(map[string]VrbAction)
-	PreActions = make(map[string]VrbAction)
-	NormVerbs  = make(map[string]string)
 )
-
-func addToVocab(wrd string, typ WordTyp) {
-	v, ok := Vocabulary[wrd]
-	if !ok {
-		Vocabulary[wrd] = WordItm{
-			Norm:  wrd,
-			Types: WordTypes{typ},
-		}
-	} else {
-		Vocabulary[wrd] = WordItm{
-			Norm:  wrd,
-			Types: append(v.Types, typ),
-		}
-	}
-}
-
-func BuildVocabulary() {
-	// Add buzz words
-	for _, bw := range BuzzWords {
-		addToVocab(bw, WordBuzz)
-	}
-	// Add verbs
-	for _, cmd := range Commands {
-		addToVocab(cmd.Verb, WordVerb)
-		if len(cmd.VrbPrep) > 0 {
-			addToVocab(cmd.VrbPrep, WordPrep)
-		}
-		if len(cmd.ObjPrep) > 0 {
-			addToVocab(cmd.ObjPrep, WordPrep)
-		}
-		// Store actions keyed by the action verb. Entries whose NormVerb
-		// differs from their verb are "variants" and shouldn't overwrite
-		// the default action for that verb.
-		actionKey := cmd.GetActionVerb()
-		if len(cmd.NormVerb) > 0 && cmd.NormVerb != actionKey {
-			// Variant: store under NormVerb key only
-			Actions[cmd.NormVerb] = cmd.Action
-			if cmd.PreAction != nil {
-				PreActions[cmd.NormVerb] = cmd.PreAction
-			}
-		} else {
-			// Default entry for this verb
-			Actions[actionKey] = cmd.Action
-			if cmd.PreAction != nil {
-				PreActions[actionKey] = cmd.PreAction
-			}
-		}
-		// Only set NormVerbs for the default case (no NormVerb or same as verb).
-		// Don't let variant entries (e.g. "move X with Y" -> NormVerb="turn")
-		// overwrite the default normalization for "move".
-		if len(cmd.NormVerb) == 0 || cmd.NormVerb == cmd.GetActionVerb() {
-			NormVerbs[cmd.GetActionVerb()] = cmd.GetActionVerb()
-		}
-	}
-	// Add directions
-	for _, d := range AllDirections {
-		addToVocab(d.String(), WordDir)
-	}
-	// Add objects
-	for _, obj := range Objects {
-		if obj.Synonyms != nil {
-			for _, s := range obj.Synonyms {
-				addToVocab(s, WordObj)
-			}
-		}
-		if obj.Adjectives != nil {
-			for _, a := range obj.Adjectives {
-				addToVocab(a, WordAdj)
-			}
-		}
-	}
-	// Add synonyms
-	for key, val := range Synonyms {
-		if _, ok := Vocabulary[key]; !ok {
-			Vocabulary[key] = WordItm{
-				Norm:  val,
-				Types: nil,
-			}
-			if el, ok := Vocabulary[val]; ok {
-				Vocabulary[key] = WordItm{
-					Norm:  val,
-					Types: append(WordTypes{}, el.Types...),
-				}
-			}
-		}
-	}
-}

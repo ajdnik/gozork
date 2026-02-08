@@ -1,10 +1,6 @@
-package zork
+package game
 
-
-type RndSelect struct {
-	Unselected []string
-	Selected   []string
-}
+import . "github.com/ajdnik/gozork/engine"
 
 var (
 	// HelloSailor counts occurences of 'hello, sailor'
@@ -730,14 +726,14 @@ func MungRoom(rm *Object, str string) {
 }
 
 func VOdysseus(arg ActArg) bool {
-	if G.Here != &CyclopsRoom || !Cyclops.IsIn(G.Here) || G.CyclopsFlag {
+	if G.Here != &CyclopsRoom || !Cyclops.IsIn(G.Here) || GD().CyclopsFlag {
 		Printf("Wasn't he a sailor?\n")
 		return true
 	}
 	QueueInt("ICyclops", false).Run = false
-	G.CyclopsFlag = true
+	GD().CyclopsFlag = true
 	Printf("The cyclops, hearing the name of his father's deadly nemesis, flees the room by knocking down the wall on the east of the room.\n")
-	G.MagicFlag = true
+	GD().MagicFlag = true
 	Cyclops.Take(FlgFight)
 	return RemoveCarefully(&Cyclops)
 }
@@ -1384,7 +1380,7 @@ func DescribeRoom(isLook bool) bool {
 	}
 	if !G.Lit {
 		Printf("It is pitch black.")
-		if !G.IsSprayed {
+		if !GD().IsSprayed {
 			Printf(" You are likely to be eaten by a grue.")
 		}
 		Printf("\n")
@@ -1532,7 +1528,7 @@ func Firster(obj *Object, lvl int) bool {
 }
 
 func DescribeObject(obj *Object, v bool, lvl int) bool {
-	G.DescObj = obj
+	GD().DescObj = obj
 	if lvl == 0 && obj.DescFcn != nil && obj.DescFcn(ActObjDesc) {
 		return true
 	}
@@ -1580,35 +1576,11 @@ func ThisIsIt(obj *Object) {
 	G.Params.ItObj = obj
 }
 
-func IsInGlobal(obj1, obj2 *Object) bool {
-	if obj2.Global == nil {
-		return false
-	}
-	for _, o := range obj2.Global {
-		if o == obj1 {
-			return true
-		}
-	}
-	return false
-}
-
-func IsHeld(obj *Object) bool {
-	for {
-		obj = obj.Location()
-		if obj == nil {
-			return false
-		}
-		if obj == G.Winner {
-			return true
-		}
-	}
-}
-
 func ScoreUpd(num int) bool {
 	G.BaseScore += num
 	G.Score += num
-	if G.Score == 350 && !G.WonGame {
-		G.WonGame = true
+	if G.Score == 350 && !GD().WonGame {
+		GD().WonGame = true
 		Map.Take(FlgInvis)
 		WestOfHouse.Take(FlgTouch)
 		Printf("An almost inaudible voice whispers in your ear, \"Look to your treasures for the final secret.\"\n")
@@ -1647,7 +1619,7 @@ func Weight(obj *Object) int {
 }
 
 func ITake(vb bool) bool {
-	if G.Dead {
+	if GD().Dead {
 		if vb {
 			Printf("Your hand passes through its object.\n")
 		}
@@ -1668,10 +1640,10 @@ func ITake(vb bool) bool {
 	if loc != nil && loc.Has(FlgCont) && !loc.Has(FlgOpen) {
 		return false
 	}
-	if !G.DirObj.Location().IsIn(G.Winner) && Weight(G.DirObj)+Weight(G.Winner) > G.LoadAllowed {
+	if !G.DirObj.Location().IsIn(G.Winner) && Weight(G.DirObj)+Weight(G.Winner) > GD().LoadAllowed {
 		if vb {
 			Printf("Your load is too heavy")
-			if G.LoadAllowed < G.LoadMax {
+			if GD().LoadAllowed < GD().LoadMax {
 				Printf(", especially in light of your condition.")
 			} else {
 				Printf(".")
@@ -1682,7 +1654,7 @@ func ITake(vb bool) bool {
 		return false
 	}
 	cnt := CCount(G.Winner)
-	if G.ActVerb.Norm == "tell" && cnt > G.FumbleNumber && Prob(cnt*G.FumbleProb, false) {
+	if G.ActVerb.Norm == "tell" && cnt > GD().FumbleNumber && Prob(cnt*GD().FumbleProb, false) {
 		Printf("You're holding too many things already!\n")
 		return false
 	}

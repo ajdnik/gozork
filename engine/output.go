@@ -1,4 +1,4 @@
-package zork
+package engine
 
 import "fmt"
 

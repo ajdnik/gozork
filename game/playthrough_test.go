@@ -1,8 +1,6 @@
-package zork
+package game
 
-import (
-	"testing"
-)
+import "testing"
 
 // Common setup sequences used by multiple playthrough tests.
 
