@@ -42,7 +42,7 @@ type NotHereProps struct {
 }
 
 type FindProps struct {
-	ObjFlags []Flag
+	ObjFlags Flags
 	LocFlags LocFlags
 	Syn      LexItm
 	Adj      LexItm
@@ -813,7 +813,7 @@ func Snarfem(isDirect bool, wrds []LexItm) []*Object {
 	if Params.GetType == GetAll {
 		wasall = true
 	}
-	Search.ObjFlags = nil
+	Search.ObjFlags = 0
 	res := []*Object{}
 	var but *[]*Object
 	var nw LexItm
@@ -1012,14 +1012,14 @@ func CanNotOrphan() {
 	Print("\"I don't understand! What are you referring to?\"", Newline)
 }
 
-func FindWhatIMean(objFlags []Flag, locFlags LocFlags, prep string) *Object {
-	if FlgKludge.In(objFlags) {
+func FindWhatIMean(objFlags Flags, locFlags LocFlags, prep string) *Object {
+	if objFlags&FlgKludge != 0 {
 		return &Rooms
 	}
 	Search.ObjFlags = objFlags
 	Search.LocFlags = locFlags
 	res := GetObject(false, false)
-	Search.ObjFlags = nil
+	Search.ObjFlags = 0
 	if len(res) != 1 {
 		return nil
 	}
@@ -1051,7 +1051,7 @@ func GetObject(isDirect, vrb bool) []*Object {
 		Search.Syn.Set(Search.Adj)
 		Search.Adj.Clear()
 	}
-	if !Search.Syn.IsSet() && !Search.Adj.IsSet() && Params.GetType != GetAll && len(Search.ObjFlags) == 0 {
+	if !Search.Syn.IsSet() && !Search.Adj.IsSet() && Params.GetType != GetAll && Search.ObjFlags == 0 {
 		if vrb {
 			Print("There seems to be a noun missing in that sentence!", Newline)
 		}
@@ -1265,12 +1265,12 @@ func IsLit(room *Object, rmChk bool) bool {
 	if AlwaysLit && Winner == Player {
 		return true
 	}
-	Search.ObjFlags = []Flag{FlgOn}
+	Search.ObjFlags = FlgOn
 	bak := Here
 	Here = room
 	if rmChk && room.Has(FlgOn) {
 		Here = bak
-		Search.ObjFlags = nil
+		Search.ObjFlags = 0
 		return true
 	}
 	Search.LocFlags = nil
@@ -1289,7 +1289,7 @@ func IsLit(room *Object, rmChk bool) bool {
 		res = append(res, nr...)
 	}
 	Here = bak
-	Search.ObjFlags = nil
+	Search.ObjFlags = 0
 	if len(res) > 0 {
 		return true
 	}

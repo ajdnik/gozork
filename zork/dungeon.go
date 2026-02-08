@@ -137,14 +137,14 @@ var (
 		In:       &LocalGlobals,
 		Synonyms: []string{"boards", "board"},
 		Desc:     "board",
-		Flags:    []Flag{FlgNoDesc},
+		Flags:    FlgNoDesc,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	Teeth = Object{
 		In:       &GlobalObjects,
 		Synonyms: []string{"overboard", "teeth"},
 		Desc:     "set of teeth",
-		Flags:    []Flag{FlgNoDesc},
+		Flags:    FlgNoDesc,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	Wall = Object{
@@ -165,7 +165,7 @@ var (
 		Synonyms:   []string{"bird", "songbird"},
 		Adjectives: []string{"song"},
 		Desc:       "songbird",
-		Flags:      []Flag{FlgNoDesc},
+		Flags:      FlgNoDesc,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	WhiteHouse = Object{
@@ -173,14 +173,14 @@ var (
 		Synonyms:   []string{"house"},
 		Adjectives: []string{"white", "beautiful", "colonial"},
 		Desc:       "white house",
-		Flags:      []Flag{FlgNoDesc},
+		Flags:      FlgNoDesc,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	Forest = Object{
 		In:       &LocalGlobals,
 		Synonyms: []string{"forest", "trees", "pines", "hemlocks"},
 		Desc:     "forest",
-		Flags:    []Flag{FlgNoDesc},
+		Flags:    FlgNoDesc,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	Tree = Object{
@@ -188,13 +188,13 @@ var (
 		Synonyms:   []string{"tree", "branch"},
 		Adjectives: []string{"large", "storm"},
 		Desc:       "tree",
-		Flags:      []Flag{FlgNoDesc, FlgClimb},
+		Flags:      FlgNoDesc | FlgClimb,
 	}
 	GlobalWater = Object{
 		In:       &LocalGlobals,
 		Synonyms: []string{"water", "quantity"},
 		Desc:     "water",
-		Flags:    []Flag{FlgDrink},
+		Flags:    FlgDrink,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	KitchenWindow = Object{
@@ -202,7 +202,7 @@ var (
 		Synonyms:   []string{"window"},
 		Adjectives: []string{"kitchen", "small"},
 		Desc:       "kitchen window",
-		Flags:      []Flag{FlgDoor, FlgNoDesc},
+		Flags:      FlgDoor | FlgNoDesc,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	Chimney = Object{
@@ -210,7 +210,7 @@ var (
 		Synonyms:   []string{"chimney"},
 		Adjectives: []string{"dark", "narrow"},
 		Desc:       "chimney",
-		Flags:      []Flag{FlgClimb, FlgNoDesc},
+		Flags:      FlgClimb | FlgNoDesc,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	Slide = Object{
@@ -218,7 +218,7 @@ var (
 		Synonyms:   []string{"chute", "ramp", "slide"},
 		Adjectives: []string{"steep", "metal", "twisting"},
 		Desc:       "chute",
-		Flags:      []Flag{FlgClimb},
+		Flags:      FlgClimb,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	Bodies = Object{
@@ -226,7 +226,7 @@ var (
 		Synonyms:   []string{"bodies", "body", "remains", "pile"},
 		Adjectives: []string{"mangled"},
 		Desc:       "pile of bodies",
-		Flags:      []Flag{FlgNoDesc, FlgTryTake},
+		Flags:      FlgNoDesc | FlgTryTake,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	Crack = Object{
@@ -234,14 +234,14 @@ var (
 		Synonyms:   []string{"crack"},
 		Adjectives: []string{"narrow"},
 		Desc:       "crack",
-		Flags:      []Flag{FlgNoDesc},
+		Flags:      FlgNoDesc,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	Grate = Object{
 		In:       &LocalGlobals,
 		Synonyms: []string{"grate", "grating"},
 		Desc:     "grating",
-		Flags:    []Flag{FlgDoor, FlgNoDesc, FlgInvis},
+		Flags:    FlgDoor | FlgNoDesc | FlgInvis,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	Ladder = Object{
@@ -249,14 +249,14 @@ var (
 		Synonyms:   []string{"ladder"},
 		Adjectives: []string{"wooden", "rickety", "narrow"},
 		Desc:       "wooden ladder",
-		Flags:      []Flag{FlgNoDesc, FlgClimb},
+		Flags:      FlgNoDesc | FlgClimb,
 	}
 	ClimbableCliff = Object{
 		In:         &LocalGlobals,
 		Synonyms:   []string{"wall", "cliff", "walls", "ledge"},
 		Adjectives: []string{"rocky", "sheer"},
 		Desc:       "cliff",
-		Flags:      []Flag{FlgNoDesc, FlgClimb},
+		Flags:      FlgNoDesc | FlgClimb,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	WhiteCliff = Object{
@@ -264,14 +264,14 @@ var (
 		Synonyms:   []string{"cliff", "cliffs"},
 		Adjectives: []string{"white"},
 		Desc:       "white cliffs",
-		Flags:      []Flag{FlgNoDesc, FlgClimb},
+		Flags:      FlgNoDesc | FlgClimb,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	Rainbow = Object{
 		In:       &LocalGlobals,
 		Synonyms: []string{"rainbow"},
 		Desc:     "rainbow",
-		Flags:    []Flag{FlgNoDesc, FlgClimb},
+		Flags:    FlgNoDesc | FlgClimb,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	River = Object{
@@ -279,7 +279,7 @@ var (
 		Synonyms:   []string{"river"},
 		Adjectives: []string{"frigid"},
 		Desc:       "river",
-		Flags:      []Flag{FlgNoDesc},
+		Flags:      FlgNoDesc,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	BoardedWindow = Object{
@@ -287,7 +287,7 @@ var (
 		Synonyms:   []string{"window"},
 		Adjectives: []string{"boarded"},
 		Desc:       "boarded window",
-		Flags:      []Flag{FlgNoDesc},
+		Flags:      FlgNoDesc,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 
@@ -299,7 +299,7 @@ var (
 		Synonyms:   []string{"boat", "raft"},
 		Adjectives: []string{"magic", "plastic", "seaworthy", "inflated", "inflatable"},
 		Desc:       "magic boat",
-		Flags:      []Flag{FlgTake, FlgBurn, FlgVeh, FlgOpen, FlgSearch},
+		Flags:      FlgTake | FlgBurn | FlgVeh | FlgOpen | FlgSearch,
 		Capacity:   100,
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Size:       20,
@@ -309,7 +309,7 @@ var (
 		Synonyms:   []string{"boat", "pile", "plastic"},
 		Adjectives: []string{"plastic", "puncture", "large"},
 		Desc:       "punctured boat",
-		Flags:      []Flag{FlgTake, FlgBurn},
+		Flags:      FlgTake | FlgBurn,
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Size:       20,
 	}
@@ -317,13 +317,13 @@ var (
 		Synonyms:   []string{"lamp", "lantern"},
 		Adjectives: []string{"broken"},
 		Desc:       "broken lantern",
-		Flags:      []Flag{FlgTake},
+		Flags:      FlgTake,
 	}
 	Gunk = Object{
 		Synonyms:   []string{"gunk", "piece", "slag"},
 		Adjectives: []string{"small", "vitreous"},
 		Desc:       "small piece of vitreous slag",
-		Flags:      []Flag{FlgTake, FlgTryTake},
+		Flags:      FlgTake | FlgTryTake,
 		Size:       10,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
@@ -331,7 +331,7 @@ var (
 		Synonyms:   []string{"bell"},
 		Adjectives: []string{"brass", "hot", "red", "small"},
 		Desc:       "red hot brass bell",
-		Flags:      []Flag{FlgTryTake},
+		Flags:      FlgTryTake,
 		LongDesc:   "On the ground is a red hot bell.",
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
@@ -339,7 +339,7 @@ var (
 		Synonyms:   []string{"egg", "treasure"},
 		Adjectives: []string{"broken", "birds", "encrusted", "jewel"},
 		Desc:       "broken jewel-encrusted egg",
-		Flags:      []Flag{FlgTake, FlgCont, FlgOpen},
+		Flags:      FlgTake | FlgCont | FlgOpen,
 		Capacity:   6,
 		TValue:     2,
 		LongDesc:   "There is a somewhat ruined egg here.",
@@ -348,7 +348,7 @@ var (
 		Synonyms:   []string{"bauble", "treasure"},
 		Adjectives: []string{"brass", "beautiful"},
 		Desc:       "beautiful brass bauble",
-		Flags:      []Flag{FlgTake},
+		Flags:      FlgTake,
 		Value:      1,
 		TValue:     1,
 	}
@@ -356,7 +356,7 @@ var (
 		Synonyms:   []string{"diamond", "treasure"},
 		Adjectives: []string{"huge", "enormous"},
 		Desc:       "huge diamond",
-		Flags:      []Flag{FlgTake},
+		Flags:      FlgTake,
 		LongDesc:   "There is an enormous diamond (perfectly cut) here.",
 		Value:      10,
 		TValue:     10,
@@ -370,35 +370,35 @@ var (
 		In:     &Rooms,
 		Desc:   "West of House",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:  []Flag{FlgLand, FlgOn, FlgSacred},
+		Flags:  FlgLand | FlgOn | FlgSacred,
 		Global: []*Object{&WhiteHouse, &Board, &Forest},
 	}
 	StoneBarrow = Object{
 		In:       &Rooms,
 		LongDesc: "You are standing in front of a massive barrow of stone. In the east face is a huge stone door which is open. You cannot see into the dark of the tomb.",
 		Desc:     "Stone Barrow",
-		Flags:    []Flag{FlgLand, FlgOn, FlgSacred},
+		Flags:    FlgLand | FlgOn | FlgSacred,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	NorthOfHouse = Object{
 		In:       &Rooms,
 		LongDesc: "You are facing the north side of a white house. There is no door here, and all the windows are boarded up. To the north a narrow path winds through the trees.",
 		Desc:     "North of House",
-		Flags:    []Flag{FlgLand, FlgOn, FlgSacred},
+		Flags:    FlgLand | FlgOn | FlgSacred,
 		Global:   []*Object{&BoardedWindow, &Board, &WhiteHouse, &Forest},
 	}
 	SouthOfHouse = Object{
 		In:       &Rooms,
 		LongDesc: "You are facing the south side of a white house. There is no door here, and all the windows are boarded.",
 		Desc:     "South of House",
-		Flags:    []Flag{FlgLand, FlgOn, FlgSacred},
+		Flags:    FlgLand | FlgOn | FlgSacred,
 		Global:   []*Object{&BoardedWindow, &Board, &WhiteHouse, &Forest},
 	}
 	EastOfHouse = Object{
 		In:     &Rooms,
 		Desc:   "Behind House",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:  []Flag{FlgLand, FlgOn, FlgSacred},
+		Flags:  FlgLand | FlgOn | FlgSacred,
 		Global: []*Object{&WhiteHouse, &KitchenWindow, &Forest},
 	}
 	Forest1 = Object{
@@ -406,7 +406,7 @@ var (
 		LongDesc: "This is a forest, with trees in all directions. To the east, there appears to be sunlight.",
 		Desc:     "Forest",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:    []Flag{FlgLand, FlgOn, FlgSacred},
+		Flags:    FlgLand | FlgOn | FlgSacred,
 		Global:   []*Object{&Tree, &Songbird, &WhiteHouse, &Forest},
 	}
 	Forest2 = Object{
@@ -414,14 +414,14 @@ var (
 		LongDesc: "This is a dimly lit forest, with large trees all around.",
 		Desc:     "Forest",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:    []Flag{FlgLand, FlgOn, FlgSacred},
+		Flags:    FlgLand | FlgOn | FlgSacred,
 		Global:   []*Object{&Tree, &Songbird, &WhiteHouse, &Forest},
 	}
 	Mountains = Object{
 		In:       &Rooms,
 		LongDesc: "The forest thins out, revealing impassable mountains.",
 		Desc:     "Forest",
-		Flags:    []Flag{FlgLand, FlgOn, FlgSacred},
+		Flags:    FlgLand | FlgOn | FlgSacred,
 		Global:   []*Object{&Tree, &WhiteHouse},
 	}
 	Forest3 = Object{
@@ -429,7 +429,7 @@ var (
 		LongDesc: "This is a dimly lit forest, with large trees all around.",
 		Desc:     "Forest",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:    []Flag{FlgLand, FlgOn, FlgSacred},
+		Flags:    FlgLand | FlgOn | FlgSacred,
 		Global:   []*Object{&Tree, &Songbird, &WhiteHouse, &Forest},
 	}
 	Path = Object{
@@ -437,20 +437,20 @@ var (
 		LongDesc: "This is a path winding through a dimly lit forest. The path heads north-south here. One particularly large tree with some low branches stands at the edge of the path.",
 		Desc:     "Forest Path",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:    []Flag{FlgLand, FlgOn, FlgSacred},
+		Flags:    FlgLand | FlgOn | FlgSacred,
 		Global:   []*Object{&Tree, &Songbird, &WhiteHouse, &Forest},
 	}
 	UpATree = Object{
 		In:     &Rooms,
 		Desc:   "Up a Tree",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:  []Flag{FlgLand, FlgOn, FlgSacred},
+		Flags:  FlgLand | FlgOn | FlgSacred,
 		Global: []*Object{&Tree, &Forest, &Songbird, &WhiteHouse},
 	}
 	GratingClearing = Object{
 		In:     &Rooms,
 		Desc:   "Clearing",
-		Flags:  []Flag{FlgLand, FlgOn, FlgSacred},
+		Flags:  FlgLand | FlgOn | FlgSacred,
 		Global: []*Object{&WhiteHouse, &Grate},
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
@@ -458,7 +458,7 @@ var (
 		In:       &Rooms,
 		LongDesc: "You are in a small clearing in a well marked forest path that extends to the east and west.",
 		Desc:     "Clearing",
-		Flags:    []Flag{FlgLand, FlgOn, FlgSacred},
+		Flags:    FlgLand | FlgOn | FlgSacred,
 		Global:   []*Object{&Tree, &Songbird, &WhiteHouse, &Forest},
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
@@ -470,7 +470,7 @@ var (
 	Kitchen = Object{
 		In:     &Rooms,
 		Desc:   "Kitchen",
-		Flags:  []Flag{FlgLand, FlgOn, FlgSacred},
+		Flags:  FlgLand | FlgOn | FlgSacred,
 		Value:  10,
 		Global: []*Object{&KitchenWindow, &Chimney, &Stairs},
 		// Action set in FinalizeGameObjects to avoid init cycle
@@ -479,13 +479,13 @@ var (
 		In:       &Rooms,
 		LongDesc: "This is the attic. The only exit is a stairway leading down.",
 		Desc:     "Attic",
-		Flags:    []Flag{FlgLand, FlgSacred},
+		Flags:    FlgLand | FlgSacred,
 		Global:   []*Object{&Stairs},
 	}
 	LivingRoom = Object{
 		In:     &Rooms,
 		Desc:   "Living Room",
-		Flags:  []Flag{FlgLand, FlgOn, FlgSacred},
+		Flags:  FlgLand | FlgOn | FlgSacred,
 		Global: []*Object{&Stairs},
 		Pseudo: []PseudoObj{
 			{Synonym: "nails", Action: NailsPseudo},
@@ -502,7 +502,7 @@ var (
 		In:     &Rooms,
 		Desc:   "Cellar",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:  []Flag{FlgLand},
+		Flags:  FlgLand,
 		Value:  25,
 		Global: []*Object{&Slide, &Stairs},
 	}
@@ -510,27 +510,27 @@ var (
 		In:       &Rooms,
 		LongDesc: "This is a small room with passages to the east and south and a forbidding hole leading west. Bloodstains and deep scratches (perhaps made by an axe) mar the walls.",
 		Desc:     "The Troll Room",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	EastOfChasm = Object{
 		In:       &Rooms,
 		LongDesc: "You are on the east edge of a chasm, the bottom of which cannot be seen. A narrow passage goes north, and the path you are on continues to the east.",
 		Desc:     "East of Chasm",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 		Pseudo:   []PseudoObj{{Synonym: "chasm", Action: ChasmPseudo}},
 	}
 	Gallery = Object{
 		In:       &Rooms,
 		LongDesc: "This is an art gallery. Most of the paintings have been stolen by vandals with exceptional taste. The vandals left through either the north or west exits.",
 		Desc:     "Gallery",
-		Flags:    []Flag{FlgLand, FlgOn},
+		Flags:    FlgLand | FlgOn,
 	}
 	Studio = Object{
 		In:       &Rooms,
 		LongDesc: "This appears to have been an artist's studio. The walls and floors are splattered with paints of 69 different colors. Strangely enough, nothing of value is hanging here. At the south end of the room is an open door (also covered with paint). A dark and narrow chimney leads up from a fireplace; although you might be able to get up it, it seems unlikely you could get back down.",
 		Desc:     "Studio",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 		Global:   []*Object{&Chimney},
 		Pseudo: []PseudoObj{
 			{Synonym: "door", Action: DoorPseudo},
@@ -546,122 +546,122 @@ var (
 		In:       &Rooms,
 		LongDesc: "This is part of a maze of twisty little passages, all alike.",
 		Desc:     "Maze",
-		Flags:    []Flag{FlgLand, FlgMaze},
+		Flags:    FlgLand | FlgMaze,
 	}
 	Maze2 = Object{
 		In:       &Rooms,
 		LongDesc: "This is part of a maze of twisty little passages, all alike.",
 		Desc:     "Maze",
-		Flags:    []Flag{FlgLand, FlgMaze},
+		Flags:    FlgLand | FlgMaze,
 	}
 	Maze3 = Object{
 		In:       &Rooms,
 		LongDesc: "This is part of a maze of twisty little passages, all alike.",
 		Desc:     "Maze",
-		Flags:    []Flag{FlgLand, FlgMaze},
+		Flags:    FlgLand | FlgMaze,
 	}
 	Maze4 = Object{
 		In:       &Rooms,
 		LongDesc: "This is part of a maze of twisty little passages, all alike.",
 		Desc:     "Maze",
-		Flags:    []Flag{FlgLand, FlgMaze},
+		Flags:    FlgLand | FlgMaze,
 	}
 	DeadEnd1 = Object{
 		In:       &Rooms,
 		LongDesc: "You have come to a dead end in the maze.",
 		Desc:     "Dead End",
-		Flags:    []Flag{FlgLand, FlgMaze},
+		Flags:    FlgLand | FlgMaze,
 	}
 	Maze5 = Object{
 		In:       &Rooms,
 		LongDesc: "This is part of a maze of twisty little passages, all alike. A skeleton, probably the remains of a luckless adventurer, lies here.",
 		Desc:     "Maze",
-		Flags:    []Flag{FlgLand, FlgMaze},
+		Flags:    FlgLand | FlgMaze,
 	}
 	DeadEnd2 = Object{
 		In:       &Rooms,
 		LongDesc: "You have come to a dead end in the maze.",
 		Desc:     "Dead End",
-		Flags:    []Flag{FlgLand, FlgMaze},
+		Flags:    FlgLand | FlgMaze,
 	}
 	Maze6 = Object{
 		In:       &Rooms,
 		LongDesc: "This is part of a maze of twisty little passages, all alike.",
 		Desc:     "Maze",
-		Flags:    []Flag{FlgLand, FlgMaze},
+		Flags:    FlgLand | FlgMaze,
 	}
 	Maze7 = Object{
 		In:       &Rooms,
 		LongDesc: "This is part of a maze of twisty little passages, all alike.",
 		Desc:     "Maze",
-		Flags:    []Flag{FlgLand, FlgMaze},
+		Flags:    FlgLand | FlgMaze,
 	}
 	Maze8 = Object{
 		In:       &Rooms,
 		LongDesc: "This is part of a maze of twisty little passages, all alike.",
 		Desc:     "Maze",
-		Flags:    []Flag{FlgLand, FlgMaze},
+		Flags:    FlgLand | FlgMaze,
 	}
 	DeadEnd3 = Object{
 		In:       &Rooms,
 		LongDesc: "You have come to a dead end in the maze.",
 		Desc:     "Dead End",
-		Flags:    []Flag{FlgLand, FlgMaze},
+		Flags:    FlgLand | FlgMaze,
 	}
 	Maze9 = Object{
 		In:       &Rooms,
 		LongDesc: "This is part of a maze of twisty little passages, all alike.",
 		Desc:     "Maze",
-		Flags:    []Flag{FlgLand, FlgMaze},
+		Flags:    FlgLand | FlgMaze,
 	}
 	Maze10 = Object{
 		In:       &Rooms,
 		LongDesc: "This is part of a maze of twisty little passages, all alike.",
 		Desc:     "Maze",
-		Flags:    []Flag{FlgLand, FlgMaze},
+		Flags:    FlgLand | FlgMaze,
 	}
 	Maze11 = Object{
 		In:       &Rooms,
 		LongDesc: "This is part of a maze of twisty little passages, all alike.",
 		Desc:     "Maze",
-		Flags:    []Flag{FlgLand, FlgMaze},
+		Flags:    FlgLand | FlgMaze,
 	}
 	GratingRoom = Object{
 		In:     &Rooms,
 		Desc:   "Grating Room",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:  []Flag{FlgLand},
+		Flags:  FlgLand,
 		Global: []*Object{&Grate},
 	}
 	Maze12 = Object{
 		In:       &Rooms,
 		LongDesc: "This is part of a maze of twisty little passages, all alike.",
 		Desc:     "Maze",
-		Flags:    []Flag{FlgLand, FlgMaze},
+		Flags:    FlgLand | FlgMaze,
 	}
 	DeadEnd4 = Object{
 		In:       &Rooms,
 		LongDesc: "You have come to a dead end in the maze.",
 		Desc:     "Dead End",
-		Flags:    []Flag{FlgLand, FlgMaze},
+		Flags:    FlgLand | FlgMaze,
 	}
 	Maze13 = Object{
 		In:       &Rooms,
 		LongDesc: "This is part of a maze of twisty little passages, all alike.",
 		Desc:     "Maze",
-		Flags:    []Flag{FlgLand, FlgMaze},
+		Flags:    FlgLand | FlgMaze,
 	}
 	Maze14 = Object{
 		In:       &Rooms,
 		LongDesc: "This is part of a maze of twisty little passages, all alike.",
 		Desc:     "Maze",
-		Flags:    []Flag{FlgLand, FlgMaze},
+		Flags:    FlgLand | FlgMaze,
 	}
 	Maze15 = Object{
 		In:       &Rooms,
 		LongDesc: "This is part of a maze of twisty little passages, all alike.",
 		Desc:     "Maze",
-		Flags:    []Flag{FlgLand, FlgMaze},
+		Flags:    FlgLand | FlgMaze,
 	}
 
 	// ================================================================
@@ -672,21 +672,21 @@ var (
 		In:     &Rooms,
 		Desc:   "Cyclops Room",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:  []Flag{FlgLand},
+		Flags:  FlgLand,
 		Global: []*Object{&Stairs},
 	}
 	StrangePassage = Object{
 		In:       &Rooms,
 		LongDesc: "This is a long passage. To the west is one entrance. On the east there is an old wooden door, with a large opening in it (about cyclops sized).",
 		Desc:     "Strange Passage",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 	}
 	TreasureRoom = Object{
 		In:       &Rooms,
 		LongDesc: "This is a large room, whose east wall is solid granite. A number of discarded bags, which crumble at your touch, are scattered about on the floor. There is an exit down a staircase.",
 		Desc:     "Treasure Room",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 		Value:    25,
 		Global:   []*Object{&Stairs},
 	}
@@ -699,7 +699,7 @@ var (
 		In:     &Rooms,
 		Desc:   "Reservoir South",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:  []Flag{FlgLand},
+		Flags:  FlgLand,
 		Global: []*Object{&GlobalWater},
 		Pseudo: []PseudoObj{
 			{Synonym: "lake", Action: LakePseudo},
@@ -710,7 +710,7 @@ var (
 		In:     &Rooms,
 		Desc:   "Reservoir",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:  []Flag{FlgNonLand},
+		Flags:  FlgNonLand,
 		Global: []*Object{&GlobalWater},
 		Pseudo: []PseudoObj{{Synonym: "stream", Action: StreamPseudo}},
 	}
@@ -718,7 +718,7 @@ var (
 		In:     &Rooms,
 		Desc:   "Reservoir North",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:  []Flag{FlgLand},
+		Flags:  FlgLand,
 		Global: []*Object{&GlobalWater, &Stairs},
 		Pseudo: []PseudoObj{{Synonym: "lake", Action: LakePseudo}},
 	}
@@ -726,7 +726,7 @@ var (
 		In:       &Rooms,
 		LongDesc: "You are standing on a path beside a gently flowing stream. The path follows the stream, which flows from west to east.",
 		Desc:     "Stream View",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 		Global:   []*Object{&GlobalWater},
 		Pseudo:   []PseudoObj{{Synonym: "stream", Action: StreamPseudo}},
 	}
@@ -734,7 +734,7 @@ var (
 		In:       &Rooms,
 		LongDesc: "You are on the gently flowing stream. The upstream route is too narrow to navigate, and the downstream route is invisible due to twisting walls. There is a narrow beach to land on.",
 		Desc:     "Stream",
-		Flags:    []Flag{FlgNonLand},
+		Flags:    FlgNonLand,
 		Global:   []*Object{&GlobalWater},
 		Pseudo:   []PseudoObj{{Synonym: "stream", Action: StreamPseudo}},
 	}
@@ -747,19 +747,19 @@ var (
 		In:     &Rooms,
 		Desc:   "Mirror Room",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:  []Flag{FlgLand},
+		Flags:  FlgLand,
 	}
 	MirrorRoom2 = Object{
 		In:     &Rooms,
 		Desc:   "Mirror Room",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:  []Flag{FlgLand, FlgOn},
+		Flags:  FlgLand | FlgOn,
 	}
 	SmallCave = Object{
 		In:       &Rooms,
 		LongDesc: "This is a tiny cave with entrances west and north, and a staircase leading down.",
 		Desc:     "Cave",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 		Global:   []*Object{&Stairs},
 	}
 	TinyCave = Object{
@@ -767,38 +767,38 @@ var (
 		LongDesc: "This is a tiny cave with entrances west and north, and a dark, forbidding staircase leading down.",
 		Desc:     "Cave",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 		Global:   []*Object{&Stairs},
 	}
 	ColdPassage = Object{
 		In:       &Rooms,
 		LongDesc: "This is a cold and damp corridor where a long east-west passageway turns into a southward path.",
 		Desc:     "Cold Passage",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 	}
 	NarrowPassage = Object{
 		In:       &Rooms,
 		LongDesc: "This is a long and narrow corridor where a long north-south passageway briefly narrows even further.",
 		Desc:     "Narrow Passage",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 	}
 	WindingPassage = Object{
 		In:       &Rooms,
 		LongDesc: "This is a winding passage. It seems that there are only exits on the east and north.",
 		Desc:     "Winding Passage",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 	}
 	TwistingPassage = Object{
 		In:       &Rooms,
 		LongDesc: "This is a winding passage. It seems that there are only exits on the east and north.",
 		Desc:     "Twisting Passage",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 	}
 	AtlantisRoom = Object{
 		In:       &Rooms,
 		LongDesc: "This is an ancient room, long under water. There is an exit to the south and a staircase leading up.",
 		Desc:     "Atlantis Room",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 		Global:   []*Object{&Stairs},
 	}
 
@@ -810,7 +810,7 @@ var (
 		In:       &Rooms,
 		LongDesc: "This is a narrow east-west passageway. There is a narrow stairway leading down at the north end of the room.",
 		Desc:     "East-West Passage",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 		Value:    5,
 		Global:   []*Object{&Stairs},
 	}
@@ -818,40 +818,40 @@ var (
 		In:       &Rooms,
 		LongDesc: "This is a circular stone room with passages in all directions. Several of them have unfortunately been blocked by cave-ins.",
 		Desc:     "Round Room",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 	}
 	DeepCanyon = Object{
 		In:     &Rooms,
 		Desc:   "Deep Canyon",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:  []Flag{FlgLand},
+		Flags:  FlgLand,
 		Global: []*Object{&Stairs},
 	}
 	DampCave = Object{
 		In:       &Rooms,
 		LongDesc: "This cave has exits to the west and east, and narrows to a crack toward the south. The earth is particularly damp here.",
 		Desc:     "Damp Cave",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 		Global:   []*Object{&Crack},
 	}
 	LoudRoom = Object{
 		In:     &Rooms,
 		Desc:   "Loud Room",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:  []Flag{FlgLand},
+		Flags:  FlgLand,
 		Global: []*Object{&Stairs},
 	}
 	NSPassage = Object{
 		In:       &Rooms,
 		LongDesc: "This is a high north-south passage, which forks to the northeast.",
 		Desc:     "North-South Passage",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 	}
 	ChasmRoom = Object{
 		In:       &Rooms,
 		LongDesc: "A chasm runs southwest to northeast and the path follows it. You are on the south side of the chasm, where a crack opens into a passage.",
 		Desc:     "Chasm",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 		Global:   []*Object{&Crack, &Stairs},
 		Pseudo:   []PseudoObj{{Synonym: "chasm", Action: ChasmPseudo}},
 	}
@@ -864,7 +864,7 @@ var (
 		In:     &Rooms,
 		Desc:   "Entrance to Hades",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:  []Flag{FlgLand, FlgOn},
+		Flags:  FlgLand | FlgOn,
 		Global: []*Object{&Bodies},
 		Pseudo: []PseudoObj{
 			{Synonym: "gate", Action: GatePseudo},
@@ -875,7 +875,7 @@ var (
 		In:       &Rooms,
 		LongDesc: "You have entered the Land of the Living Dead. Thousands of lost souls can be heard weeping and moaning. In the corner are stacked the remains of dozens of previous adventurers less fortunate than yourself. A passage exits to the north.",
 		Desc:     "Land of the Dead",
-		Flags:    []Flag{FlgLand, FlgOn},
+		Flags:    FlgLand | FlgOn,
 		Global:   []*Object{&Bodies},
 	}
 
@@ -887,27 +887,27 @@ var (
 		In:       &Rooms,
 		LongDesc: "You have entered a low cave with passages leading northwest and east.",
 		Desc:     "Engravings Cave",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 	}
 	EgyptRoom = Object{
 		In:       &Rooms,
 		LongDesc: "This is a room which looks like an Egyptian tomb. There is an ascending staircase to the west.",
 		Desc:     "Egyptian Room",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 		Global:   []*Object{&Stairs},
 	}
 	DomeRoom = Object{
 		In:     &Rooms,
 		Desc:   "Dome Room",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:  []Flag{FlgLand},
+		Flags:  FlgLand,
 		Pseudo: []PseudoObj{{Synonym: "dome", Action: DomePseudo}},
 	}
 	TorchRoom = Object{
 		In:     &Rooms,
 		Desc:   "Torch Room",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:  []Flag{FlgLand},
+		Flags:  FlgLand,
 		Global: []*Object{&Stairs},
 		Pseudo: []PseudoObj{{Synonym: "dome", Action: DomePseudo}},
 	}
@@ -915,7 +915,7 @@ var (
 		In:       &Rooms,
 		LongDesc: "This is the north end of a large temple. On the east wall is an ancient inscription, probably a prayer in a long-forgotten language. Below the prayer is a staircase leading down. The west wall is solid granite. The exit to the north end of the room is through huge marble pillars.",
 		Desc:     "Temple",
-		Flags:    []Flag{FlgLand, FlgOn, FlgSacred},
+		Flags:    FlgLand | FlgOn | FlgSacred,
 		Global:   []*Object{&Stairs},
 	}
 	SouthTemple = Object{
@@ -923,7 +923,7 @@ var (
 		LongDesc: "This is the south end of a large temple. In front of you is what appears to be an altar. In one corner is a small hole in the floor which leads into darkness. You probably could not get back up it.",
 		Desc:     "Altar",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:    []Flag{FlgLand, FlgOn, FlgSacred},
+		Flags:    FlgLand | FlgOn | FlgSacred,
 	}
 
 	// ================================================================
@@ -934,20 +934,20 @@ var (
 		In:     &Rooms,
 		Desc:   "Dam",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:  []Flag{FlgLand, FlgOn},
+		Flags:  FlgLand | FlgOn,
 		Global: []*Object{&GlobalWater},
 	}
 	DamLobby = Object{
 		In:       &Rooms,
 		LongDesc: "This room appears to have been the waiting room for groups touring the dam. There are open doorways here to the north and east marked \"Private\", and there is a path leading south over the top of the dam.",
 		Desc:     "Dam Lobby",
-		Flags:    []Flag{FlgLand, FlgOn},
+		Flags:    FlgLand | FlgOn,
 	}
 	MaintenanceRoom = Object{
 		In:       &Rooms,
 		LongDesc: "This is what appears to have been the maintenance room for Flood Control Dam #3. Apparently, this room has been ransacked recently, for most of the valuable equipment is gone. On the wall in front of you is a group of buttons colored blue, yellow, brown, and red. There are doorways to the west and south.",
 		Desc:     "Maintenance Room",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 	}
 
 	// ================================================================
@@ -958,28 +958,28 @@ var (
 		In:       &Rooms,
 		LongDesc: "You are at the base of Flood Control Dam #3, which looms above you and to the north. The river Frigid is flowing by here. Along the river are the White Cliffs which seem to form giant walls stretching from north to south along the shores of the river as it winds its way downstream.",
 		Desc:     "Dam Base",
-		Flags:    []Flag{FlgLand, FlgOn, FlgSacred},
+		Flags:    FlgLand | FlgOn | FlgSacred,
 		Global:   []*Object{&GlobalWater, &River},
 	}
 	River1 = Object{
 		In:       &Rooms,
 		LongDesc: "You are on the Frigid River in the vicinity of the Dam. The river flows quietly here. There is a landing on the west shore.",
 		Desc:     "Frigid River",
-		Flags:    []Flag{FlgNonLand, FlgSacred, FlgOn},
+		Flags:    FlgNonLand | FlgSacred | FlgOn,
 		Global:   []*Object{&GlobalWater, &River},
 	}
 	River2 = Object{
 		In:       &Rooms,
 		LongDesc: "The river turns a corner here making it impossible to see the Dam. The White Cliffs loom on the east bank and large rocks prevent landing on the west.",
 		Desc:     "Frigid River",
-		Flags:    []Flag{FlgNonLand, FlgSacred},
+		Flags:    FlgNonLand | FlgSacred,
 		Global:   []*Object{&GlobalWater, &River},
 	}
 	River3 = Object{
 		In:       &Rooms,
 		LongDesc: "The river descends here into a valley. There is a narrow beach on the west shore below the cliffs. In the distance a faint rumbling can be heard.",
 		Desc:     "Frigid River",
-		Flags:    []Flag{FlgNonLand, FlgSacred},
+		Flags:    FlgNonLand | FlgSacred,
 		Global:   []*Object{&GlobalWater, &River},
 	}
 	WhiteCliffsNorth = Object{
@@ -987,7 +987,7 @@ var (
 		LongDesc: "You are on a narrow strip of beach which runs along the base of the White Cliffs. There is a narrow path heading south along the Cliffs and a tight passage leading west into the cliffs themselves.",
 		Desc:     "White Cliffs Beach",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:    []Flag{FlgLand, FlgSacred},
+		Flags:    FlgLand | FlgSacred,
 		Global:   []*Object{&GlobalWater, &WhiteCliff, &River},
 	}
 	WhiteCliffsSouth = Object{
@@ -995,7 +995,7 @@ var (
 		LongDesc: "You are on a rocky, narrow strip of beach beside the Cliffs. A narrow path leads north along the shore.",
 		Desc:     "White Cliffs Beach",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:    []Flag{FlgLand, FlgSacred},
+		Flags:    FlgLand | FlgSacred,
 		Global:   []*Object{&GlobalWater, &WhiteCliff, &River},
 	}
 	River4 = Object{
@@ -1003,69 +1003,69 @@ var (
 		LongDesc: "The river is running faster here and the sound ahead appears to be that of rushing water. On the east shore is a sandy beach. A small area of beach can also be seen below the cliffs on the west shore.",
 		Desc:     "Frigid River",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:    []Flag{FlgNonLand, FlgSacred},
+		Flags:    FlgNonLand | FlgSacred,
 		Global:   []*Object{&GlobalWater, &River},
 	}
 	River5 = Object{
 		In:       &Rooms,
 		LongDesc: "The sound of rushing water is nearly unbearable here. On the east shore is a large landing area.",
 		Desc:     "Frigid River",
-		Flags:    []Flag{FlgNonLand, FlgSacred, FlgOn},
+		Flags:    FlgNonLand | FlgSacred | FlgOn,
 		Global:   []*Object{&GlobalWater, &River},
 	}
 	Shore = Object{
 		In:       &Rooms,
 		LongDesc: "You are on the east shore of the river. The water here seems somewhat treacherous. A path travels from north to south here, the south end quickly turning around a sharp corner.",
 		Desc:     "Shore",
-		Flags:    []Flag{FlgLand, FlgSacred, FlgOn},
+		Flags:    FlgLand | FlgSacred | FlgOn,
 		Global:   []*Object{&GlobalWater, &River},
 	}
 	SandyBeach = Object{
 		In:       &Rooms,
 		LongDesc: "You are on a large sandy beach on the east shore of the river, which is flowing quickly by. A path runs beside the river to the south here, and a passage is partially buried in sand to the northeast.",
 		Desc:     "Sandy Beach",
-		Flags:    []Flag{FlgLand, FlgSacred},
+		Flags:    FlgLand | FlgSacred,
 		Global:   []*Object{&GlobalWater, &River},
 	}
 	SandyCave = Object{
 		In:       &Rooms,
 		LongDesc: "This is a sand-filled cave whose exit is to the southwest.",
 		Desc:     "Sandy Cave",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 	}
 	AragainFalls = Object{
 		In:     &Rooms,
 		Desc:   "Aragain Falls",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:  []Flag{FlgLand, FlgSacred, FlgOn},
+		Flags:  FlgLand | FlgSacred | FlgOn,
 		Global: []*Object{&GlobalWater, &River, &Rainbow},
 	}
 	OnRainbow = Object{
 		In:       &Rooms,
 		LongDesc: "You are on top of a rainbow (I bet you never thought you would walk on a rainbow), with a magnificent view of the Falls. The rainbow travels east-west here.",
 		Desc:     "On the Rainbow",
-		Flags:    []Flag{FlgLand, FlgOn, FlgSacred},
+		Flags:    FlgLand | FlgOn | FlgSacred,
 		Global:   []*Object{&Rainbow},
 	}
 	EndOfRainbow = Object{
 		In:       &Rooms,
 		LongDesc: "You are on a small, rocky beach on the continuation of the Frigid River past the Falls. The beach is narrow due to the presence of the White Cliffs. The river canyon opens here and sunlight shines in from above. A rainbow crosses over the falls to the east and a narrow path continues to the southwest.",
 		Desc:     "End of Rainbow",
-		Flags:    []Flag{FlgLand, FlgOn},
+		Flags:    FlgLand | FlgOn,
 		Global:   []*Object{&GlobalWater, &Rainbow, &River},
 	}
 	CanyonBottom = Object{
 		In:       &Rooms,
 		LongDesc: "You are beneath the walls of the river canyon which may be climbable here. The lesser part of the runoff of Aragain Falls flows by below. To the north is a narrow path.",
 		Desc:     "Canyon Bottom",
-		Flags:    []Flag{FlgLand, FlgOn, FlgSacred},
+		Flags:    FlgLand | FlgOn | FlgSacred,
 		Global:   []*Object{&GlobalWater, &ClimbableCliff, &River},
 	}
 	CliffMiddle = Object{
 		In:       &Rooms,
 		LongDesc: "You are on a ledge about halfway up the wall of the river canyon. You can see from here that the main flow from Aragain Falls twists along a passage which it is impossible for you to enter. Below you is the canyon bottom. Above you is more cliff, which appears climbable.",
 		Desc:     "Rocky Ledge",
-		Flags:    []Flag{FlgLand, FlgOn, FlgSacred},
+		Flags:    FlgLand | FlgOn | FlgSacred,
 		Global:   []*Object{&ClimbableCliff, &River},
 	}
 	CanyonView = Object{
@@ -1073,7 +1073,7 @@ var (
 		LongDesc: "You are at the top of the Great Canyon on its west wall. From here there is a marvelous view of the canyon and parts of the Frigid River upstream. Across the canyon, the walls of the White Cliffs join the mighty ramparts of the Flathead Mountains to the east. Following the Canyon upstream to the north, Aragain Falls may be seen, complete with rainbow. The mighty Frigid River flows out from a great dark cavern. To the west and south can be seen an immense forest, stretching for miles around. A path leads northwest. It is possible to climb down into the canyon from here.",
 		Desc:     "Canyon View",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:    []Flag{FlgLand, FlgOn, FlgSacred},
+		Flags:    FlgLand | FlgOn | FlgSacred,
 		Global:   []*Object{&ClimbableCliff, &River, &Rainbow},
 	}
 
@@ -1085,32 +1085,32 @@ var (
 		In:       &Rooms,
 		LongDesc: "You are standing at the entrance of what might have been a coal mine. The shaft enters the west wall, and there is another exit on the south end of the room.",
 		Desc:     "Mine Entrance",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 	}
 	SqueekyRoom = Object{
 		In:       &Rooms,
 		LongDesc: "You are in a small room. Strange squeaky sounds may be heard coming from the passage at the north end. You may also escape to the east.",
 		Desc:     "Squeaky Room",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 	}
 	BatRoom = Object{
 		In:     &Rooms,
 		Desc:   "Bat Room",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:  []Flag{FlgLand, FlgSacred},
+		Flags:  FlgLand | FlgSacred,
 	}
 	ShaftRoom = Object{
 		In:       &Rooms,
 		LongDesc: "This is a large room, in the middle of which is a small shaft descending through the floor into darkness below. To the west and the north are exits from this room. Constructed over the top of the shaft is a metal framework to which a heavy iron chain is attached.",
 		Desc:     "Shaft Room",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 		Pseudo:   []PseudoObj{{Synonym: "chain", Action: ChainPseudo}},
 	}
 	SmellyRoom = Object{
 		In:       &Rooms,
 		LongDesc: "This is a small nondescript room. However, from the direction of a small descending staircase a foul odor can be detected. To the south is a narrow tunnel.",
 		Desc:     "Smelly Room",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 		Global:   []*Object{&Stairs},
 		Pseudo: []PseudoObj{
 			{Synonym: "odor", Action: GasPseudo},
@@ -1122,7 +1122,7 @@ var (
 		LongDesc: "This is a small room which smells strongly of coal gas. There is a short climb up some stairs and a narrow tunnel leading east.",
 		Desc:     "Gas Room",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:    []Flag{FlgLand, FlgSacred},
+		Flags:    FlgLand | FlgSacred,
 		Global:   []*Object{&Stairs},
 		Pseudo: []PseudoObj{
 			{Synonym: "gas", Action: GasPseudo},
@@ -1133,41 +1133,41 @@ var (
 		In:       &Rooms,
 		LongDesc: "This is a very small room. In the corner is a rickety wooden ladder, leading downward. It might be safe to descend. There is also a staircase leading upward.",
 		Desc:     "Ladder Top",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 		Global:   []*Object{&Ladder, &Stairs},
 	}
 	LadderBottom = Object{
 		In:       &Rooms,
 		LongDesc: "This is a rather wide room. On one side is the bottom of a narrow wooden ladder. To the west and the south are passages leaving the room.",
 		Desc:     "Ladder Bottom",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 		Global:   []*Object{&Ladder},
 	}
 	DeadEnd5 = Object{
 		In:       &Rooms,
 		LongDesc: "You have come to a dead end in the mine.",
 		Desc:     "Dead End",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 	}
 	TimberRoom = Object{
 		In:       &Rooms,
 		LongDesc: "This is a long and narrow passage, which is cluttered with broken timbers. A wide passage comes from the east and turns at the west end of the room into a very narrow passageway. From the west comes a strong draft.",
 		Desc:     "Timber Room",
 		// Action set in FinalizeGameObjects to avoid init cycle
-		Flags:    []Flag{FlgLand, FlgSacred},
+		Flags:    FlgLand | FlgSacred,
 	}
 	LowerShaft = Object{
 		In:       &Rooms,
 		LongDesc: "This is a small drafty room in which is the bottom of a long shaft. To the south is a passageway and to the east a very narrow passage. In the shaft can be seen a heavy iron chain.",
 		Desc:     "Drafty Room",
-		Flags:    []Flag{FlgLand, FlgSacred},
+		Flags:    FlgLand | FlgSacred,
 		Pseudo:   []PseudoObj{{Synonym: "chain", Action: ChainPseudo}},
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	MachineRoom = Object{
 		In:     &Rooms,
 		Desc:   "Machine Room",
-		Flags:  []Flag{FlgLand},
+		Flags:  FlgLand,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 
@@ -1179,31 +1179,31 @@ var (
 		In:       &Rooms,
 		LongDesc: "This is a nondescript part of a coal mine.",
 		Desc:     "Coal Mine",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 	}
 	Mine2 = Object{
 		In:       &Rooms,
 		LongDesc: "This is a nondescript part of a coal mine.",
 		Desc:     "Coal Mine",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 	}
 	Mine3 = Object{
 		In:       &Rooms,
 		LongDesc: "This is a nondescript part of a coal mine.",
 		Desc:     "Coal Mine",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 	}
 	Mine4 = Object{
 		In:       &Rooms,
 		LongDesc: "This is a nondescript part of a coal mine.",
 		Desc:     "Coal Mine",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 	}
 	SlideRoom = Object{
 		In:       &Rooms,
 		LongDesc: "This is a small chamber, which appears to have been part of a coal mine. On the south wall of the chamber the letters \"Granite Wall\" are etched in the rock. To the east is a long passage, and there is a steep metal slide twisting downward. To the north is a small opening.",
 		Desc:     "Slide Room",
-		Flags:    []Flag{FlgLand},
+		Flags:    FlgLand,
 		Global:   []*Object{&Slide},
 	}
 
@@ -1217,7 +1217,7 @@ var (
 		Synonyms:   []string{"mountain", "range"},
 		Adjectives: []string{"impassable", "flathead"},
 		Desc:       "mountain range",
-		Flags:      []Flag{FlgNoDesc, FlgClimb},
+		Flags:      FlgNoDesc | FlgClimb,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 
@@ -1227,7 +1227,7 @@ var (
 		Synonyms:   []string{"door"},
 		Adjectives: []string{"front", "boarded"},
 		Desc:       "door",
-		Flags:      []Flag{FlgDoor, FlgNoDesc},
+		Flags:      FlgDoor | FlgNoDesc,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	Mailbox = Object{
@@ -1235,7 +1235,7 @@ var (
 		Synonyms:   []string{"mailbox", "box"},
 		Adjectives: []string{"small"},
 		Desc:       "small mailbox",
-		Flags:      []Flag{FlgCont, FlgTryTake},
+		Flags:      FlgCont | FlgTryTake,
 		Capacity:   10,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
@@ -1246,7 +1246,7 @@ var (
 		Synonyms:   []string{"door"},
 		Adjectives: []string{"huge", "stone"},
 		Desc:       "stone door",
-		Flags:      []Flag{FlgDoor, FlgNoDesc, FlgOpen},
+		Flags:      FlgDoor | FlgNoDesc | FlgOpen,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	Barrow = Object{
@@ -1254,7 +1254,7 @@ var (
 		Synonyms:   []string{"barrow", "tomb"},
 		Adjectives: []string{"massive", "stone"},
 		Desc:       "stone barrow",
-		Flags:      []Flag{FlgNoDesc},
+		Flags:      FlgNoDesc,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 
@@ -1264,7 +1264,7 @@ var (
 		Synonyms:   []string{"case"},
 		Adjectives: []string{"trophy"},
 		Desc:       "trophy case",
-		Flags:      []Flag{FlgTrans, FlgCont, FlgNoDesc, FlgTryTake, FlgSearch},
+		Flags:      FlgTrans | FlgCont | FlgNoDesc | FlgTryTake | FlgSearch,
 		Capacity:   10000,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
@@ -1273,7 +1273,7 @@ var (
 		Synonyms:   []string{"rug", "carpet"},
 		Adjectives: []string{"large", "oriental"},
 		Desc:       "carpet",
-		Flags:      []Flag{FlgNoDesc, FlgTryTake},
+		Flags:      FlgNoDesc | FlgTryTake,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	TrapDoor = Object{
@@ -1281,7 +1281,7 @@ var (
 		Synonyms:   []string{"door", "trapdoor", "trap-door", "cover"},
 		Adjectives: []string{"trap", "dusty"},
 		Desc:       "trap door",
-		Flags:      []Flag{FlgDoor, FlgNoDesc, FlgInvis},
+		Flags:      FlgDoor | FlgNoDesc | FlgInvis,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	WoodenDoor = Object{
@@ -1289,7 +1289,7 @@ var (
 		Synonyms:   []string{"door", "lettering", "writing"},
 		Adjectives: []string{"wooden", "gothic", "strange", "west"},
 		Desc:       "wooden door",
-		Flags:      []Flag{FlgRead, FlgDoor, FlgNoDesc, FlgTrans},
+		Flags:      FlgRead | FlgDoor | FlgNoDesc | FlgTrans,
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Text:       "The engravings translate to \"This space intentionally left blank.\"",
 	}
@@ -1298,7 +1298,7 @@ var (
 		Synonyms:   []string{"sword", "orcrist", "glamdring", "blade"},
 		Adjectives: []string{"elvish", "old", "antique"},
 		Desc:       "sword",
-		Flags:      []Flag{FlgTake, FlgWeapon, FlgTryTake},
+		Flags:      FlgTake | FlgWeapon | FlgTryTake,
 		FirstDesc:  "Above the trophy case hangs an elvish sword of great antiquity.",
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Size:       30,
@@ -1309,7 +1309,7 @@ var (
 		Synonyms:   []string{"lamp", "lantern", "light"},
 		Adjectives: []string{"brass"},
 		Desc:       "brass lantern",
-		Flags:      []Flag{FlgTake, FlgLight},
+		Flags:      FlgTake | FlgLight,
 		FirstDesc:  "A battery-powered brass lantern is on the trophy case.",
 		// Action set in FinalizeGameObjects to avoid init cycle
 		LongDesc:   "There is a brass lantern (battery-powered) here.",
@@ -1322,7 +1322,7 @@ var (
 		Synonyms:   []string{"table"},
 		Adjectives: []string{"kitchen"},
 		Desc:       "kitchen table",
-		Flags:      []Flag{FlgNoDesc, FlgCont, FlgOpen, FlgSurf},
+		Flags:      FlgNoDesc | FlgCont | FlgOpen | FlgSurf,
 		Capacity:   50,
 	}
 
@@ -1331,7 +1331,7 @@ var (
 		In:       &Attic,
 		Synonyms: []string{"table"},
 		Desc:     "table",
-		Flags:    []Flag{FlgNoDesc, FlgCont, FlgOpen, FlgSurf},
+		Flags:    FlgNoDesc | FlgCont | FlgOpen | FlgSurf,
 		Capacity: 40,
 	}
 	Rope = Object{
@@ -1339,7 +1339,7 @@ var (
 		Synonyms:   []string{"rope", "hemp", "coil"},
 		Adjectives: []string{"large"},
 		Desc:       "rope",
-		Flags:      []Flag{FlgTake, FlgSacred, FlgTryTake},
+		Flags:      FlgTake | FlgSacred | FlgTryTake,
 		// Action set in FinalizeGameObjects to avoid init cycle
 		FirstDesc:  "A large coil of rope is lying in the corner.",
 		Size:       10,
@@ -1351,7 +1351,7 @@ var (
 		Synonyms:   []string{"ghosts", "spirits", "fiends", "force"},
 		Adjectives: []string{"invisible", "evil"},
 		Desc:       "number of ghosts",
-		Flags:      []Flag{FlgPerson, FlgNoDesc},
+		Flags:      FlgPerson | FlgNoDesc,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 
@@ -1362,7 +1362,7 @@ var (
 		Adjectives: []string{"crystal"},
 		Desc:       "crystal skull",
 		FirstDesc:  "Lying in one corner of the room is a beautifully carved crystal skull. It appears to be grinning at you rather nastily.",
-		Flags:      []Flag{FlgTake},
+		Flags:      FlgTake,
 		Value:      10,
 		TValue:     10,
 	}
@@ -1372,7 +1372,7 @@ var (
 		In:         &ShaftRoom,
 		Synonyms:   []string{"cage", "dumbwaiter", "basket"},
 		Desc:       "basket",
-		Flags:      []Flag{FlgTrans, FlgTryTake, FlgCont, FlgOpen},
+		Flags:      FlgTrans | FlgTryTake | FlgCont | FlgOpen,
 		// Action set in FinalizeGameObjects to avoid init cycle
 		LongDesc:   "At the end of the chain is a basket.",
 		Capacity:   50,
@@ -1385,7 +1385,7 @@ var (
 		Adjectives: []string{"lowered"},
 		Desc:       "basket",
 		LongDesc:   "From the chain is suspended a basket.",
-		Flags:      []Flag{FlgTryTake},
+		Flags:      FlgTryTake,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 
@@ -1395,7 +1395,7 @@ var (
 		Synonyms:   []string{"bat", "vampire"},
 		Adjectives: []string{"vampire", "deranged"},
 		Desc:       "bat",
-		Flags:      []Flag{FlgPerson, FlgTryTake},
+		Flags:      FlgPerson | FlgTryTake,
 		DescFcn:    BatDescFcn,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
@@ -1404,7 +1404,7 @@ var (
 		Synonyms:   []string{"figurine", "treasure"},
 		Adjectives: []string{"exquisite", "jade"},
 		Desc:       "jade figurine",
-		Flags:      []Flag{FlgTake},
+		Flags:      FlgTake,
 		LongDesc:   "There is an exquisite jade figurine here.",
 		Size:       10,
 		Value:      5,
@@ -1417,7 +1417,7 @@ var (
 		Synonyms:   []string{"bell"},
 		Adjectives: []string{"small", "brass"},
 		Desc:       "brass bell",
-		Flags:      []Flag{FlgTake},
+		Flags:      FlgTake,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	Prayer = Object{
@@ -1425,7 +1425,7 @@ var (
 		Synonyms:   []string{"prayer", "inscription"},
 		Adjectives: []string{"ancient", "old"},
 		Desc:       "prayer",
-		Flags:      []Flag{FlgRead, FlgSacred, FlgNoDesc},
+		Flags:      FlgRead | FlgSacred | FlgNoDesc,
 		Text:       "The prayer is inscribed in an ancient script, rarely used today. It seems to be a philippic against small insects, absent-mindedness, and the picking up and dropping of small objects. The final verse consigns trespassers to the land of the dead. All evidence indicates that the beliefs of the ancient Zorkers were obscure.",
 	}
 
@@ -1434,7 +1434,7 @@ var (
 		In:       &SouthTemple,
 		Synonyms: []string{"altar"},
 		Desc:     "altar",
-		Flags:    []Flag{FlgNoDesc, FlgSurf, FlgCont, FlgOpen},
+		Flags:    FlgNoDesc | FlgSurf | FlgCont | FlgOpen,
 		Capacity: 50,
 	}
 	Candles = Object{
@@ -1442,7 +1442,7 @@ var (
 		Synonyms:   []string{"candles", "pair"},
 		Adjectives: []string{"burning"},
 		Desc:       "pair of candles",
-		Flags:      []Flag{FlgTake, FlgFlame, FlgOn, FlgLight},
+		Flags:      FlgTake | FlgFlame | FlgOn | FlgLight,
 		// Action set in FinalizeGameObjects to avoid init cycle
 		FirstDesc:  "On the two ends of the altar are burning candles.",
 		Size:       10,
@@ -1454,7 +1454,7 @@ var (
 		Synonyms:   []string{"troll"},
 		Adjectives: []string{"nasty"},
 		Desc:       "troll",
-		Flags:      []Flag{FlgPerson, FlgOpen, FlgTryTake},
+		Flags:      FlgPerson | FlgOpen | FlgTryTake,
 		// Action set in FinalizeGameObjects to avoid init cycle
 		LongDesc:   "A nasty-looking troll, brandishing a bloody axe, blocks all passages out of the room.",
 		Strength:   2,
@@ -1466,7 +1466,7 @@ var (
 		Synonyms:   []string{"bolt", "nut"},
 		Adjectives: []string{"metal", "large"},
 		Desc:       "bolt",
-		Flags:      []Flag{FlgNoDesc, FlgTurn, FlgTryTake},
+		Flags:      FlgNoDesc | FlgTurn | FlgTryTake,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	Bubble = Object{
@@ -1474,14 +1474,14 @@ var (
 		Synonyms:   []string{"bubble"},
 		Adjectives: []string{"small", "green", "plastic"},
 		Desc:       "green bubble",
-		Flags:      []Flag{FlgNoDesc, FlgTryTake},
+		Flags:      FlgNoDesc | FlgTryTake,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	Dam = Object{
 		In:         &DamRoom,
 		Synonyms:   []string{"dam", "gate", "gates", "fcd#3"},
 		Desc:       "dam",
-		Flags:      []Flag{FlgNoDesc, FlgTryTake},
+		Flags:      FlgNoDesc | FlgTryTake,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	ControlPanel = Object{
@@ -1489,7 +1489,7 @@ var (
 		Synonyms:   []string{"panel"},
 		Adjectives: []string{"control"},
 		Desc:       "control panel",
-		Flags:      []Flag{FlgNoDesc},
+		Flags:      FlgNoDesc,
 	}
 
 	// Dam Lobby
@@ -1498,7 +1498,7 @@ var (
 		Synonyms:   []string{"match", "matches", "matchbook"},
 		Adjectives: []string{"match"},
 		Desc:       "matchbook",
-		Flags:      []Flag{FlgRead, FlgTake},
+		Flags:      FlgRead | FlgTake,
 		LongDesc:   "There is a matchbook whose cover says \"Visit Beautiful FCD#3\" here.",
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Size:       2,
@@ -1509,7 +1509,7 @@ var (
 		Synonyms:   []string{"guide", "book", "books", "guidebooks"},
 		Adjectives: []string{"tour", "guide"},
 		Desc:       "tour guidebook",
-		Flags:      []Flag{FlgRead, FlgTake, FlgBurn},
+		Flags:      FlgRead | FlgTake | FlgBurn,
 		FirstDesc:  "Some guidebooks entitled \"Flood Control Dam #3\" are on the reception desk.",
 		Text:       "\"\tFlood Control Dam #3\n\nFCD#3 was constructed in year 783 of the Great Underground Empire to harness the mighty Frigid River. This work was supported by a grant of 37 million zorkmids from your omnipotent local tyrant Lord Dimwit Flathead the Excessive. This impressive structure is composed of 370,000 cubic feet of concrete, is 256 feet tall at the center, and 193 feet wide at the top. The lake created behind the dam has a volume of 1.7 billion cubic feet, an area of 12 million square feet, and a shore line of 36 thousand feet.\n\nThe construction of FCD#3 took 112 days from ground breaking to the dedication. It required a work force of 384 slaves, 34 slave drivers, 12 engineers, 2 turtle doves, and a partridge in a pear tree. The work was managed by a command team composed of 2345 bureaucrats, 2347 secretaries (at least two of whom could type), 12,256 paper shufflers, 52,469 rubber stampers, 245,193 red tape processors, and nearly one million dead trees.\n\nWe will now point out some of the more interesting features of FCD#3 as we conduct you on a guided tour of the facilities:\n\n        1) You start your tour here in the Dam Lobby. You will notice on your right that....\"",
 	}
@@ -1520,7 +1520,7 @@ var (
 		Synonyms:   []string{"boat", "pile", "plastic", "valve"},
 		Adjectives: []string{"plastic", "inflatable"},
 		Desc:       "pile of plastic",
-		Flags:      []Flag{FlgTake, FlgBurn},
+		Flags:      FlgTake | FlgBurn,
 		// Action set in FinalizeGameObjects to avoid init cycle
 		LongDesc:   "There is a folded pile of plastic here which has a small valve attached.",
 		Size:       20,
@@ -1532,7 +1532,7 @@ var (
 		Synonyms:   []string{"chest", "chests", "group", "toolchests"},
 		Adjectives: []string{"tool"},
 		Desc:       "group of tool chests",
-		Flags:      []Flag{FlgCont, FlgOpen, FlgTryTake, FlgSacred},
+		Flags:      FlgCont | FlgOpen | FlgTryTake | FlgSacred,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	YellowButton = Object{
@@ -1540,7 +1540,7 @@ var (
 		Synonyms:   []string{"button", "switch"},
 		Adjectives: []string{"yellow"},
 		Desc:       "yellow button",
-		Flags:      []Flag{FlgNoDesc},
+		Flags:      FlgNoDesc,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	BrownButton = Object{
@@ -1548,7 +1548,7 @@ var (
 		Synonyms:   []string{"button", "switch"},
 		Adjectives: []string{"brown"},
 		Desc:       "brown button",
-		Flags:      []Flag{FlgNoDesc},
+		Flags:      FlgNoDesc,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	RedButton = Object{
@@ -1556,7 +1556,7 @@ var (
 		Synonyms:   []string{"button", "switch"},
 		Adjectives: []string{"red"},
 		Desc:       "red button",
-		Flags:      []Flag{FlgNoDesc},
+		Flags:      FlgNoDesc,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	BlueButton = Object{
@@ -1564,7 +1564,7 @@ var (
 		Synonyms:   []string{"button", "switch"},
 		Adjectives: []string{"blue"},
 		Desc:       "blue button",
-		Flags:      []Flag{FlgNoDesc},
+		Flags:      FlgNoDesc,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	Screwdriver = Object{
@@ -1572,20 +1572,20 @@ var (
 		Synonyms:   []string{"screwdriver", "tool", "tools", "driver"},
 		Adjectives: []string{"screw"},
 		Desc:       "screwdriver",
-		Flags:      []Flag{FlgTake, FlgTool},
+		Flags:      FlgTake | FlgTool,
 	}
 	Wrench = Object{
 		In:       &MaintenanceRoom,
 		Synonyms: []string{"wrench", "tool", "tools"},
 		Desc:     "wrench",
-		Flags:    []Flag{FlgTake, FlgTool},
+		Flags:    FlgTake | FlgTool,
 		Size:     10,
 	}
 	Tube = Object{
 		In:       &MaintenanceRoom,
 		Synonyms: []string{"tube", "tooth", "paste"},
 		Desc:     "tube",
-		Flags:    []Flag{FlgTake, FlgCont, FlgRead},
+		Flags:    FlgTake | FlgCont | FlgRead,
 		// Action set in FinalizeGameObjects to avoid init cycle
 		LongDesc: "There is an object which looks like a tube of toothpaste here.",
 		Capacity: 7,
@@ -1596,7 +1596,7 @@ var (
 		In:       &MaintenanceRoom,
 		Synonyms: []string{"leak", "drip", "pipe"},
 		Desc:     "leak",
-		Flags:    []Flag{FlgNoDesc, FlgInvis},
+		Flags:    FlgNoDesc | FlgInvis,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 
@@ -1605,7 +1605,7 @@ var (
 		In:       &MachineRoom,
 		Synonyms: []string{"machine", "pdp10", "dryer", "lid"},
 		Desc:     "machine",
-		Flags:    []Flag{FlgCont, FlgNoDesc, FlgTryTake},
+		Flags:    FlgCont | FlgNoDesc | FlgTryTake,
 		Capacity: 50,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
@@ -1613,7 +1613,7 @@ var (
 		In:       &MachineRoom,
 		Synonyms: []string{"switch"},
 		Desc:     "switch",
-		Flags:    []Flag{FlgNoDesc, FlgTurn},
+		Flags:    FlgNoDesc | FlgTurn,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 
@@ -1623,7 +1623,7 @@ var (
 		Synonyms:   []string{"cyclops", "monster", "eye"},
 		Adjectives: []string{"hungry", "giant"},
 		Desc:       "cyclops",
-		Flags:      []Flag{FlgPerson, FlgNoDesc, FlgTryTake},
+		Flags:      FlgPerson | FlgNoDesc | FlgTryTake,
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Strength:   10000,
 	}
@@ -1634,7 +1634,7 @@ var (
 		Synonyms:   []string{"chalice", "cup", "silver", "treasure"},
 		Adjectives: []string{"silver", "engravings"},
 		Desc:       "chalice",
-		Flags:      []Flag{FlgTake, FlgTryTake, FlgCont},
+		Flags:      FlgTake | FlgTryTake | FlgCont,
 		// Action set in FinalizeGameObjects to avoid init cycle
 		LongDesc:   "There is a silver chalice, intricately engraved, here.",
 		Capacity:   5,
@@ -1649,7 +1649,7 @@ var (
 		Synonyms:   []string{"painting", "art", "canvas", "treasure"},
 		Adjectives: []string{"beautiful"},
 		Desc:       "painting",
-		Flags:      []Flag{FlgTake, FlgBurn},
+		Flags:      FlgTake | FlgBurn,
 		// Action set in FinalizeGameObjects to avoid init cycle
 		FirstDesc:  "Fortunately, there is still one chance for you to be a vandal, for on the far wall is a painting of unparalleled beauty.",
 		LongDesc:   "A painting by a neglected genius is here.",
@@ -1664,7 +1664,7 @@ var (
 		Synonyms:   []string{"manual", "piece", "paper"},
 		Adjectives: []string{"zork", "owners", "small"},
 		Desc:       "ZORK owner's manual",
-		Flags:      []Flag{FlgRead, FlgTake},
+		Flags:      FlgRead | FlgTake,
 		FirstDesc:  "Loosely attached to a wall is a small piece of paper.",
 		Text:       "Congratulations!\n\nYou are the privileged owner of ZORK I: The Great Underground Empire, a self-contained and self-maintaining universe. If used and maintained in accordance with normal operating practices for small universes, ZORK will provide many months of trouble-free operation.",
 	}
@@ -1674,7 +1674,7 @@ var (
 		In:       &GratingClearing,
 		Synonyms: []string{"leaves", "leaf", "pile"},
 		Desc:     "pile of leaves",
-		Flags:    []Flag{FlgTake, FlgBurn, FlgTryTake},
+		Flags:    FlgTake | FlgBurn | FlgTryTake,
 		// Action set in FinalizeGameObjects to avoid init cycle
 		LongDesc: "On the ground is a pile of leaves.",
 		Size:     25,
@@ -1686,7 +1686,7 @@ var (
 		Synonyms:   []string{"nest"},
 		Adjectives: []string{"birds"},
 		Desc:       "bird's nest",
-		Flags:      []Flag{FlgTake, FlgBurn, FlgCont, FlgOpen, FlgSearch},
+		Flags:      FlgTake | FlgBurn | FlgCont | FlgOpen | FlgSearch,
 		FirstDesc:  "Beside you on the branch is a small bird's nest.",
 		Capacity:   20,
 	}
@@ -1696,7 +1696,7 @@ var (
 		In:       &SandyCave,
 		Synonyms: []string{"sand"},
 		Desc:     "sand",
-		Flags:    []Flag{FlgNoDesc},
+		Flags:    FlgNoDesc,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	Scarab = Object{
@@ -1704,7 +1704,7 @@ var (
 		Synonyms:   []string{"scarab", "bug", "beetle", "treasure"},
 		Adjectives: []string{"beautiful", "carved", "jeweled"},
 		Desc:       "beautiful jeweled scarab",
-		Flags:      []Flag{FlgTake, FlgInvis},
+		Flags:      FlgTake | FlgInvis,
 		Size:       8,
 		Value:      5,
 		TValue:     5,
@@ -1715,7 +1715,7 @@ var (
 		In:       &SandyBeach,
 		Synonyms: []string{"shovel", "tool", "tools"},
 		Desc:     "shovel",
-		Flags:    []Flag{FlgTake, FlgTool},
+		Flags:    FlgTake | FlgTool,
 		Size:     15,
 	}
 
@@ -1725,7 +1725,7 @@ var (
 		Synonyms:   []string{"coffin", "casket", "treasure"},
 		Adjectives: []string{"solid", "gold"},
 		Desc:       "gold coffin",
-		Flags:      []Flag{FlgTake, FlgCont, FlgSacred, FlgSearch},
+		Flags:      FlgTake | FlgCont | FlgSacred | FlgSearch,
 		LongDesc:   "The solid-gold coffin used for the burial of Ramses II is here.",
 		Capacity:   35,
 		Size:       55,
@@ -1739,7 +1739,7 @@ var (
 		Synonyms:   []string{"thief", "robber", "man", "person"},
 		Adjectives: []string{"shady", "suspicious", "seedy"},
 		Desc:       "thief",
-		Flags:      []Flag{FlgPerson, FlgInvis, FlgCont, FlgOpen, FlgTryTake},
+		Flags:      FlgPerson | FlgInvis | FlgCont | FlgOpen | FlgTryTake,
 		// Action set in FinalizeGameObjects to avoid init cycle
 		LongDesc:   "There is a suspicious-looking individual, holding a large bag, leaning against one wall. He is armed with a deadly stiletto.",
 		Strength:   5,
@@ -1751,7 +1751,7 @@ var (
 		Synonyms:   []string{"trunk", "chest", "jewels", "treasure"},
 		Adjectives: []string{"old"},
 		Desc:       "trunk of jewels",
-		Flags:      []Flag{FlgTake, FlgInvis},
+		Flags:      FlgTake | FlgInvis,
 		FirstDesc:  "Lying half buried in the mud is an old trunk, bulging with jewels.",
 		LongDesc:   "There is an old trunk here, bulging with assorted jewels.",
 		// Action set in FinalizeGameObjects to avoid init cycle
@@ -1766,7 +1766,7 @@ var (
 		Synonyms:   []string{"pump", "air-pump", "tool", "tools"},
 		Adjectives: []string{"small", "hand-held"},
 		Desc:       "hand-held air pump",
-		Flags:      []Flag{FlgTake, FlgTool},
+		Flags:      FlgTake | FlgTool,
 	}
 
 	// Atlantis Room
@@ -1775,7 +1775,7 @@ var (
 		Synonyms:   []string{"trident", "fork", "treasure"},
 		Adjectives: []string{"poseidon", "own", "crystal"},
 		Desc:       "crystal trident",
-		Flags:      []Flag{FlgTake},
+		Flags:      FlgTake,
 		FirstDesc:  "On the shore lies Poseidon's own crystal trident.",
 		Size:       20,
 		Value:      4,
@@ -1787,14 +1787,14 @@ var (
 		In:         &MirrorRoom1,
 		Synonyms:   []string{"reflection", "mirror", "enormous"},
 		Desc:       "mirror",
-		Flags:      []Flag{FlgTryTake, FlgNoDesc},
+		Flags:      FlgTryTake | FlgNoDesc,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	Mirror2 = Object{
 		In:         &MirrorRoom2,
 		Synonyms:   []string{"reflection", "mirror", "enormous"},
 		Desc:       "mirror",
-		Flags:      []Flag{FlgTryTake, FlgNoDesc},
+		Flags:      FlgTryTake | FlgNoDesc,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 
@@ -1804,7 +1804,7 @@ var (
 		Synonyms:   []string{"railing", "rail"},
 		Adjectives: []string{"wooden"},
 		Desc:       "wooden railing",
-		Flags:      []Flag{FlgNoDesc},
+		Flags:      FlgNoDesc,
 	}
 
 	// Torch Room
@@ -1813,7 +1813,7 @@ var (
 		Synonyms:   []string{"pedestal"},
 		Adjectives: []string{"white", "marble"},
 		Desc:       "pedestal",
-		Flags:      []Flag{FlgNoDesc, FlgCont, FlgOpen, FlgSurf},
+		Flags:      FlgNoDesc | FlgCont | FlgOpen | FlgSurf,
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Capacity:   30,
 	}
@@ -1824,7 +1824,7 @@ var (
 		Synonyms: []string{"wall", "engravings", "inscription"},
 		Adjectives: []string{"old", "ancient"},
 		Desc:     "wall with engravings",
-		Flags:    []Flag{FlgRead, FlgSacred},
+		Flags:    FlgRead | FlgSacred,
 		LongDesc: "There are old engravings on the walls here.",
 		Text:     "The engravings were incised in the living rock of the cave wall by an unknown hand. They depict, in symbolic form, the beliefs of the ancient Zorkers. Skillfully interwoven with the bas reliefs are excerpts illustrating the major religious tenets of that time. Unfortunately, a later age seems to have considered them blasphemous and just as skillfully excised them.",
 	}
@@ -1835,7 +1835,7 @@ var (
 		Synonyms:   []string{"bar", "platinum", "treasure"},
 		Adjectives: []string{"platinum", "large"},
 		Desc:       "platinum bar",
-		Flags:      []Flag{FlgTake, FlgSacred},
+		Flags:      FlgTake | FlgSacred,
 		LongDesc:   "On the ground is a large platinum bar.",
 		Size:       20,
 		Value:      10,
@@ -1848,7 +1848,7 @@ var (
 		Synonyms:   []string{"pot", "gold", "treasure"},
 		Adjectives: []string{"gold"},
 		Desc:       "pot of gold",
-		Flags:      []Flag{FlgTake, FlgInvis},
+		Flags:      FlgTake | FlgInvis,
 		FirstDesc:  "At the end of the rainbow is a pot of gold.",
 		Size:       15,
 		Value:      10,
@@ -1861,7 +1861,7 @@ var (
 		Synonyms:   []string{"buoy"},
 		Adjectives: []string{"red"},
 		Desc:       "red buoy",
-		Flags:      []Flag{FlgTake, FlgCont},
+		Flags:      FlgTake | FlgCont,
 		FirstDesc:  "There is a red buoy here (probably a warning).",
 		Capacity:   20,
 		Size:       10,
@@ -1874,7 +1874,7 @@ var (
 		Synonyms:   []string{"bracelet", "jewel", "sapphire", "treasure"},
 		Adjectives: []string{"sapphire"},
 		Desc:       "sapphire-encrusted bracelet",
-		Flags:      []Flag{FlgTake},
+		Flags:      FlgTake,
 		Size:       10,
 		Value:      5,
 		TValue:     5,
@@ -1886,7 +1886,7 @@ var (
 		Synonyms:   []string{"coal", "pile", "heap"},
 		Adjectives: []string{"small"},
 		Desc:       "small pile of coal",
-		Flags:      []Flag{FlgTake, FlgBurn},
+		Flags:      FlgTake | FlgBurn,
 		Size:       20,
 	}
 
@@ -1896,7 +1896,7 @@ var (
 		Synonyms:   []string{"timbers", "pile"},
 		Adjectives: []string{"wooden", "broken"},
 		Desc:       "broken timber",
-		Flags:      []Flag{FlgTake},
+		Flags:      FlgTake,
 		Size:       50,
 	}
 
@@ -1905,7 +1905,7 @@ var (
 		In:         &Maze5,
 		Synonyms:   []string{"bones", "skeleton", "body"},
 		Desc:       "skeleton",
-		Flags:      []Flag{FlgTryTake, FlgNoDesc},
+		Flags:      FlgTryTake | FlgNoDesc,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	BurnedOutLantern = Object{
@@ -1913,7 +1913,7 @@ var (
 		Synonyms:   []string{"lantern", "lamp"},
 		Adjectives: []string{"rusty", "burned", "dead", "useless"},
 		Desc:       "burned-out lantern",
-		Flags:      []Flag{FlgTake},
+		Flags:      FlgTake,
 		FirstDesc:  "The deceased adventurer's useless lantern is here.",
 		Size:       20,
 	}
@@ -1922,7 +1922,7 @@ var (
 		Synonyms:   []string{"bag", "coins", "treasure"},
 		Adjectives: []string{"old", "leather"},
 		Desc:       "leather bag of coins",
-		Flags:      []Flag{FlgTake},
+		Flags:      FlgTake,
 		LongDesc:   "An old leather bag, bulging with coins, is here.",
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Size:       15,
@@ -1934,7 +1934,7 @@ var (
 		Synonyms:   []string{"knives", "knife"},
 		Adjectives: []string{"rusty"},
 		Desc:       "rusty knife",
-		Flags:      []Flag{FlgTake, FlgTryTake, FlgWeapon, FlgTool},
+		Flags:      FlgTake | FlgTryTake | FlgWeapon | FlgTool,
 		// Action set in FinalizeGameObjects to avoid init cycle
 		FirstDesc:  "Beside the skeleton is a rusty knife.",
 		Size:       20,
@@ -1944,7 +1944,7 @@ var (
 		Synonyms:   []string{"key"},
 		Adjectives: []string{"skeleton"},
 		Desc:       "skeleton key",
-		Flags:      []Flag{FlgTake, FlgTool},
+		Flags:      FlgTake | FlgTool,
 		Size:       10,
 	}
 
@@ -1958,7 +1958,7 @@ var (
 		Synonyms:   []string{"parchment", "map"},
 		Adjectives: []string{"antique", "old", "ancient"},
 		Desc:       "ancient map",
-		Flags:      []Flag{FlgInvis, FlgRead, FlgTake},
+		Flags:      FlgInvis | FlgRead | FlgTake,
 		FirstDesc:  "In the trophy case is an ancient parchment which appears to be a map.",
 		Size:       2,
 		Text:       "The map shows a forest with three clearings. The largest clearing contains a house. Three paths leave the large clearing. One of these paths, leading southwest, is marked \"To Stone Barrow\".",
@@ -1970,7 +1970,7 @@ var (
 		Synonyms:   []string{"advertisement", "leaflet", "booklet", "mail"},
 		Adjectives: []string{"small"},
 		Desc:       "leaflet",
-		Flags:      []Flag{FlgRead, FlgTake, FlgBurn},
+		Flags:      FlgRead | FlgTake | FlgBurn,
 		LongDesc:   "A small leaflet is on the ground.",
 		Size:       2,
 		Text:       "\"WELCOME TO ZORK!\n\nZORK is a game of adventure, danger, and low cunning. In it you will explore some of the most amazing territory ever seen by mortals. No computer should be without one!\"",
@@ -1982,7 +1982,7 @@ var (
 		Synonyms:   []string{"bottle", "container"},
 		Adjectives: []string{"clear", "glass"},
 		Desc:       "glass bottle",
-		Flags:      []Flag{FlgTake, FlgTrans, FlgCont},
+		Flags:      FlgTake | FlgTrans | FlgCont,
 		// Action set in FinalizeGameObjects to avoid init cycle
 		FirstDesc:  "A bottle is sitting on the table.",
 		Capacity:   4,
@@ -1992,7 +1992,7 @@ var (
 		Synonyms:   []string{"bag", "sack"},
 		Adjectives: []string{"brown", "elongated", "smelly"},
 		Desc:       "brown sack",
-		Flags:      []Flag{FlgTake, FlgCont, FlgBurn},
+		Flags:      FlgTake | FlgCont | FlgBurn,
 		FirstDesc:  "On the table is an elongated brown sack, smelling of hot peppers.",
 		Capacity:   9,
 		Size:       9,
@@ -2005,7 +2005,7 @@ var (
 		Synonyms:   []string{"knives", "knife", "blade"},
 		Adjectives: []string{"nasty", "unrusty"},
 		Desc:       "nasty knife",
-		Flags:      []Flag{FlgTake, FlgWeapon, FlgTryTake},
+		Flags:      FlgTake | FlgWeapon | FlgTryTake,
 		FirstDesc:  "On a table is a nasty-looking knife.",
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
@@ -2015,7 +2015,7 @@ var (
 		In:         &Bottle,
 		Synonyms:   []string{"water", "quantity", "liquid", "h2o"},
 		Desc:       "quantity of water",
-		Flags:      []Flag{FlgTryTake, FlgTake, FlgDrink},
+		Flags:      FlgTryTake | FlgTake | FlgDrink,
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Size:       4,
 	}
@@ -2026,14 +2026,14 @@ var (
 		Synonyms:   []string{"food", "sandwich", "lunch", "dinner"},
 		Adjectives: []string{"hot", "pepper"},
 		Desc:       "lunch",
-		Flags:      []Flag{FlgTake, FlgFood},
+		Flags:      FlgTake | FlgFood,
 		LongDesc:   "A hot pepper sandwich is here.",
 	}
 	Garlic = Object{
 		In:       &SandwichBag,
 		Synonyms: []string{"garlic", "clove"},
 		Desc:     "clove of garlic",
-		Flags:    []Flag{FlgTake, FlgFood},
+		Flags:    FlgTake | FlgFood,
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Size:     4,
 	}
@@ -2044,7 +2044,7 @@ var (
 		Synonyms:   []string{"book", "prayer", "page", "books"},
 		Adjectives: []string{"large", "black"},
 		Desc:       "black book",
-		Flags:      []Flag{FlgRead, FlgTake, FlgCont, FlgBurn, FlgTurn},
+		Flags:      FlgRead | FlgTake | FlgCont | FlgBurn | FlgTurn,
 		// Action set in FinalizeGameObjects to avoid init cycle
 		FirstDesc:  "On the altar is a large black book, open to page 569.",
 		Size:       10,
@@ -2057,7 +2057,7 @@ var (
 		Synonyms:   []string{"sceptre", "scepter", "treasure"},
 		Adjectives: []string{"sharp", "egyptian", "ancient", "enameled"},
 		Desc:       "sceptre",
-		Flags:      []Flag{FlgTake, FlgWeapon},
+		Flags:      FlgTake | FlgWeapon,
 		LongDesc:   "An ornamented sceptre, tapering to a sharp point, is here.",
 		// Action set in FinalizeGameObjects to avoid init cycle
 		FirstDesc:  "A sceptre, possibly that of ancient Egypt itself, is in the coffin. The sceptre is ornamented with colored enamel, and tapers to a sharp point.",
@@ -2072,7 +2072,7 @@ var (
 		Synonyms:   []string{"egg", "treasure"},
 		Adjectives: []string{"birds", "encrusted", "jeweled"},
 		Desc:       "jewel-encrusted egg",
-		Flags:      []Flag{FlgTake, FlgCont, FlgSearch},
+		Flags:      FlgTake | FlgCont | FlgSearch,
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Value:      5,
 		TValue:     5,
@@ -2086,7 +2086,7 @@ var (
 		Synonyms:   []string{"canary", "treasure"},
 		Adjectives: []string{"clockwork", "gold", "golden"},
 		Desc:       "golden clockwork canary",
-		Flags:      []Flag{FlgTake, FlgSearch},
+		Flags:      FlgTake | FlgSearch,
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Value:      6,
 		TValue:     4,
@@ -2099,7 +2099,7 @@ var (
 		Synonyms:   []string{"material", "gunk"},
 		Adjectives: []string{"viscous"},
 		Desc:       "viscous material",
-		Flags:      []Flag{FlgTake, FlgTool},
+		Flags:      FlgTake | FlgTool,
 		Size:       6,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
@@ -2110,7 +2110,7 @@ var (
 		Synonyms:   []string{"axe", "ax"},
 		Adjectives: []string{"bloody"},
 		Desc:       "bloody axe",
-		Flags:      []Flag{FlgWeapon, FlgTryTake, FlgTake, FlgNoDesc},
+		Flags:      FlgWeapon | FlgTryTake | FlgTake | FlgNoDesc,
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Size:       25,
 	}
@@ -2121,7 +2121,7 @@ var (
 		Synonyms:   []string{"bag"},
 		Adjectives: []string{"large", "thiefs"},
 		Desc:       "large bag",
-		Flags:      []Flag{FlgTryTake, FlgNoDesc},
+		Flags:      FlgTryTake | FlgNoDesc,
 		// Action set in FinalizeGameObjects to avoid init cycle
 	}
 	Stiletto = Object{
@@ -2129,7 +2129,7 @@ var (
 		Synonyms:   []string{"stiletto"},
 		Adjectives: []string{"vicious"},
 		Desc:       "stiletto",
-		Flags:      []Flag{FlgWeapon, FlgTryTake, FlgTake, FlgNoDesc},
+		Flags:      FlgWeapon | FlgTryTake | FlgTake | FlgNoDesc,
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Size:       10,
 	}
@@ -2140,7 +2140,7 @@ var (
 		Synonyms:   []string{"torch", "ivory", "treasure"},
 		Adjectives: []string{"flaming", "ivory"},
 		Desc:       "torch",
-		Flags:      []Flag{FlgTake, FlgFlame, FlgOn, FlgLight},
+		Flags:      FlgTake | FlgFlame | FlgOn | FlgLight,
 		// Action set in FinalizeGameObjects to avoid init cycle
 		FirstDesc:  "Sitting on the pedestal is a flaming torch, made of ivory.",
 		Size:       20,
@@ -2154,7 +2154,7 @@ var (
 		Synonyms:   []string{"label", "fineprint", "print"},
 		Adjectives: []string{"tan", "fine"},
 		Desc:       "tan label",
-		Flags:      []Flag{FlgRead, FlgTake, FlgBurn},
+		Flags:      FlgRead | FlgTake | FlgBurn,
 		Size:       2,
 		Text:       "  !!!!FROBOZZ MAGIC BOAT COMPANY!!!!\n\nHello, Sailor!\n\nInstructions for use:\n\n   To get into a body of water, say \"Launch\".\n   To get to shore, say \"Land\" or the direction in which you want to maneuver the boat.\n\nWarranty:\n\n  This boat is guaranteed against all defects for a period of 76 milliseconds from date of purchase or until first used, whichever comes first.\n\nWarning:\n   This boat is made of thin plastic.\n   Good Luck!",
 	}
@@ -2165,7 +2165,7 @@ var (
 		Synonyms:   []string{"emerald", "treasure"},
 		Adjectives: []string{"large"},
 		Desc:       "large emerald",
-		Flags:      []Flag{FlgTake},
+		Flags:      FlgTake,
 		Value:      5,
 		TValue:     10,
 	}
@@ -2176,7 +2176,7 @@ var (
 		Synonyms:   []string{"canary", "treasure"},
 		Adjectives: []string{"broken", "clockwork", "gold", "golden"},
 		Desc:       "broken clockwork canary",
-		Flags:      []Flag{FlgTake},
+		Flags:      FlgTake,
 		// Action set in FinalizeGameObjects to avoid init cycle
 		TValue:     1,
 		FirstDesc:  "There is a golden clockwork canary nestled in the egg. It seems to have recently had a bad experience. The mountings for its jewel-like eyes are empty, and its silver beak is crumpled. Through a cracked crystal window below its left wing you can see the remains of intricate machinery. It is not clear what result winding it would have, as the mainspring seems sprung.",

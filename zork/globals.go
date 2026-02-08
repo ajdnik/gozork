@@ -2,7 +2,7 @@ package zork
 
 var (
 	GlobalObjects = Object{
-		Flags: []Flag{FlgKludge, FlgInvis, FlgTouch, FlgSurf, FlgTryTake, FlgOpen, FlgSearch, FlgTrans, FlgOn, FlgLand, FlgFight, FlgStagg, FlgWear},
+		Flags: FlgKludge | FlgInvis | FlgTouch | FlgSurf | FlgTryTake | FlgOpen | FlgSearch | FlgTrans | FlgOn | FlgLand | FlgFight | FlgStagg | FlgWear,
 	}
 	LocalGlobals = Object{
 		In:        &GlobalObjects,
@@ -30,52 +30,52 @@ var (
 		In:       &GlobalObjects,
 		Synonyms: []string{"it", "them", "her", "him"},
 		Desc:     "random object",
-		Flags:    []Flag{FlgNoDesc, FlgTouch},
+		Flags:    FlgNoDesc | FlgTouch,
 	}
 	Hands = Object{
 		In:         &GlobalObjects,
 		Synonyms:   []string{"pair", "hands", "hand"},
 		Adjectives: []string{"bare"},
 		Desc:       "pair of hands",
-		Flags:      []Flag{FlgNoDesc, FlgTool},
+		Flags:      FlgNoDesc | FlgTool,
 	}
 	Me = Object{
 		In:       &GlobalObjects,
 		Synonyms: []string{"me", "myself", "self", "cretin"},
 		Desc:     "you",
-		Flags:    []Flag{FlgPerson},
+		Flags:    FlgPerson,
 		// Action:   CretinFcn,
 	}
 	Adventurer = Object{
 		Synonyms: []string{"adventurer"},
 		Desc:     "cretin",
-		Flags:    []Flag{FlgNoDesc, FlgInvis, FlgSacred, FlgPerson},
+		Flags:    FlgNoDesc | FlgInvis | FlgSacred | FlgPerson,
 	}
 	Stairs = Object{
 		In:         &LocalGlobals,
 		Synonyms:   []string{"stairs", "steps", "staircase", "stairway"},
 		Adjectives: []string{"stone", "dark", "marble", "forbidding", "steep"},
 		Desc:       "stairs",
-		Flags:      []Flag{FlgNoDesc, FlgClimb},
+		Flags:      FlgNoDesc | FlgClimb,
 		Action:     StairsFcn,
 	}
 	Intnum = Object{
 		In:       &GlobalObjects,
 		Synonyms: []string{"intnum"},
 		Desc:     "number",
-		Flags:    []Flag{FlgTool},
+		Flags:    FlgTool,
 	}
 	Blessings = Object{
 		In:       &GlobalObjects,
 		Synonyms: []string{"blessings", "graces"},
 		Desc:     "blessings",
-		Flags:    []Flag{FlgNoDesc},
+		Flags:    FlgNoDesc,
 	}
 	Sailor = Object{
 		In:       &GlobalObjects,
 		Synonyms: []string{"sailor", "footpad", "aviator"},
 		Desc:     "sailor",
-		Flags:    []Flag{FlgNoDesc},
+		Flags:    FlgNoDesc,
 		Action:   SailorFcn,
 	}
 	Ground = Object{
@@ -95,14 +95,14 @@ var (
 		In:       &GlobalObjects,
 		Synonyms: []string{"lungs", "air", "mouth", "breath"},
 		Desc:     "blast of air",
-		Flags:    []Flag{FlgNoDesc},
+		Flags:    FlgNoDesc,
 	}
 	PathObj = Object{
 		In:         &GlobalObjects,
 		Synonyms:   []string{"trail", "path"},
 		Adjectives: []string{"forest", "narrow", "long", "winding"},
 		Desc:       "passage",
-		Flags:      []Flag{FlgNoDesc},
+		Flags:      FlgNoDesc,
 		Action:     PathObject,
 	}
 	Zorkmid = Object{

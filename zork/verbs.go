@@ -1484,7 +1484,7 @@ func VSay(arg ActArg) bool {
 	return false
 }
 
-func FindIn(where *Object, what Flag) *Object {
+func FindIn(where *Object, what Flags) *Object {
 	if !where.HasChildren() {
 		return nil
 	}
@@ -2002,7 +2002,7 @@ func VZork(arg ActArg) bool {
 	return true
 }
 
-func NoGoTell(av Flag, wloc *Object) {
+func NoGoTell(av Flags, wloc *Object) {
 	if av != FlgUnk {
 		Print("You can't go there in a ", NoNewline)
 		PrintObject(wloc)
@@ -2015,7 +2015,7 @@ func NoGoTell(av Flag, wloc *Object) {
 func Goto(rm *Object, isV bool) bool {
 	lb := rm.Has(FlgLand) || rm.Has(FlgRLand)
 	wloc := Winner.Location()
-	var av Flag
+	var av Flags
 	olit := Lit
 	ohere := Here
 	if wloc.Has(FlgVeh) {

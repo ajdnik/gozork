@@ -1,128 +1,119 @@
 package zork
 
-// Flag represents various properties game objects can have
-type Flag int
+// Flags represents a bitfield of properties that game objects can have.
+type Flags uint64
 
 const (
-	// FlgUnk is the default value for Flag and means the value is undefined
-	FlgUnk Flag = iota
-	// Take means the object can be picked up by the player
-	FlgTake
-	// TryTake means the object shouldn't be implicitly taken
+	// FlgUnk means the value is undefined (zero value, no bits set).
+	FlgUnk Flags = 0
+
+	// FlgTake means the object can be picked up by the player.
+	FlgTake Flags = 1 << iota
+	// FlgTryTake means the object shouldn't be implicitly taken.
 	FlgTryTake
-	// Container means the object can contain other objects
+	// FlgCont means the object can contain other objects.
 	FlgCont
-	// Door means the object is a door
+	// FlgDoor means the object is a door.
 	FlgDoor
-	// Open means the object can be opened
+	// FlgOpen means the object can be opened.
 	FlgOpen
-	// Surface refres to objects such as table, desk, countertop...
+	// FlgSurf refers to objects such as table, desk, countertop.
 	FlgSurf
-	// Locked means the object is locked and can't be implicitly opened
+	// FlgLock means the object is locked and can't be implicitly opened.
 	FlgLock
-	// Wear means the object can be worn by the player
+	// FlgWear means the object can be worn by the player.
 	FlgWear
-	// Worn means the object is currently being worn by the player
+	// FlgWorn means the object is currently being worn by the player.
 	FlgWorn
-	// Read means the object can be read
+	// FlgRead means the object can be read.
 	FlgRead
-	// Light means the object can be turned on/off
+	// FlgLight means the object can be turned on/off.
 	FlgLight
-	// On means the object's properties such as Light or Flame are turned on
+	// FlgOn means the object's properties such as Light or Flame are turned on.
 	FlgOn
-	// Flame means the object can be a source of fire
+	// FlgFlame means the object can be a source of fire.
 	FlgFlame
-	// Burn means the object can be burnt
+	// FlgBurn means the object can be burnt.
 	FlgBurn
-	// Transparent means the objects inside can be seen even when it's closed
+	// FlgTrans means the objects inside can be seen even when it's closed.
 	FlgTrans
-	// NoDescription means the object shouldn't be described
+	// FlgNoDesc means the object shouldn't be described.
 	FlgNoDesc
-	// Invisible means the object shouldn't be found
+	// FlgInvis means the object shouldn't be found.
 	FlgInvis
-	// Touch means the object has interacted with the player
+	// FlgTouch means the object has interacted with the player.
 	FlgTouch
-	// Search means to find anything in the object the parser should look as deep as possible
+	// FlgSearch means to find anything in the object the parser should look as deep as possible.
 	FlgSearch
-	// Vehicle means the object can transport the player
+	// FlgVeh means the object can transport the player.
 	FlgVeh
-	// Person means the object is a character
+	// FlgPerson means the object is a character.
 	FlgPerson
-	// Female means the object is a female character
+	// FlgFemale means the object is a female character.
 	FlgFemale
-	// Vowel means the object's description starts with a vowel
+	// FlgVowel means the object's description starts with a vowel.
 	FlgVowel
-	// NoArticle means the object's description doesn't work with articles
+	// FlgNoArt means the object's description doesn't work with articles.
 	FlgNoArt
-	// Plural means the object's description is a plural noun
+	// FlgPlural means the object's description is a plural noun.
 	FlgPlural
-	// RoomLand means the object is a dry land room
+	// FlgLand means the object is a dry land room.
 	FlgLand
-	// RoomWater means the object is a water room
+	// FlgWater means the object is a water room.
 	FlgWater
-	// RoomAir means the object is a room mid-air
+	// FlgAir means the object is a room mid-air.
 	FlgAir
-	// Outside means the object is an outdoors room
+	// FlgOut means the object is an outdoors room.
 	FlgOut
-	// Integral means the object is an integral part of another object and can't be taken or dropped independently
+	// FlgIntegral means the object is an integral part of another object.
 	FlgIntegral
-	// BodyPart means the object is a body part
+	// FlgBodyPart means the object is a body part.
 	FlgBodyPart
-	// NotAll means the object shouldn't be taken when taking all
+	// FlgNotAll means the object shouldn't be taken when taking all.
 	FlgNotAll
-	// Drop means if dropping objects in the vehicle the object should stay in the vehicle
+	// FlgDrop means if dropping objects in the vehicle the object should stay in the vehicle.
 	FlgDrop
-	// In means the player should stay in the vehicle rather than on
+	// FlgIn means the player should stay in the vehicle rather than on.
 	FlgIn
-	// Kludge is a syntax flag which can be used to support a syntax VERB PREPOSITION without any object
+	// FlgKludge is a syntax flag which can be used to support a syntax VERB PREPOSITION without any object.
 	FlgKludge
-	// Fight means the character is actively engaged in combat
+	// FlgFight means the character is actively engaged in combat.
 	FlgFight
-	// Staggered means the character is recovering from a blow and will skip their next attack
+	// FlgStagg means the character is recovering from a blow and will skip their next attack.
 	FlgStagg
-	// Sacred means the object is protected and cannot be stolen by the thief
+	// FlgSacred means the object is protected and cannot be stolen by the thief.
 	FlgSacred
-	// Tool means the object can be used as an implement (e.g. for digging, inflating, locking)
+	// FlgTool means the object can be used as an implement (e.g. for digging, inflating, locking).
 	FlgTool
+	// FlgNonLand means the room is a non-land area.
 	FlgNonLand
-	// FlgMaze means the room is a maze
+	// FlgMaze means the room is a maze.
 	FlgMaze
+	// FlgClimb means the object can be climbed.
 	FlgClimb
+	// FlgWeapon means the object is a weapon.
 	FlgWeapon
+	// FlgDrink means the object can be drunk.
 	FlgDrink
+	// FlgFood means the object can be eaten.
 	FlgFood
+	// FlgTurn means the object can be turned.
 	FlgTurn
+	// FlgRMung means the room is munged/destroyed.
 	FlgRMung
+	// FlgRLand means the room becomes dry land conditionally.
 	FlgRLand
+	// FlgActor means the object is an actor.
 	FlgActor
 )
 
-// In function checks if the current flag is in the flag slice.
-// Returns true if it's in otherwise it returns false.
-func (f Flag) In(flgs []Flag) bool {
-	for _, fl := range flgs {
-		if fl == f {
-			return true
-		}
-	}
-	return false
-}
-
-// AnyFlagIn compares two flag slices and returns true
-// if any of the flags in the first slice are present in the
-// second slice.
-func AnyFlagIn(any, flgs []Flag) bool {
-	if len(any) == 0 {
+// AnyFlagIn returns true if required is zero (no requirement) or if
+// any bit in required is also set in actual.
+func AnyFlagIn(required, actual Flags) bool {
+	if required == 0 {
 		return true
 	}
-	for _, af := range any {
-		for _, fl := range flgs {
-			if af == fl {
-				return true
-			}
-		}
-	}
-	return false
+	return required&actual != 0
 }
 
 // ActArg represents an argument enum that is passed to Action functions.
@@ -183,7 +174,7 @@ func (dp DirProps) IsSet() bool {
 
 // Object represents a game object which can be a character, room, vehicle etc.
 type Object struct {
-	Flags      []Flag
+	Flags      Flags
 	In         *Object
 	Children   []*Object
 	Synonyms   []string
@@ -193,7 +184,7 @@ type Object struct {
 	Pseudo     []PseudoObj
 	ContFcn    Action
 	DescFcn    Action
-	VehType    Flag
+	VehType    Flags
 	Capacity   int
 	Size       int
 	Value      int
@@ -312,40 +303,19 @@ func (o *Object) MoveTo(dest *Object) {
 	dest.AddChild(o)
 }
 
-// Has checks if the current game object has a certain
-// flag set.
-func (o *Object) Has(f Flag) bool {
-	return f.In(o.Flags)
+// Has checks if the current game object has a certain flag set.
+func (o *Object) Has(f Flags) bool {
+	return o.Flags&f != 0
 }
 
-// Give gives the game object a flag.
-// If the flag is alread set nothing happend.
-func (o *Object) Give(f Flag) {
-	if o.Flags == nil {
-		o.Flags = []Flag{}
-	}
-	if f.In(o.Flags) {
-		return
-	}
-	o.Flags = append(o.Flags, f)
+// Give sets a flag on the game object.
+func (o *Object) Give(f Flags) {
+	o.Flags |= f
 }
 
-// Take removes a flag from the game object.
-// If the flag isn't set nothing happens.
-func (o *Object) Take(f Flag) {
-	found := -1
-	for idx, flg := range o.Flags {
-		if flg == f {
-			found = idx
-			break
-		}
-	}
-	if found == -1 {
-		return
-	}
-	o.Flags[found] = o.Flags[len(o.Flags)-1]
-	o.Flags[len(o.Flags)-1] = -1
-	o.Flags = o.Flags[:len(o.Flags)-1]
+// Take clears a flag from the game object.
+func (o *Object) Take(f Flags) {
+	o.Flags &^= f
 }
 
 // Is checks if the word is present amongst object's
@@ -378,7 +348,7 @@ func (o *Object) IsIn(loc *Object) bool {
 // objectSnapshot holds the original state of an object for test resets.
 type objectSnapshot struct {
 	In       *Object
-	Flags    []Flag
+	Flags    Flags
 	Strength int
 	Value    int
 	TValue   int
@@ -399,11 +369,9 @@ func BuildObjectTree() {
 	}
 	for _, obj := range Objects {
 		if saveOriginals {
-			flags := make([]Flag, len(obj.Flags))
-			copy(flags, obj.Flags)
 			originalState[obj] = objectSnapshot{
 				In:       obj.In,
-				Flags:    flags,
+				Flags:    obj.Flags,
 				Strength: obj.Strength,
 				Value:    obj.Value,
 				TValue:   obj.TValue,
@@ -429,8 +397,7 @@ func ResetObjectTree() {
 	// Restore original state
 	for obj, snap := range originalState {
 		obj.In = snap.In
-		obj.Flags = make([]Flag, len(snap.Flags))
-		copy(obj.Flags, snap.Flags)
+		obj.Flags = snap.Flags
 		obj.Strength = snap.Strength
 		obj.Value = snap.Value
 		obj.TValue = snap.TValue

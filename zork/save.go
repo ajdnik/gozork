@@ -95,7 +95,7 @@ func rtnName(fn RtnFunc) string {
 
 type savedObject struct {
 	InIdx     int
-	Flags     []Flag
+	Flags     Flags
 	Strength  int
 	Value     int
 	TValue    int
@@ -200,7 +200,7 @@ func captureState() *gameState {
 	for i, obj := range Objects {
 		s.ObjStates[i] = savedObject{
 			InIdx:     objToIdx(obj.In),
-			Flags:     append([]Flag(nil), obj.Flags...),
+			Flags:     obj.Flags,
 			Strength:  obj.Strength,
 			Value:     obj.Value,
 			TValue:    obj.TValue,
@@ -304,7 +304,7 @@ func applyState(s *gameState) {
 	for i, obj := range Objects {
 		so := s.ObjStates[i]
 		obj.In = idxToObj(so.InIdx)
-		obj.Flags = append([]Flag(nil), so.Flags...)
+		obj.Flags = so.Flags
 		obj.Strength = so.Strength
 		obj.Value = so.Value
 		obj.TValue = so.TValue
