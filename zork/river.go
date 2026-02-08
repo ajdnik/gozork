@@ -1,6 +1,5 @@
 package zork
 
-import "math/rand"
 
 
 func FixBoat() {
@@ -400,7 +399,7 @@ func IRfill() bool {
 		Print("A sound, like that of flowing water, starts to come from below.", Newline)
 	} else if G.Here == &LoudRoom {
 		Print("All of a sudden, an alarmingly loud roaring sound fills the room. Filled with fear, you scramble away.", Newline)
-		dest := LoudRuns[rand.Intn(len(LoudRuns))]
+		dest := LoudRuns[G.Rand.Intn(len(LoudRuns))]
 		Goto(dest, true)
 	} else if G.Here == &ReservoirNorth || G.Here == &ReservoirSouth {
 		Print("You notice that the water level has risen to the point that it is impossible to cross.", Newline)

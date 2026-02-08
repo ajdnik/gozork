@@ -37,14 +37,17 @@ func Verify() bool {
 // ResetGameState creates a fresh GameState with all defaults and restores the
 // object tree. Tests and restart use this to get a clean game.
 func ResetGameState() {
-	// Preserve I/O handles if they were set (e.g. by tests)
-	var out, in_ = G.GameOutput, G.GameInput
+	// Preserve I/O handles and RNG if they were set (e.g. by tests)
+	out, in_, rng := G.GameOutput, G.GameInput, G.Rand
 	G = NewGameState()
 	if out != nil {
 		G.GameOutput = out
 	}
 	if in_ != nil {
 		G.GameInput = in_
+	}
+	if rng != nil {
+		G.Rand = rng
 	}
 	// Restore object tree to initial state
 	ResetObjectTree()

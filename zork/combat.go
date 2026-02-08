@@ -1,7 +1,5 @@
 package zork
 
-import "math/rand"
-
 // ================================================================
 // COMBAT SYSTEM TYPES AND TABLES
 // ================================================================
@@ -489,7 +487,7 @@ func RandomMeleeMsg(set MeleeSet) MeleeMsg {
 	if len(set) == 0 {
 		return nil
 	}
-	return set[rand.Intn(len(set))]
+	return set[G.Rand.Intn(len(set))]
 }
 
 // VillainStrength calculates a villain's effective combat strength
@@ -593,15 +591,15 @@ func VillainBlow(oo *VillainEntry, out bool) BlowRes {
 			// Lookup from the actual Def arrays
 			switch {
 			case att <= 1:
-				res = Def1[rand.Intn(len(Def1))]
+				res = Def1[G.Rand.Intn(len(Def1))]
 			case att == 2:
 				if int(Def1Res[1]) < len(Def1) {
 					start := int(Def1Res[1])
 					_ = start
 				}
-				res = Def1[rand.Intn(len(Def1))]
+				res = Def1[G.Rand.Intn(len(Def1))]
 			default:
-				res = Def1[rand.Intn(len(Def1))]
+				res = Def1[G.Rand.Intn(len(Def1))]
 			}
 		} else if def == 2 {
 			if att > 3 {
@@ -609,9 +607,9 @@ func VillainBlow(oo *VillainEntry, out bool) BlowRes {
 			}
 			switch {
 			case att <= 1:
-				res = Def2A[rand.Intn(len(Def2A))]
+				res = Def2A[G.Rand.Intn(len(Def2A))]
 			default:
-				res = Def2B[rand.Intn(len(Def2B))]
+				res = Def2B[G.Rand.Intn(len(Def2B))]
 			}
 		} else {
 			att = att - def
@@ -630,11 +628,11 @@ func VillainBlow(oo *VillainEntry, out bool) BlowRes {
 			}
 			switch {
 			case idx <= 1:
-				res = Def3A[rand.Intn(len(Def3A))]
+				res = Def3A[G.Rand.Intn(len(Def3A))]
 			case idx == 2:
-				res = Def3B[rand.Intn(len(Def3B))]
+				res = Def3B[G.Rand.Intn(len(Def3B))]
 			default:
-				res = Def3C[rand.Intn(len(Def3C))]
+				res = Def3C[G.Rand.Intn(len(Def3C))]
 			}
 		}
 		if out {
@@ -790,12 +788,12 @@ func HeroBlow() bool {
 			if att > 2 {
 				att = 3
 			}
-			res = Def1[rand.Intn(len(Def1))]
+			res = Def1[G.Rand.Intn(len(Def1))]
 		} else if def == 2 {
 			if att > 3 {
 				att = 4
 			}
-			res = Def2B[rand.Intn(len(Def2B))]
+			res = Def2B[G.Rand.Intn(len(Def2B))]
 		} else {
 			att = att - def
 			if att < -1 {
@@ -810,11 +808,11 @@ func HeroBlow() bool {
 			}
 			switch {
 			case idx <= 1:
-				res = Def3A[rand.Intn(len(Def3A))]
+				res = Def3A[G.Rand.Intn(len(Def3A))]
 			case idx == 2:
-				res = Def3B[rand.Intn(len(Def3B))]
+				res = Def3B[G.Rand.Intn(len(Def3B))]
 			default:
-				res = Def3C[rand.Intn(len(Def3C))]
+				res = Def3C[G.Rand.Intn(len(Def3C))]
 			}
 		}
 		if res == BlowStag && dweapon != nil && Prob(25, false) {

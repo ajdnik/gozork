@@ -1,7 +1,5 @@
 package zork
 
-import "math/rand"
-
 func OpenClose(obj *Object, strOpn, strCls string) {
 	if G.ActVerb.Norm == "open" {
 		if obj.Has(FlgOpen) {
@@ -44,7 +42,7 @@ func FlyMe() bool {
 	Fweep(4)
 	Print("The bat grabs you by the scruff of your neck and lifts you away....", Newline)
 	NewLine()
-	dest := BatDrops[rand.Intn(len(BatDrops))]
+	dest := BatDrops[G.Rand.Intn(len(BatDrops))]
 	Goto(dest, false)
 	if G.Here != &EnteranceToHades {
 		VFirstLook(ActUnk)
@@ -2492,7 +2490,7 @@ func LoudRoomFcn(arg ActArg) bool {
 	if arg == ActEnd && G.GatesOpen && !G.LowTide {
 		Print("It is unbearably loud here, with an ear-splitting roar seeming to come from all around you. There is a pounding in your head which won't stop. With a tremendous effort, you scramble out of the room.", Newline)
 		NewLine()
-		dest := LoudRuns[rand.Intn(len(LoudRuns))]
+		dest := LoudRuns[G.Rand.Intn(len(LoudRuns))]
 		Goto(dest, true)
 		return false
 	}

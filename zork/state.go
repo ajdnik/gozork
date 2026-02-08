@@ -3,8 +3,16 @@ package zork
 import (
 	"bufio"
 	"io"
+	"math/rand"
 	"os"
+	"time"
 )
+
+// RNG abstracts random number generation so tests can inject
+// a deterministic source. The single method matches math/rand.Rand.Intn.
+type RNG interface {
+	Intn(n int) int
+}
 
 // G is the current game state. All mutable game state is accessed through
 // this pointer, making it easy to create fresh instances for tests or
@@ -115,6 +123,9 @@ type GameState struct {
 	Reader         *bufio.Reader
 	InputExhausted bool
 
+	// ---- RNG ----
+	Rand RNG
+
 	// ---- Save/Restore/Restart function hooks ----
 	Save    func() bool
 	Restore func() bool
@@ -141,6 +152,9 @@ func NewGameState() *GameState {
 		// I/O defaults
 		GameOutput: os.Stdout,
 		GameInput:  os.Stdin,
+
+		// RNG default: time-seeded source
+		Rand: rand.New(rand.NewSource(time.Now().UnixNano())),
 
 		// Stub function hooks (replaced by initSaveSystem)
 		Save:    func() bool { return false },

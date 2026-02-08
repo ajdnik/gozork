@@ -8,6 +8,11 @@ import (
 	"testing"
 )
 
+// newSeededRNG returns a deterministic RNG for tests.
+func newSeededRNG(seed int64) RNG {
+	return rand.New(rand.NewSource(seed))
+}
+
 // Step represents one player command and the expected response properties.
 type Step struct {
 	Command  string   // command to type
@@ -23,23 +28,21 @@ type Step struct {
 func runScript(t *testing.T, steps []Step) {
 	t.Helper()
 
-	// Seed rand for deterministic results. Seed 1 produces survivable
-	// combat outcomes (seed 42 causes instant death from the troll).
-	rand.Seed(1)
-
 	// Build the command stream: all commands joined by newlines
 	var input strings.Builder
 	for _, s := range steps {
 		input.WriteString(s.Command + "\n")
 	}
 
-	// Ensure G exists, then plug in fake I/O
+	// Ensure G exists, then plug in fake I/O and deterministic RNG.
+	// Seed 1 produces survivable combat outcomes.
 	if G == nil {
 		G = NewGameState()
 	}
 	var output bytes.Buffer
 	G.GameInput = strings.NewReader(input.String())
 	G.GameOutput = &output
+	G.Rand = newSeededRNG(1)
 	G.Reader = nil // force re-init
 
 	// Run the game, catching panics from Quit()

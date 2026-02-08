@@ -1,7 +1,5 @@
 package zork
 
-import "math/rand"
-
 const (
 	NumUndef int = -1
 )
@@ -1073,7 +1071,7 @@ func GetObject(isDirect, vrb bool) []*Object {
 		}
 		if G.Params.GetType == GetOne && ln != 0 {
 			if ln > 1 {
-				res = []*Object{res[rand.Intn(len(res))]}
+				res = []*Object{res[G.Rand.Intn(len(res))]}
 				Print("(How about the ", NoNewline)
 				PrintObject(res[0])
 				Print("?)", Newline)
