@@ -150,8 +150,8 @@ Default handlers for ~80 verbs. Each is a `func(ActionArg) bool`. Key verbs:
 
 1. Gets the exit for the direction from `G.Here.Exits`
 2. Evaluates exit type (unconditional, conditional, door, function-based)
-3. Calls `Goto(destination, true)` if passage is allowed
-4. `Goto()` moves the player, updates `G.Here`, checks lighting, and optionally shows the room
+3. Calls `MoveToRoom(destination, true)` if passage is allowed
+4. `MoveToRoom()` moves the player, updates `G.Here`, checks lighting, and optionally shows the room
 
 Special movement: climbing, boarding/disembarking vehicles, launching the boat, entering/exiting through doors and windows.
 

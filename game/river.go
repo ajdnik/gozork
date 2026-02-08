@@ -391,7 +391,7 @@ func iRfill() bool {
 	} else if G.Here == &loudRoom {
 		Printf("All of a sudden, an alarmingly loud roaring sound fills the room. Filled with fear, you scramble away.\n")
 		dest := loudRuns[G.Rand.Intn(len(loudRuns))]
-		gotoRoom(dest, true)
+		moveToRoom(dest, true)
 	} else if G.Here == &reservoirNorth || G.Here == &reservoirSouth {
 		Printf("You notice that the water level has risen to the point that it is impossible to cross.\n")
 	}
@@ -446,9 +446,9 @@ func iRiver() bool {
 	rm, ok := riverNext[G.Here]
 	if ok {
 		Printf("The flow of the river carries you downstream.\n\n")
-		gotoRoom(rm, true)
+		moveToRoom(rm, true)
 		// ZIL: <ENABLE <QUEUE I-RIVER <LKP ,HERE ,RIVER-SPEEDS>>>
-		// After gotoRoom, HERE is the new room. Use its speed for the next leg.
+		// After moveToRoom, HERE is the new room. Use its speed for the next leg.
 		if spd, ok := riverSpeedMap[G.Here]; ok {
 			Queue("iRiver", spd).Run = true
 		}

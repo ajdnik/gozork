@@ -834,7 +834,7 @@ func vPray(arg ActionArg) bool {
 		Printf("If you pray enough, your prayers may be answered.\n")
 		return true
 	}
-	return gotoRoom(&forest1, true)
+	return moveToRoom(&forest1, true)
 }
 
 func vPump(arg ActionArg) bool {
@@ -1239,10 +1239,10 @@ func vTieUp(arg ActionArg) bool {
 
 func vTreasure(arg ActionArg) bool {
 	if G.Here == &northTemple {
-		return gotoRoom(&treasureRoom, true)
+		return moveToRoom(&treasureRoom, true)
 	}
 	if G.Here == &treasureRoom {
-		return gotoRoom(&northTemple, true)
+		return moveToRoom(&northTemple, true)
 	}
 	Printf("Nothing happens.\n")
 	return true

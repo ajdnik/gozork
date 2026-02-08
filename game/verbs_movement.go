@@ -249,7 +249,7 @@ func vWalk(arg ActionArg) bool {
 	}
 	// Unconditional exit
 	if props.UExit {
-		return gotoRoom(props.RExit, true)
+		return moveToRoom(props.RExit, true)
 	}
 	// Non-exit
 	if len(props.NExit) > 0 {
@@ -262,12 +262,12 @@ func vWalk(arg ActionArg) bool {
 		if rm == nil {
 			return RFatal()
 		}
-		return gotoRoom(rm, true)
+		return moveToRoom(rm, true)
 	}
 	// Conditional exit
 	if props.CExit != nil {
 		if props.CExit() {
-			return gotoRoom(props.RExit, true)
+			return moveToRoom(props.RExit, true)
 		}
 		if len(props.CExitStr) > 0 {
 			Printf("%s\n", props.CExitStr)
@@ -278,7 +278,7 @@ func vWalk(arg ActionArg) bool {
 	}
 	if props.DExit != nil {
 		if props.DExit.Has(FlgOpen) {
-			return gotoRoom(props.RExit, true)
+			return moveToRoom(props.RExit, true)
 		}
 		if len(props.DExitStr) > 0 {
 			Printf("%s\n", props.DExitStr)
@@ -319,7 +319,7 @@ func noGoTell(av Flags, wloc *Object) {
 	Printf("You can't go there without a vehicle.\n")
 }
 
-func gotoRoom(rm *Object, isV bool) bool {
+func moveToRoom(rm *Object, showDescription bool) bool {
 	lb := rm.Has(FlgLand) || rm.Has(FlgRLand)
 	wloc := G.Winner.Location()
 	var av Flags
@@ -386,7 +386,7 @@ func gotoRoom(rm *Object, isV bool) bool {
 	if G.Here == ohere && G.Here == &enteranceToHades {
 		return true
 	}
-	if isV && G.Winner == &adventurer {
+	if showDescription && G.Winner == &adventurer {
 		vFirstLook(ActUnk)
 	}
 	return true

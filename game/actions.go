@@ -46,7 +46,7 @@ func flyMe() bool {
 	fweep(4)
 	Printf("The bat grabs you by the scruff of your neck and lifts you away....\n\n")
 	dest := batDrops[G.Rand.Intn(len(batDrops))]
-	gotoRoom(dest, false)
+	moveToRoom(dest, false)
 	if G.Here != &enteranceToHades {
 		vFirstLook(ActUnk)
 	}
@@ -237,10 +237,10 @@ func jigsUp(desc string, isPlyr bool) bool {
 		gD().TrollFlag = true
 		G.AlwaysLit = true
 		G.Winner.Action = deadFunction
-		gotoRoom(&enteranceToHades, true)
+		moveToRoom(&enteranceToHades, true)
 	} else {
 		Printf("Now, let's take a look here...\nWell, you probably deserve another chance. I can't quite fix you up completely, but you can't have everything.\n\n")
-		gotoRoom(&forest1, true)
+		moveToRoom(&forest1, true)
 	}
 	trapDoor.Take(FlgTouch)
 	G.Params.Continue = NumUndef
@@ -353,7 +353,7 @@ func whiteHouseFcn(arg ActionArg) bool {
 		case "through", "open":
 			if G.Here == &eastOfHouse {
 				if kitchenWindow.Has(FlgOpen) {
-					return gotoRoom(&kitchen, true)
+					return moveToRoom(&kitchen, true)
 				}
 				Printf("The window is closed.\n")
 				thisIsIt(&kitchenWindow)
@@ -374,7 +374,7 @@ func goNext(tbl map[*Object]*Object) int {
 	if !ok {
 		return NumUndef
 	}
-	if !gotoRoom(val, true) {
+	if !moveToRoom(val, true) {
 		return 2
 	}
 	return 1
@@ -1058,7 +1058,7 @@ func mirrorMirrorFcn(arg ActionArg) bool {
 			for _, c := range l2 {
 				c.MoveTo(G.Here)
 			}
-			gotoRoom(rm2, false)
+			moveToRoom(rm2, false)
 			Printf("There is a rumble from deep within the earth and the room shakes.\n")
 			return true
 		}
@@ -1251,7 +1251,7 @@ func slideFcn(arg ActionArg) bool {
 			return true
 		}
 		Printf("You tumble down the slide....\n")
-		gotoRoom(&cellar, true)
+		moveToRoom(&cellar, true)
 		return true
 	case "put":
 		if G.DirObj == &me {
@@ -1260,7 +1260,7 @@ func slideFcn(arg ActionArg) bool {
 				return true
 			}
 			Printf("You tumble down the slide....\n")
-			gotoRoom(&cellar, true)
+			moveToRoom(&cellar, true)
 			return true
 		}
 		slider(G.DirObj)
@@ -1927,9 +1927,9 @@ func rainbowFcn(arg ActionArg) bool {
 		}
 		if gD().RainbowFlag {
 			if G.Here == &aragainFalls {
-				gotoRoom(&endOfRainbow, true)
+				moveToRoom(&endOfRainbow, true)
 			} else if G.Here == &endOfRainbow {
-				gotoRoom(&aragainFalls, true)
+				moveToRoom(&aragainFalls, true)
 			} else {
 				Printf("You'll have to say which way...\n")
 			}
@@ -2556,7 +2556,7 @@ func loudRoomFcn(arg ActionArg) bool {
 	if arg == ActEnd && gD().GatesOpen && !gD().LowTide {
 		Printf("it is unbearably loud here, with an ear-splitting roar seeming to come from all around you. There is a pounding in your head which won't stop. With a tremendous effort, you scramble out of the room.\n\n")
 		dest := loudRuns[G.Rand.Intn(len(loudRuns))]
-		gotoRoom(dest, true)
+		moveToRoom(dest, true)
 		return false
 	}
 	if arg == ActEnter {
@@ -2795,7 +2795,7 @@ func deadFunction(arg ActionArg) bool {
 				gD().TrollFlag = false
 			}
 			Printf("From the distance the sound of a lone trumpet is heard. The room becomes very bright and you feel disembodied. In a moment, the brightness fades and you find yourself rising as if from a long sleep, deep in the woods. In the distance you can faintly hear a songbird and the sounds of the forest.\n\n")
-			gotoRoom(&forest1, true)
+			moveToRoom(&forest1, true)
 			return true
 		}
 		Printf("Your prayers are not heard.\n")
