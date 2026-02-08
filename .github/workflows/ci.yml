@@ -96,7 +96,7 @@ jobs:
       - name: Run tests with coverage
         run: |
           set +e
-          go test -json -v -count=1 -timeout 300s -coverprofile=coverage.out ./... > test-output.json 2> test-stderr.txt
+          go test -json -v -cover -count=1 -timeout 300s -coverprofile=coverage.out ./... > test-output.json 2> test-stderr.txt
           echo "$?" > test-exit-code.txt
           awk -F'"Output":"' '/"Action":"output"/{
             out=$2
@@ -185,19 +185,35 @@ jobs:
             echo "| Package | Status | Duration | Coverage |"
             echo "|---------|--------|----------|----------|"
             awk '
-              function getstr(re, s,    m) { return match(s, re, m) ? m[1] : "" }
               {
                 line=$0
-                pkg=getstr(/"Package":"([^"]+)"/, line)
-                action=getstr(/"Action":"([^"]+)"/, line)
-                if (action=="pass" || action=="fail") {
+                pkg=""; action=""; elapsed=""
+                if (match(line, /"Package":"[^"]+"/)) {
+                  pkg=substr(line, RSTART, RLENGTH)
+                  sub(/^"Package":"?/, "", pkg)
+                  sub(/"$/, "", pkg)
+                }
+                if (match(line, /"Action":"[^"]+"/)) {
+                  action=substr(line, RSTART, RLENGTH)
+                  sub(/^"Action":"?/, "", action)
+                  sub(/"$/, "", action)
+                }
+                if (match(line, /"Elapsed":[0-9.]+/)) {
+                  elapsed=substr(line, RSTART, RLENGTH)
+                  sub(/^"Elapsed":/, "", elapsed)
+                }
+                if (action=="pass" || action=="fail" || action=="skip") {
                   if (pkg!="") {
-                    status[pkg]=(action=="pass" ? "ok" : "FAIL")
-                    if (match(line, /"Elapsed":([0-9.]+)/, m)) durmap[pkg]=m[1]"s"
+                    status[pkg]=(action=="fail" ? "FAIL" : "ok")
+                    if (elapsed!="") durmap[pkg]=elapsed "s"
                   }
                 }
                 if (action=="output") {
-                  if (pkg!="" && match(line, /coverage: ([0-9.]+%)/, m)) covmap[pkg]=m[1]
+                  if (pkg!="" && match(line, /coverage: [0-9.]+%/)) {
+                    cov=substr(line, RSTART, RLENGTH)
+                    sub(/^coverage: /, "", cov)
+                    covmap[pkg]=cov
+                  }
                 }
               }
               END {
