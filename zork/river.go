@@ -11,7 +11,7 @@ func FixBoat() {
 
 func FixMaintLeak() {
 	G.WaterLevel = -1
-	QueueInt(IMaintRoom, false).Run = false
+	QueueInt("IMaintRoom", false).Run = false
 	Print("By some miracle of Zorkian technology, you have managed to stop the leak in the dam.", Newline)
 }
 
@@ -86,13 +86,13 @@ func BoltFcn(arg ActArg) bool {
 					G.GatesOpen = false
 					LoudRoom.Take(FlgTouch)
 					Print("The sluice gates close and water starts to collect behind the dam.", Newline)
-					Queue(IRfill, 8).Run = true
-					QueueInt(IRempty, false).Run = false
+					Queue("IRfill", 8).Run = true
+					QueueInt("IRempty", false).Run = false
 				} else {
 					G.GatesOpen = true
 					Print("The sluice gates open and water pours through the dam.", Newline)
-					Queue(IRempty, 8).Run = true
-					QueueInt(IRfill, false).Run = false
+					Queue("IRempty", 8).Run = true
+					QueueInt("IRfill", false).Run = false
 				}
 			} else {
 				Print("The bolt won't turn with your best effort.", Newline)
@@ -312,7 +312,7 @@ func RBoatFcn(arg ActArg) bool {
 				// ZIL: <ENABLE <QUEUE I-RIVER <LKP ,HERE ,RIVER-SPEEDS>>>
 				// After GoNext, HERE is the destination room. Use its speed.
 				if spd, ok := RiverSpeedMap[G.Here]; ok {
-					Queue(IRiver, spd).Run = true
+					Queue("IRiver", spd).Run = true
 				}
 				return true
 			}
@@ -438,7 +438,7 @@ func IMaintRoom() bool {
 	G.WaterLevel++
 	if G.WaterLevel >= 14 {
 		MungRoom(&MaintenanceRoom, "The room is full of water and cannot be entered.")
-		QueueInt(IMaintRoom, false).Run = false
+		QueueInt("IMaintRoom", false).Run = false
 		if hereQ {
 			JigsUp("I'm afraid you have done drowned yourself.", false)
 		}
@@ -450,7 +450,7 @@ func IMaintRoom() bool {
 
 func IRiver() bool {
 	if G.Here != &River1 && G.Here != &River2 && G.Here != &River3 && G.Here != &River4 && G.Here != &River5 {
-		QueueInt(IRiver, false).Run = false
+		QueueInt("IRiver", false).Run = false
 		return false
 	}
 	rm, ok := RiverNext[G.Here]
@@ -461,7 +461,7 @@ func IRiver() bool {
 		// ZIL: <ENABLE <QUEUE I-RIVER <LKP ,HERE ,RIVER-SPEEDS>>>
 		// After Goto, HERE is the new room. Use its speed for the next leg.
 		if spd, ok := RiverSpeedMap[G.Here]; ok {
-			Queue(IRiver, spd).Run = true
+			Queue("IRiver", spd).Run = true
 		}
 		return true
 	}

@@ -830,7 +830,7 @@ func VOdysseus(arg ActArg) bool {
 		Print("Wasn't he a sailor?", Newline)
 		return true
 	}
-	QueueInt(ICyclops, false).Run = false
+	QueueInt("ICyclops", false).Run = false
 	G.CyclopsFlag = true
 	Print("The cyclops, hearing the name of his father's deadly nemesis, flees the room by knocking down the wall on the east of the room.", Newline)
 	G.MagicFlag = true

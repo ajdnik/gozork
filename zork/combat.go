@@ -465,7 +465,7 @@ func ISword() bool {
 		return true
 	}
 	// Sword not held - disable the interrupt
-	QueueInt(ISword, false).Run = false
+	QueueInt("ISword", false).Run = false
 	return false
 }
 
@@ -548,7 +548,7 @@ func WinnerResult(def int, res BlowRes, od int) {
 		G.Winner.Strength = def - od
 	}
 	if def-od < 0 {
-		Queue(ICure, CureWait).Run = true
+		Queue("ICure", CureWait).Run = true
 	}
 	if FightStrength(true) <= 0 {
 		G.Winner.Strength = 1 - FightStrength(false)

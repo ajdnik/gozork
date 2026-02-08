@@ -175,9 +175,8 @@ func VDiagnose(arg ActArg) bool {
 	// Check if healing is active
 	cureActive := false
 	for i := len(G.QueueItms) - 1; i >= 0; i-- {
-		if G.QueueItms[i].Rtn != nil && G.QueueItms[i].Run {
-			// Can't directly compare function pointers in Go, so we use a flag
-			// The cure interrupt is identified by its tick pattern
+		if G.QueueItms[i].Key == "ICure" && G.QueueItms[i].Run {
+			cureActive = true
 			break
 		}
 	}
@@ -305,14 +304,14 @@ func RandomizeObjects() {
 }
 
 func KillInterrupts() bool {
-	QueueInt(IXb, false).Run = false
-	QueueInt(IXc, false).Run = false
-	QueueInt(ICyclops, false).Run = false
-	QueueInt(ILantern, false).Run = false
-	QueueInt(ICandles, false).Run = false
-	QueueInt(ISword, false).Run = false
-	QueueInt(IForestRandom, false).Run = false
-	QueueInt(IMatch, false).Run = false
+	QueueInt("IXb", false).Run = false
+	QueueInt("IXc", false).Run = false
+	QueueInt("ICyclops", false).Run = false
+	QueueInt("ILantern", false).Run = false
+	QueueInt("ICandles", false).Run = false
+	QueueInt("ISword", false).Run = false
+	QueueInt("IForestRandom", false).Run = false
+	QueueInt("IMatch", false).Run = false
 	Match.Take(FlgOn)
 	return true
 }
@@ -668,7 +667,7 @@ func HotBellFcn(arg ActArg) bool {
 	if G.ActVerb.Norm == "pour on" {
 		RemoveCarefully(G.DirObj)
 		Print("The water cools the bell and is evaporated.", Newline)
-		QueueInt(IXbh, false).Run = false
+		QueueInt("IXbh", false).Run = false
 		IXbh()
 		return true
 	}
@@ -974,7 +973,7 @@ func MatchFcn(arg ActArg) bool {
 		}
 		Match.Give(FlgFlame)
 		Match.Give(FlgOn)
-		Queue(IMatch, 2).Run = true
+		Queue("IMatch", 2).Run = true
 		Print("One of the matches starts to burn.", Newline)
 		if !G.Lit {
 			G.Lit = true
@@ -990,7 +989,7 @@ func MatchFcn(arg ActArg) bool {
 		if !G.Lit {
 			Print("It's pitch black in here!", Newline)
 		}
-		QueueInt(IMatch, false).Run = false
+		QueueInt("IMatch", false).Run = false
 		return true
 	}
 	if G.ActVerb.Norm == "count" || G.ActVerb.Norm == "open" {
@@ -1088,7 +1087,7 @@ func PaintingFcn(arg ActArg) bool {
 
 func CandlesFcn(arg ActArg) bool {
 	if !Candles.Has(FlgTouch) {
-		Queue(ICandles, -1).Run = true
+		Queue("ICandles", -1).Run = true
 	}
 	if G.IndirObj == &Candles {
 		return false
@@ -1114,7 +1113,7 @@ func CandlesFcn(arg ActArg) bool {
 			} else {
 				Candles.Give(FlgOn)
 				Print("lit.", Newline)
-				Queue(ICandles, -1).Run = true
+				Queue("ICandles", -1).Run = true
 			}
 			return true
 		}
@@ -1135,7 +1134,7 @@ func CandlesFcn(arg ActArg) bool {
 		return true
 	}
 	if G.ActVerb.Norm == "lamp off" {
-		QueueInt(ICandles, false).Run = false
+		QueueInt("ICandles", false).Run = false
 		if Candles.Has(FlgOn) {
 			Print("The flame is extinguished.", NoNewline)
 			Candles.Take(FlgOn)
@@ -1284,7 +1283,7 @@ func ButtonFcn(arg ActArg) bool {
 				Leak.Take(FlgInvis)
 				Print("There is a rumbling sound and a stream of water appears to burst from the east wall of the room (apparently, a leak has occurred in a pipe).", Newline)
 				G.WaterLevel = 1
-				Queue(IMaintRoom, -1).Run = true
+				Queue("IMaintRoom", -1).Run = true
 				return true
 			}
 			Print("The blue button appears to be jammed.", Newline)
@@ -1439,7 +1438,7 @@ func TubeFcn(arg ActArg) bool {
 
 func SwordFcn(arg ActArg) bool {
 	if G.ActVerb.Norm == "take" && G.Winner == &Adventurer {
-		Queue(ISword, -1).Run = true
+		Queue("ISword", -1).Run = true
 		return false
 	}
 	if G.ActVerb.Norm == "examine" {
@@ -1459,7 +1458,7 @@ func SwordFcn(arg ActArg) bool {
 func LanternFcn(arg ActArg) bool {
 	if G.ActVerb.Norm == "throw" {
 		Print("The lamp has smashed into the floor, and the light has gone out.", Newline)
-		QueueInt(ILantern, false).Run = false
+		QueueInt("ILantern", false).Run = false
 		RemoveCarefully(&Lamp)
 		BrokenLamp.MoveTo(G.Here)
 		return true
@@ -1469,7 +1468,7 @@ func LanternFcn(arg ActArg) bool {
 			Print("A burned-out lamp won't light.", Newline)
 			return true
 		}
-		itm := QueueInt(ILantern, false)
+		itm := QueueInt("ILantern", false)
 		if itm.Tick <= 0 {
 			// First activation or timer expired: initialize countdown
 			itm.Tick = -1
@@ -1483,7 +1482,7 @@ func LanternFcn(arg ActArg) bool {
 			Print("The lamp has already burned out.", Newline)
 			return true
 		}
-		QueueInt(ILantern, false).Run = false
+		QueueInt("ILantern", false).Run = false
 		return false
 	}
 	if G.ActVerb.Norm == "examine" {
@@ -1701,7 +1700,7 @@ func CyclopsFcn(arg ActArg) bool {
 				Print("The cyclops says \"Mmm Mmm. I love hot peppers! But oh, could I use a drink. Perhaps I could drink the blood of that thing.\"  From the gleam in his eye, it could be surmised that you are \"that thing\".", Newline)
 				G.CycloWrath = MinInt(-1, -count)
 			}
-			Queue(ICyclops, -1).Run = true
+			Queue("ICyclops", -1).Run = true
 			return true
 		}
 		if G.DirObj == &Water || (G.DirObj == &Bottle && Water.IsIn(&Bottle)) {
@@ -1725,7 +1724,7 @@ func CyclopsFcn(arg ActArg) bool {
 		return true
 	}
 	if G.ActVerb.Norm == "throw" || G.ActVerb.Norm == "attack" || G.ActVerb.Norm == "mung" {
-		Queue(ICyclops, -1).Run = true
+		Queue("ICyclops", -1).Run = true
 		if G.ActVerb.Norm == "mung" {
 			Print("\"Do you think I'm as stupid as my father was?\", he says, dodging.", Newline)
 		} else {
@@ -2272,7 +2271,7 @@ func CyclopsRoomFcn(arg ActArg) bool {
 		if G.CycloWrath == 0 {
 			return false
 		}
-		Queue(ICyclops, -1).Run = true
+		Queue("ICyclops", -1).Run = true
 		return false
 	}
 	return false
@@ -2359,7 +2358,7 @@ func MirrorRoomFcn(arg ActArg) bool {
 func Cave2RoomFcn(arg ActArg) bool {
 	if arg == ActEnd {
 		if Candles.IsIn(G.Winner) && Prob(50, true) && Candles.Has(FlgOn) {
-			QueueInt(ICandles, false).Run = false
+			QueueInt("ICandles", false).Run = false
 			Candles.Take(FlgOn)
 			Print("A gust of wind blows out your candles!", Newline)
 			G.Lit = IsLit(G.Here, true)
@@ -2399,17 +2398,17 @@ func LLDRoomFcn(arg ActArg) bool {
 				Print("In your confusion, the candles drop to the ground (and they are out).", Newline)
 				Candles.MoveTo(G.Here)
 				Candles.Take(FlgOn)
-				QueueInt(ICandles, false).Run = false
+				QueueInt("ICandles", false).Run = false
 			}
-			Queue(IXb, 6).Run = true
-			Queue(IXbh, 20).Run = true
+			Queue("IXb", 6).Run = true
+			Queue("IXbh", 20).Run = true
 			return true
 		}
 		if G.XC && G.ActVerb.Norm == "read" && G.DirObj == &Book && !G.LLDFlag {
 			Print("Each word of the prayer reverberates through the hall in a deafening confusion. As the last word fades, a voice, loud and commanding, speaks: \"Begone, fiends!\" A heart-stopping scream fills the cavern, and the spirits, sensing a greater power, flee through the walls.", Newline)
 			RemoveCarefully(&Ghosts)
 			G.LLDFlag = true
-			QueueInt(IXc, false).Run = false
+			QueueInt("IXc", false).Run = false
 			return true
 		}
 	}
@@ -2417,8 +2416,8 @@ func LLDRoomFcn(arg ActArg) bool {
 		if G.XB && Candles.IsIn(G.Winner) && Candles.Has(FlgOn) && !G.XC {
 			G.XC = true
 			Print("The flames flicker wildly and appear to dance. The earth beneath your feet trembles, and your legs nearly buckle beneath you. The spirits cower at your unearthly power.", Newline)
-			QueueInt(IXb, false).Run = false
-			Queue(IXc, 3).Run = true
+			QueueInt("IXb", false).Run = false
+			Queue("IXc", 3).Run = true
 		}
 	}
 	return false
@@ -2609,7 +2608,7 @@ func CanyonViewFcn(arg ActArg) bool {
 
 func ForestRoomFcn(arg ActArg) bool {
 	if arg == ActEnter {
-		Queue(IForestRandom, -1).Run = true
+		Queue("IForestRandom", -1).Run = true
 		return false
 	}
 	if arg == ActBegin {
@@ -2667,7 +2666,7 @@ func TreeRoomFcn(arg ActArg) bool {
 		}
 	}
 	if arg == ActEnter {
-		Queue(IForestRandom, -1).Run = true
+		Queue("IForestRandom", -1).Run = true
 	}
 	return false
 }
@@ -2763,7 +2762,7 @@ func ICandles() bool {
 		return true
 	}
 	tick := CandleTable[G.CandleTableIdx].(int)
-	Queue(ICandles, tick).Run = true
+	Queue("ICandles", tick).Run = true
 	LightInt(&Candles, G.CandleTableIdx, tick)
 	if tick != 0 {
 		G.CandleTableIdx += 2
@@ -2776,7 +2775,7 @@ func ILantern() bool {
 		return true
 	}
 	tick := LampTable[G.LampTableIdx].(int)
-	Queue(ILantern, tick).Run = true
+	Queue("ILantern", tick).Run = true
 	LightInt(&Lamp, G.LampTableIdx, tick)
 	if tick != 0 {
 		G.LampTableIdx += 2
@@ -2826,10 +2825,10 @@ func ICure() bool {
 		if G.LoadAllowed < G.LoadMax {
 			G.LoadAllowed += 10
 		}
-		Queue(ICure, CureWait).Run = true
+		Queue("ICure", CureWait).Run = true
 	} else {
 		G.LoadAllowed = G.LoadMax
-		QueueInt(ICure, false).Run = false
+		QueueInt("ICure", false).Run = false
 	}
 	return false
 }
@@ -2872,11 +2871,11 @@ func ICyclops() bool {
 		return true
 	}
 	if G.Here != &CyclopsRoom {
-		QueueInt(ICyclops, false).Run = false
+		QueueInt("ICyclops", false).Run = false
 		return false
 	}
 	if AbsInt(G.CycloWrath) > 5 {
-		QueueInt(ICyclops, false).Run = false
+		QueueInt("ICyclops", false).Run = false
 		JigsUp("The cyclops, tired of all of your games and trickery, grabs you firmly. As he licks his chops, he says \"Mmm. Just like Mom used to make 'em.\" It's nice to be appreciated.", false)
 		return true
 	}
@@ -2896,7 +2895,7 @@ func ICyclops() bool {
 
 func IForestRandom() bool {
 	if !ForestRoomQ() {
-		QueueInt(IForestRandom, false).Run = false
+		QueueInt("IForestRandom", false).Run = false
 		return false
 	}
 	if Prob(15, false) {

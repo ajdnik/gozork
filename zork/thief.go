@@ -168,7 +168,7 @@ func RobberFcn(arg ActArg) bool {
 		} else if x {
 			Print("His booty remains.", Newline)
 		}
-		QueueInt(IThief, false).Run = false
+		QueueInt("IThief", false).Run = false
 		return true
 	}
 	if arg == ActArg(FFirst) {
@@ -180,7 +180,7 @@ func RobberFcn(arg ActArg) bool {
 		return false
 	}
 	if arg == ActArg(FUnconscious) {
-		QueueInt(IThief, false).Run = false
+		QueueInt("IThief", false).Run = false
 		Thief.Take(FlgFight)
 		Stiletto.MoveTo(G.Here)
 		Stiletto.Take(FlgNoDesc)
@@ -192,7 +192,7 @@ func RobberFcn(arg ActArg) bool {
 			Thief.Give(FlgFight)
 			Print("The robber revives, briefly feigning continued unconsciousness, and, when he sees his moment, scrambles away from you.", Newline)
 		}
-		Queue(IThief, -1).Run = true
+		Queue("IThief", -1).Run = true
 		Thief.LongDesc = RobberCDesc
 		RecoverStiletto()
 		return true
@@ -234,7 +234,7 @@ func RobberFcn(arg ActArg) bool {
 	if (G.ActVerb.Norm == "throw" || G.ActVerb.Norm == "give") && G.DirObj != nil && G.DirObj != &Thief && G.IndirObj == &Thief {
 		if Thief.Strength < 0 {
 			Thief.Strength = -Thief.Strength
-			Queue(IThief, -1).Run = true
+			Queue("IThief", -1).Run = true
 			RecoverStiletto()
 			Thief.LongDesc = RobberCDesc
 			Print("Your proposed victim suddenly recovers consciousness.", Newline)

@@ -1,51 +1,42 @@
 package zork
 
-import "reflect"
-
-type RtnFunc func() bool
-
-// funcAddr returns the function pointer address for comparison.
-func funcAddr(f RtnFunc) uintptr {
-	return reflect.ValueOf(f).Pointer()
+// ClockEvent represents a timed or daemon interrupt in the game's event queue.
+type ClockEvent struct {
+	Key  string       // unique identifier for this event
+	Run  bool         // whether the event is active
+	Tick int          // countdown; fires when it reaches 0
+	Fn   func() bool  // the function to call when the event fires
 }
 
-type QueueItm struct {
-	Run  bool
-	Tick int
-	Rtn  RtnFunc
+// Queue finds (or creates) a clock event by key and sets its tick value.
+func Queue(key string, tick int) *ClockEvent {
+	ev := QueueInt(key, false)
+	ev.Tick = tick
+	return ev
 }
 
-
-func Queue(rtn RtnFunc, tick int) *QueueItm {
-	itm := QueueInt(rtn, false)
-	itm.Tick = tick
-	return itm
-}
-
-func QueueInt(rtn RtnFunc, dmn bool) *QueueItm {
-	// Search existing queue entries for a matching function.
-	// We use reflect to compare function pointers since Go doesn't
-	// allow direct comparison of function values.
-	rtnPtr := funcAddr(rtn)
+// QueueInt finds an existing clock event by key, or allocates a new slot.
+// If dmn is true, the event is a daemon (always ticked, even on bad parses).
+func QueueInt(key string, dmn bool) *ClockEvent {
+	// Search existing entries for a matching key.
 	for i := len(G.QueueItms) - 1; i >= G.QueueInts; i-- {
-		if G.QueueItms[i].Rtn != nil && funcAddr(G.QueueItms[i].Rtn) == rtnPtr {
+		if G.QueueItms[i].Key == key {
 			return &G.QueueItms[i]
 		}
 	}
 	if G.QueueInts <= 0 {
-		// Queue is full, reuse the last slot
+		// Queue is full, reuse the last slot.
 		return &G.QueueItms[0]
 	}
 	G.QueueInts--
 	if dmn {
 		G.QueueDmns--
 	}
-	G.QueueItms[G.QueueInts].Rtn = rtn
-	G.QueueItms[G.QueueInts].Run = false
-	G.QueueItms[G.QueueInts].Tick = 0
+	G.QueueItms[G.QueueInts] = ClockEvent{Key: key, Fn: clockFuncs[key]}
 	return &G.QueueItms[G.QueueInts]
 }
 
+// Clocker runs all active clock events. Called once per turn.
 func Clocker() bool {
 	if G.ClockWait {
 		G.ClockWait = false
@@ -64,10 +55,35 @@ func Clocker() bool {
 			continue
 		}
 		G.QueueItms[i].Tick--
-		if G.QueueItms[i].Tick <= 0 && G.QueueItms[i].Rtn() {
+		if G.QueueItms[i].Tick <= 0 && G.QueueItms[i].Fn() {
 			flg = true
 		}
 	}
 	G.Moves++
 	return flg
+}
+
+// clockFuncs maps event keys to their handler functions.
+// Populated once by initClockFuncs (called from InitGame).
+var clockFuncs map[string]func() bool
+
+func initClockFuncs() {
+	clockFuncs = map[string]func() bool{
+		"IFight":        IFight,
+		"ISword":        ISword,
+		"IThief":        IThief,
+		"ICandles":      ICandles,
+		"ILantern":      ILantern,
+		"ICure":         ICure,
+		"ICyclops":      ICyclops,
+		"IForestRandom": IForestRandom,
+		"IMaintRoom":    IMaintRoom,
+		"IMatch":        IMatch,
+		"IRempty":       IRempty,
+		"IRfill":        IRfill,
+		"IRiver":        IRiver,
+		"IXb":           IXb,
+		"IXbh":          IXbh,
+		"IXc":           IXc,
+	}
 }

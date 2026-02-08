@@ -56,17 +56,18 @@ func InitGame() {
 		G = NewGameState()
 	}
 	ResetGameState()
+	initClockFuncs()
 	FinalizeGameObjects()
 	BuildObjectTree()
 	BuildVocabulary()
 	InitReader()
 	initSaveSystem()
 
-	Queue(IFight, -1).Run = true
-	Queue(ISword, -1)
-	Queue(IThief, -1).Run = true
-	Queue(ICandles, 40)
-	Queue(ILantern, 200)
+	Queue("IFight", -1).Run = true
+	Queue("ISword", -1)
+	Queue("IThief", -1).Run = true
+	Queue("ICandles", 40)
+	Queue("ILantern", 200)
 	InflatedBoat.VehType = FlgNonLand
 	Def1Res[1] = Def1[2]
 	Def1Res[2] = Def1[4]

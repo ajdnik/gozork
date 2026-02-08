@@ -63,7 +63,7 @@ type GameState struct {
 	Oops          OopsProps
 
 	// ---- Clock / interrupt queue ----
-	QueueItms [30]QueueItm
+	QueueItms [30]ClockEvent
 	QueueInts int
 	QueueDmns int
 	ClockWait bool

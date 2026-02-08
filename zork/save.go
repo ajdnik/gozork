@@ -4,7 +4,6 @@ import (
 	"encoding/gob"
 	"fmt"
 	"os"
-	"reflect"
 	"strings"
 )
 
@@ -43,53 +42,6 @@ func idxToObj(idx int) *Object {
 	return Objects[idx]
 }
 
-// ---- clock function registry ----
-
-var (
-	rtnToName map[uintptr]string
-	nameToRtn map[string]RtnFunc
-)
-
-func buildRtnRegistry() {
-	if rtnToName != nil {
-		return
-	}
-	entries := []struct {
-		name string
-		fn   RtnFunc
-	}{
-		{"IFight", IFight},
-		{"ISword", ISword},
-		{"IThief", IThief},
-		{"ICandles", ICandles},
-		{"ILantern", ILantern},
-		{"ICure", ICure},
-		{"ICyclops", ICyclops},
-		{"IForestRandom", IForestRandom},
-		{"IMaintRoom", IMaintRoom},
-		{"IMatch", IMatch},
-		{"IRempty", IRempty},
-		{"IRfill", IRfill},
-		{"IRiver", IRiver},
-		{"IXb", IXb},
-		{"IXbh", IXbh},
-		{"IXc", IXc},
-	}
-	rtnToName = make(map[uintptr]string, len(entries))
-	nameToRtn = make(map[string]RtnFunc, len(entries))
-	for _, e := range entries {
-		ptr := reflect.ValueOf(e.fn).Pointer()
-		rtnToName[ptr] = e.name
-		nameToRtn[e.name] = e.fn
-	}
-}
-
-func rtnName(fn RtnFunc) string {
-	if fn == nil {
-		return ""
-	}
-	return rtnToName[reflect.ValueOf(fn).Pointer()]
-}
 
 // ---- serializable state structs ----
 
@@ -105,9 +57,9 @@ type savedObject struct {
 }
 
 type savedQueueItem struct {
-	Run     bool
-	Tick    int
-	RtnName string
+	Key  string
+	Run  bool
+	Tick int
 }
 
 type savedVillain struct {
@@ -191,7 +143,6 @@ type gameState struct {
 
 func captureState() *gameState {
 	buildObjIndex()
-	buildRtnRegistry()
 
 	s := &gameState{}
 
@@ -274,9 +225,9 @@ func captureState() *gameState {
 	// Capture clock state
 	for i := range G.QueueItms {
 		s.QueueItems[i] = savedQueueItem{
-			Run:     G.QueueItms[i].Run,
-			Tick:    G.QueueItms[i].Tick,
-			RtnName: rtnName(G.QueueItms[i].Rtn),
+			Key:  G.QueueItms[i].Key,
+			Run:  G.QueueItms[i].Run,
+			Tick: G.QueueItms[i].Tick,
 		}
 	}
 	s.QueueInts = G.QueueInts
@@ -294,7 +245,6 @@ func captureState() *gameState {
 
 func applyState(s *gameState) {
 	buildObjIndex()
-	buildRtnRegistry()
 
 	// Restore object states
 	// First clear all children
@@ -382,12 +332,13 @@ func applyState(s *gameState) {
 
 	// Restore clock state
 	for i := range G.QueueItms {
+		G.QueueItms[i].Key = s.QueueItems[i].Key
 		G.QueueItms[i].Run = s.QueueItems[i].Run
 		G.QueueItms[i].Tick = s.QueueItems[i].Tick
-		if s.QueueItems[i].RtnName != "" {
-			G.QueueItms[i].Rtn = nameToRtn[s.QueueItems[i].RtnName]
+		if s.QueueItems[i].Key != "" {
+			G.QueueItms[i].Fn = clockFuncs[s.QueueItems[i].Key]
 		} else {
-			G.QueueItms[i].Rtn = nil
+			G.QueueItms[i].Fn = nil
 		}
 	}
 	G.QueueInts = s.QueueInts
@@ -424,7 +375,6 @@ func promptFilename(action string) string {
 // breaking the init cycle between Objects and function references.
 func initSaveSystem() {
 	buildObjIndex()
-	buildRtnRegistry()
 	G.Save = doSave
 	G.Restore = doRestore
 	G.Restart = doRestart
@@ -480,11 +430,11 @@ func doRestart() bool {
 	FinalizeGameObjects()
 	BuildObjectTree()
 
-	Queue(IFight, -1).Run = true
-	Queue(ISword, -1)
-	Queue(IThief, -1).Run = true
-	Queue(ICandles, 40)
-	Queue(ILantern, 200)
+	Queue("IFight", -1).Run = true
+	Queue("ISword", -1)
+	Queue("IThief", -1).Run = true
+	Queue("ICandles", 40)
+	Queue("ILantern", 200)
 	InflatedBoat.VehType = FlgNonLand
 	Def1Res[1] = Def1[2]
 	Def1Res[2] = Def1[4]
