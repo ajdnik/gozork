@@ -304,16 +304,16 @@ func (o *Object) HasChildren() bool {
 	return len(o.Children) > 0
 }
 
-// GetExit returns the direction properties for the given direction, or nil.
-func (o *Object) GetExit(d Direction) *ExitProps {
+// GetExit returns the direction properties for the given direction.
+func (o *Object) GetExit(d Direction) (ExitProps, bool) {
 	if o.Exits == nil {
-		return nil
+		return ExitProps{}, false
 	}
 	dp, ok := o.Exits[d]
 	if !ok || !dp.IsSet() {
-		return nil
+		return ExitProps{}, false
 	}
-	return &dp
+	return dp, true
 }
 
 // SetExit sets exit properties for a direction, initializing the map if needed.

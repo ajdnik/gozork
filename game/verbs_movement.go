@@ -56,7 +56,7 @@ func vClimbFcn(dir Direction, obj *Object) bool {
 	if obj != nil && G.DirObj != &rooms {
 		obj = G.DirObj
 	}
-	if tx := G.Here.GetExit(dir); tx != nil {
+	if tx, ok := G.Here.GetExit(dir); ok {
 		if obj != nil {
 			if len(tx.NExit) > 0 || ((tx.CExit != nil || tx.DExit != nil || tx.UExit) && !IsInGlobal(G.DirObj, tx.RExit)) {
 				Printf("The %s do", obj.Desc)
@@ -144,8 +144,7 @@ func vLeap(arg ActionArg) bool {
 		}
 		return vSkip(ActUnk)
 	}
-	tx := G.Here.GetExit(Down)
-	if tx != nil && tx.IsSet() {
+	if tx, ok := G.Here.GetExit(Down); ok {
 		if len(tx.NExit) > 0 || (tx.CExit != nil && !tx.CExit()) {
 			Printf("This was not a very safe place to try jumping.\n")
 			return jigsUp(PickOne(jumpLoss), false)
@@ -220,8 +219,8 @@ func through(obj *Object) bool {
 
 func otherSide(dobj *Object) (Direction, bool) {
 	for _, d := range AllDirections {
-		dp := G.Here.GetExit(d)
-		if dp == nil {
+		dp, ok := G.Here.GetExit(d)
+		if !ok {
 			continue
 		}
 		if dp.DExit == dobj {
@@ -236,8 +235,8 @@ func vWalk(arg ActionArg) bool {
 		Perform(ActionVerb{Norm: "walk to", Orig: "walk to"}, G.DirObj, nil)
 		return true
 	}
-	props := G.Here.GetExit(G.Params.WalkDir)
-	if props == nil {
+	props, ok := G.Here.GetExit(G.Params.WalkDir)
+	if !ok {
 		if !G.Lit && Prob(80, false) && G.Winner == &adventurer && !G.Here.Has(FlgNonLand) {
 			if gD().IsSprayed {
 				Printf("There are odd noises in the darkness, and there is no exit in that direction.\n")

@@ -416,8 +416,8 @@ func iSword() bool {
 		} else {
 			// Check adjacent rooms for monsters
 			for _, d := range AllDirections {
-				dp := G.Here.GetExit(d)
-				if dp != nil && dp.RExit != nil {
+				dp, ok := G.Here.GetExit(d)
+				if ok && dp.RExit != nil {
 					if infested(dp.RExit) {
 						ng = 1
 						break
