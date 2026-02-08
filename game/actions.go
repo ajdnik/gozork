@@ -3011,7 +3011,3 @@ func chainPseudo(arg ActionArg) bool {
 	}
 	return false
 }
-
-func barrowDoorFcn2(arg ActionArg) bool {
-	return false
-}

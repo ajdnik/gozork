@@ -184,19 +184,41 @@ jobs:
             echo ""
             echo "| Package | Status | Duration | Coverage |"
             echo "|---------|--------|----------|----------|"
-            grep -E '^ok |^FAIL\s' test-output.txt | while IFS= read -r line; do
-              if echo "$line" | grep -q '^ok'; then
-                PKG=$(echo "$line" | awk '{print $2}')
-                DUR=$(echo "$line" | awk '{print $3}')
-                COV=$(echo "$line" | grep -oP 'coverage: \K[0-9.]+%' || echo "—")
-                echo "| \`$PKG\` | :white_check_mark: ok | $DUR | $COV |"
-              else
-                PKG=$(echo "$line" | awk '{print $2}')
-                DUR=$(echo "$line" | awk '{for(i=1;i<=NF;i++) if($i ~ /^[0-9.]+s$/) print $i}')
-                [ -z "$DUR" ] && DUR="—"
-                echo "| \`$PKG\` | :x: FAIL | $DUR | — |"
-              fi
-            done
+            awk -F'"' '
+              /"Action":"pass"/ && /"Package":/ {
+                pkg=""; dur=""; cov="—";
+                for (i=1;i<=NF;i++) {
+                  if ($i=="Package") pkg=$(i+2);
+                  if ($i=="Elapsed") dur=$(i+2)"s";
+                  if ($i=="Coverage") cov=$(i+2);
+                }
+                if (pkg!="") {
+                  status[pkg]="ok"; durmap[pkg]=dur; covmap[pkg]=cov;
+                }
+              }
+              /"Action":"fail"/ && /"Package":/ {
+                pkg=""; dur="";
+                for (i=1;i<=NF;i++) {
+                  if ($i=="Package") pkg=$(i+2);
+                  if ($i=="Elapsed") dur=$(i+2)"s";
+                }
+                if (pkg!="") {
+                  status[pkg]="FAIL"; durmap[pkg]=dur;
+                }
+              }
+              END {
+                for (p in status) {
+                  s=status[p];
+                  d=durmap[p]; if (d=="") d="—";
+                  c=covmap[p]; if (c=="") c="—";
+                  if (s=="ok") {
+                    printf "| `%s` | :white_check_mark: ok | %s | %s |\n", p, d, c;
+                  } else {
+                    printf "| `%s` | :x: FAIL | %s | — |\n", p, d;
+                  }
+                }
+              }
+            ' test-output.json | sort
             echo ""
             echo "</details>"
             echo ""

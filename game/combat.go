@@ -31,14 +31,6 @@ const (
 	cureWait    = 30
 )
 
-const (
-	vVillain = 0
-	vBest    = 1
-	vBestAdv = 2
-	vProb    = 3
-	vMsgs    = 4
-)
-
 // Melee message marker constants
 const (
 	fWep = 0 // means print weapon name
@@ -397,9 +389,9 @@ func iFight() bool {
 			}
 		} else {
 			if o.Has(FlgFight) {
-			if o.Action != nil {
-				o.Action(ActBusy)
-			}
+				if o.Action != nil {
+					o.Action(ActBusy)
+				}
 			}
 			if o == &thief {
 				gD().ThiefEngrossed = false

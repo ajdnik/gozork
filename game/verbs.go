@@ -118,11 +118,6 @@ func vBrush(arg ActionArg) bool {
 	return true
 }
 
-func tellNoPrsi() bool {
-	Printf("You didn't say with what!\n")
-	return true
-}
-
 func preBurn(arg ActionArg) bool {
 	if G.IndirObj == nil {
 		Printf("You didn't say with what!\n")

@@ -96,31 +96,6 @@ func vVerify(arg ActionArg) bool {
 	return true
 }
 
-// vCommandFile switches input to come from a file. In the original Z-machine
-// this uses the DIRIN opcode. Not applicable to this Go port.
-func vCommandFile(arg ActionArg) bool {
-	return true
-}
-
-// vRandom reseeds the random number generator. In the original Z-machine
-// this uses the RANDOM opcode with a negative argument to set the seed.
-func vRandom(arg ActionArg) bool {
-	Printf("Illegal call to #RND.\n")
-	return true
-}
-
-// vRecord starts recording input to a file. In the original Z-machine
-// this uses the DIROUT opcode. Not applicable to this Go port.
-func vRecord(arg ActionArg) bool {
-	return true
-}
-
-// vUnrecord stops recording input. In the original Z-machine this uses
-// the DIROUT opcode. Not applicable to this Go port.
-func vUnrecord(arg ActionArg) bool {
-	return true
-}
-
 func vVersion(arg ActionArg) bool {
 	Printf("ZORK I: The Great Underground Empire\nInfocom interactive fiction - a fantasy story\nCopyright (c) 1981, 1982, 1983, 1984, 1985, 1986 Infocom, Inc. All rights reserved.\nZORK is a registered trademark of Infocom, Inc.\nRelease ")
 	num := binary.LittleEndian.Uint16(version[4:6])

@@ -24,15 +24,6 @@ func rob(what, where *Object, prob int) bool {
 	return robbed
 }
 
-func stolenLight() bool {
-	oLit := G.Lit
-	G.Lit = IsLit(G.Here, true)
-	if !G.Lit && oLit {
-		Printf("The thief seems to have left you in the dark.\n")
-	}
-	return true
-}
-
 func recoverStiletto() {
 	if stiletto.IsIn(thief.Location()) {
 		stiletto.Give(FlgNoDesc)
