@@ -15,12 +15,6 @@ type QueueItm struct {
 	Rtn  RtnFunc
 }
 
-var (
-	QueueItms [30]QueueItm
-	QueueInts = 30
-	QueueDmns = 30
-	ClockWait = false
-)
 
 func Queue(rtn RtnFunc, tick int) *QueueItm {
 	itm := QueueInt(rtn, false)
@@ -33,47 +27,47 @@ func QueueInt(rtn RtnFunc, dmn bool) *QueueItm {
 	// We use reflect to compare function pointers since Go doesn't
 	// allow direct comparison of function values.
 	rtnPtr := funcAddr(rtn)
-	for i := len(QueueItms) - 1; i >= QueueInts; i-- {
-		if QueueItms[i].Rtn != nil && funcAddr(QueueItms[i].Rtn) == rtnPtr {
-			return &QueueItms[i]
+	for i := len(G.QueueItms) - 1; i >= G.QueueInts; i-- {
+		if G.QueueItms[i].Rtn != nil && funcAddr(G.QueueItms[i].Rtn) == rtnPtr {
+			return &G.QueueItms[i]
 		}
 	}
-	if QueueInts <= 0 {
+	if G.QueueInts <= 0 {
 		// Queue is full, reuse the last slot
-		return &QueueItms[0]
+		return &G.QueueItms[0]
 	}
-	QueueInts--
+	G.QueueInts--
 	if dmn {
-		QueueDmns--
+		G.QueueDmns--
 	}
-	QueueItms[QueueInts].Rtn = rtn
-	QueueItms[QueueInts].Run = false
-	QueueItms[QueueInts].Tick = 0
-	return &QueueItms[QueueInts]
+	G.QueueItms[G.QueueInts].Rtn = rtn
+	G.QueueItms[G.QueueInts].Run = false
+	G.QueueItms[G.QueueInts].Tick = 0
+	return &G.QueueItms[G.QueueInts]
 }
 
 func Clocker() bool {
-	if ClockWait {
-		ClockWait = false
+	if G.ClockWait {
+		G.ClockWait = false
 		return false
 	}
-	end := QueueDmns
-	if ParserOk {
-		end = QueueInts
+	end := G.QueueDmns
+	if G.ParserOk {
+		end = G.QueueInts
 	}
 	flg := false
-	for i := len(QueueItms) - 1; i >= end; i-- {
-		if !QueueItms[i].Run {
+	for i := len(G.QueueItms) - 1; i >= end; i-- {
+		if !G.QueueItms[i].Run {
 			continue
 		}
-		if QueueItms[i].Tick == 0 {
+		if G.QueueItms[i].Tick == 0 {
 			continue
 		}
-		QueueItms[i].Tick--
-		if QueueItms[i].Tick <= 0 && QueueItms[i].Rtn() {
+		G.QueueItms[i].Tick--
+		if G.QueueItms[i].Tick <= 0 && G.QueueItms[i].Rtn() {
 			flg = true
 		}
 	}
-	Moves++
+	G.Moves++
 	return flg
 }

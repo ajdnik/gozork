@@ -33,11 +33,14 @@ func runScript(t *testing.T, steps []Step) {
 		input.WriteString(s.Command + "\n")
 	}
 
-	// Plug in fake I/O
+	// Ensure G exists, then plug in fake I/O
+	if G == nil {
+		G = NewGameState()
+	}
 	var output bytes.Buffer
-	GameInput = strings.NewReader(input.String())
-	GameOutput = &output
-	Reader = nil // force re-init
+	G.GameInput = strings.NewReader(input.String())
+	G.GameOutput = &output
+	G.Reader = nil // force re-init
 
 	// Run the game, catching panics from Quit()
 	func() {

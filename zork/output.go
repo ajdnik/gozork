@@ -1,10 +1,6 @@
 package zork
 
-import (
-	"fmt"
-	"io"
-	"os"
-)
+import "fmt"
 
 type EndType int
 
@@ -13,26 +9,22 @@ const (
 	NoNewline
 )
 
-// GameOutput is the writer all game output goes to. Defaults to os.Stdout.
-// Tests can replace this to capture output.
-var GameOutput io.Writer = os.Stdout
-
 func NewLine() {
-	fmt.Fprintln(GameOutput, "")
+	fmt.Fprintln(G.GameOutput, "")
 }
 
 func PrintObject(obj *Object) {
-	fmt.Fprintf(GameOutput, "%v", obj.Desc)
+	fmt.Fprintf(G.GameOutput, "%v", obj.Desc)
 }
 
 func PrintNumber(num int) {
-	fmt.Fprintf(GameOutput, "%v", num)
+	fmt.Fprintf(G.GameOutput, "%v", num)
 }
 
 func Print(msg string, end EndType) {
 	if end == NoNewline {
-		fmt.Fprintf(GameOutput, "%s", msg)
+		fmt.Fprintf(G.GameOutput, "%s", msg)
 	} else {
-		fmt.Fprintln(GameOutput, msg)
+		fmt.Fprintln(G.GameOutput, msg)
 	}
 }

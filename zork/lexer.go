@@ -2,11 +2,11 @@ package zork
 
 import (
 	"bufio"
-	"io"
-	"os"
 	"sort"
 	"strings"
 )
+
+var Vocabulary = make(map[string]WordItm)
 
 // WordTyp defined the part-of-speech type
 type WordTyp int
@@ -122,31 +122,25 @@ type WordItm struct {
 
 // GameInput is the reader all game input comes from. Defaults to os.Stdin.
 // Tests can replace this to feed commands programmatically.
-var GameInput io.Reader = os.Stdin
 
-var (
-	Reader     *bufio.Reader
-	Vocabulary = make(map[string]WordItm)
-)
 
 // InitReader initializes the buffered reader from GameInput.
 // Must be called before any Read() calls.
 func InitReader() {
-	Reader = bufio.NewReader(GameInput)
+	G.Reader = bufio.NewReader(G.GameInput)
 }
 
 // ErrInputExhausted is returned when the game input stream reaches EOF.
-var InputExhausted bool
 
 // Read function reads input from the game input,
 // tokenizes the input and tags parts-of-speech
 func Read() (string, []LexItm) {
-	if Reader == nil {
+	if G.Reader == nil {
 		InitReader()
 	}
-	txt, err := Reader.ReadString('\n')
+	txt, err := G.Reader.ReadString('\n')
 	if err != nil {
-		InputExhausted = true
+		G.InputExhausted = true
 		// Return whatever partial text we got
 		if len(txt) == 0 {
 			return "", nil

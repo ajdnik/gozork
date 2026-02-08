@@ -37,7 +37,6 @@ const (
 	CureWait    = 30
 )
 
-// Villain table field indices
 const (
 	VVillain  = 0
 	VBest     = 1
@@ -310,8 +309,6 @@ var (
 		},
 	}
 
-	// Villain table - initialized in FinalizeGameObjects to avoid init cycles
-	Villains []*VillainEntry
 )
 
 // ================================================================
@@ -321,10 +318,10 @@ var (
 
 
 func WeaponFunction(w, v *Object) bool {
-	if !v.IsIn(Here) {
+	if !v.IsIn(G.Here) {
 		return false
 	}
-	if ActVerb.Norm == "take" {
+	if G.ActVerb.Norm == "take" {
 		if w.IsIn(v) {
 			Print("The ", NoNewline)
 			PrintObject(v)
@@ -343,9 +340,9 @@ func FightStrength(adjust bool) int {
 	if ScoreMax == 0 {
 		return StrengthMin
 	}
-	s := StrengthMin + Score/(ScoreMax/(StrengthMax-StrengthMin))
+	s := StrengthMin + G.Score/(ScoreMax/(StrengthMax-StrengthMin))
 	if adjust {
-		s += Winner.Strength
+		s += G.Winner.Strength
 	}
 	return s
 }
@@ -389,17 +386,17 @@ func Awaken(o *Object) bool {
 }
 
 func IFight() bool {
-	if Dead {
+	if G.Dead {
 		return false
 	}
 	fightQ := false
-	numVillains := len(Villains)
+	numVillains := len(G.Villains)
 	for cnt := 0; cnt < numVillains; cnt++ {
-		oo := Villains[cnt]
+		oo := G.Villains[cnt]
 		o := oo.Villain
-		if o.IsIn(Here) && !o.Has(FlgInvis) {
-			if o == &Thief && ThiefEngrossed {
-				ThiefEngrossed = false
+		if o.IsIn(G.Here) && !o.Has(FlgInvis) {
+			if o == &Thief && G.ThiefEngrossed {
+				G.ThiefEngrossed = false
 			} else if o.Strength < 0 {
 				p := oo.Prob
 				if p != 0 && Prob(p, false) {
@@ -418,9 +415,9 @@ func IFight() bool {
 				}
 			}
 			if o == &Thief {
-				ThiefEngrossed = false
+				G.ThiefEngrossed = false
 			}
-			Winner.Take(FlgStagg)
+			G.Winner.Take(FlgStagg)
 			o.Take(FlgStagg)
 			o.Take(FlgFight)
 			Awaken(o)
@@ -435,14 +432,14 @@ func IFight() bool {
 func ISword() bool {
 	if Sword.IsIn(&Adventurer) {
 		ng := 0
-		if Infested(Here) {
+		if Infested(G.Here) {
 			ng = 2
 		} else {
 			// Check adjacent rooms for monsters
 			dirs := []*DirProps{
-				&Here.North, &Here.South, &Here.East, &Here.West,
-				&Here.NorthEast, &Here.NorthWest, &Here.SouthEast, &Here.SouthWest,
-				&Here.Up, &Here.Down, &Here.Into, &Here.Out,
+				&G.Here.North, &G.Here.South, &G.Here.East, &G.Here.West,
+				&G.Here.NorthEast, &G.Here.NorthWest, &G.Here.SouthEast, &G.Here.SouthWest,
+				&G.Here.Up, &G.Here.Down, &G.Here.Into, &G.Here.Out,
 			}
 			for _, dp := range dirs {
 				if dp.IsSet() && dp.RExit != nil {
@@ -503,13 +500,13 @@ func RandomMeleeMsg(set MeleeSet) MeleeMsg {
 func VillainStrength(oo *VillainEntry) int {
 	od := oo.Villain.Strength
 	if od >= 0 {
-		if oo.Villain == &Thief && ThiefEngrossed {
+		if oo.Villain == &Thief && G.ThiefEngrossed {
 			if od > 2 {
 				od = 2
 			}
-			ThiefEngrossed = false
+			G.ThiefEngrossed = false
 		}
-		if IndirObj != nil && IndirObj.Has(FlgWeapon) && oo.Best == IndirObj {
+		if G.IndirObj != nil && G.IndirObj.Has(FlgWeapon) && oo.Best == G.IndirObj {
 			tmp := od - oo.BestAdv
 			if tmp < 1 {
 				tmp = 1
@@ -546,15 +543,15 @@ func VillainResult(villain *Object, def int, res BlowRes) BlowRes {
 // WinnerResult applies the combat result to the player
 func WinnerResult(def int, res BlowRes, od int) {
 	if def == 0 {
-		Winner.Strength = -10000
+		G.Winner.Strength = -10000
 	} else {
-		Winner.Strength = def - od
+		G.Winner.Strength = def - od
 	}
 	if def-od < 0 {
 		Queue(ICure, CureWait).Run = true
 	}
 	if FightStrength(true) <= 0 {
-		Winner.Strength = 1 - FightStrength(false)
+		G.Winner.Strength = 1 - FightStrength(false)
 		JigsUp("It appears that that last blow was too much for you. I'm afraid you are dead.", false)
 	}
 }
@@ -564,7 +561,7 @@ func VillainBlow(oo *VillainEntry, out bool) BlowRes {
 	villain := oo.Villain
 	remarks := oo.Msgs
 
-	Winner.Take(FlgStagg)
+	G.Winner.Take(FlgStagg)
 	if villain.Has(FlgStagg) {
 		Print("The ", NoNewline)
 		PrintObject(villain)
@@ -579,7 +576,7 @@ func VillainBlow(oo *VillainEntry, out bool) BlowRes {
 		return BlowMissed
 	}
 	od := FightStrength(false)
-	dweapon := FindWeapon(Winner)
+	dweapon := FindWeapon(G.Winner)
 	var res BlowRes
 	if def < 0 {
 		res = BlowKill
@@ -656,7 +653,7 @@ func VillainBlow(oo *VillainEntry, out bool) BlowRes {
 		}
 		msg := RandomMeleeMsg((*remarks)[res-1])
 		if msg != nil {
-			Remark(msg, Winner, dweapon)
+			Remark(msg, G.Winner, dweapon)
 		}
 	}
 	_ = oa
@@ -673,24 +670,24 @@ func VillainBlow(oo *VillainEntry, out bool) BlowRes {
 		if def < 0 {
 			def = 0
 		}
-		if LoadAllowed > 50 {
-			LoadAllowed -= 10
+		if G.LoadAllowed > 50 {
+			G.LoadAllowed -= 10
 		}
 	case res == BlowHeavyWnd:
 		def -= 2
 		if def < 0 {
 			def = 0
 		}
-		if LoadAllowed > 50 {
-			LoadAllowed -= 20
+		if G.LoadAllowed > 50 {
+			G.LoadAllowed -= 20
 		}
 	case res == BlowStag:
-		Winner.Give(FlgStagg)
+		G.Winner.Give(FlgStagg)
 	default:
 		// BlowLoseWpn
 		if dweapon != nil {
-			dweapon.MoveTo(Here)
-			nweapon := FindWeapon(Winner)
+			dweapon.MoveTo(G.Here)
+			nweapon := FindWeapon(G.Winner)
 			if nweapon != nil {
 				Print("Fortunately, you still have a ", NoNewline)
 				PrintObject(nweapon)
@@ -709,7 +706,7 @@ func DoFight(numVillains int) bool {
 		var res BlowRes
 		out := false
 		for cnt < numVillains {
-			oo := Villains[cnt]
+			oo := G.Villains[cnt]
 			cnt++
 			o := oo.Villain
 			if !o.Has(FlgFight) {
@@ -740,21 +737,21 @@ func DoFight(numVillains int) bool {
 }
 
 func HeroBlow() bool {
-	if DirObj == nil {
+	if G.DirObj == nil {
 		return false
 	}
 	// Find the villain entry for the target
 	var oo *VillainEntry
-	for _, v := range Villains {
-		if v.Villain == DirObj {
+	for _, v := range G.Villains {
+		if v.Villain == G.DirObj {
 			oo = v
 			break
 		}
 	}
-	DirObj.Give(FlgFight)
-	if Winner.Has(FlgStagg) {
+	G.DirObj.Give(FlgFight)
+	if G.Winner.Has(FlgStagg) {
 		Print("You are still recovering from that last blow, so your attack is ineffective.", Newline)
-		Winner.Take(FlgStagg)
+		G.Winner.Take(FlgStagg)
 		return true
 	}
 	att := FightStrength(true)
@@ -763,14 +760,14 @@ func HeroBlow() bool {
 	}
 	oa := att
 	_ = oa
-	villain := DirObj
+	villain := G.DirObj
 	if oo == nil {
 		return false
 	}
 	od := VillainStrength(oo)
 	def := od
 	if def == 0 {
-		if DirObj == Winner {
+		if G.DirObj == G.Winner {
 			JigsUp("Well, you really did it that time. Is suicide painless?", false)
 			return true
 		}
@@ -829,7 +826,7 @@ func HeroBlow() bool {
 		}
 		msg := RandomMeleeMsg(HeroMelee[res-1])
 		if msg != nil {
-			Remark(msg, DirObj, IndirObj)
+			Remark(msg, G.DirObj, G.IndirObj)
 		}
 	}
 	// Apply hero blow results
@@ -851,16 +848,16 @@ func HeroBlow() bool {
 			def = 0
 		}
 	case res == BlowStag:
-		DirObj.Give(FlgStagg)
+		G.DirObj.Give(FlgStagg)
 	default:
 		// BlowLoseWpn
 		if dweapon != nil {
 			dweapon.Take(FlgNoDesc)
 			dweapon.Give(FlgWeapon)
-			dweapon.MoveTo(Here)
+			dweapon.MoveTo(G.Here)
 			ThisIsIt(dweapon)
 		}
 	}
-	VillainResult(DirObj, def, res)
+	VillainResult(G.DirObj, def, res)
 	return true
 }

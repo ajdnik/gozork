@@ -111,29 +111,27 @@ var (
 		Desc:     "zorkmid",
 		Action:   ZorkmidFunction,
 	}
-	LoadAllowed = 100
-	LoadMax     = 100
 )
 
 func NotHereObjectFcn(arg ActArg) bool {
-	if DirObj == &NotHereObject && IndirObj == &NotHereObject {
+	if G.DirObj == &NotHereObject && G.IndirObj == &NotHereObject {
 		Print("Those things aren't here!", Newline)
 		return true
 	}
-	Params.Continue = NumUndef
-	Params.InQuotes = false
+	G.Params.Continue = NumUndef
+	G.Params.InQuotes = false
 	isDir := false
-	if DirObj == &NotHereObject {
+	if G.DirObj == &NotHereObject {
 		isDir = true
 	}
-	if Winner == Player {
+	if G.Winner == G.Player {
 		Print("You can't see any ", NoNewline)
 		NotHerePrint(isDir)
 		Print(" here!", Newline)
 		return true
 	}
 	Print("The ", NoNewline)
-	PrintObject(Winner)
+	PrintObject(G.Winner)
 	Print(" seems confused. \"I don't see any ", NoNewline)
 	NotHerePrint(isDir)
 	Print(" here!\"", Newline)
@@ -141,17 +139,17 @@ func NotHereObjectFcn(arg ActArg) bool {
 }
 
 func NotHerePrint(isDir bool) {
-	if Params.ShldOrphan {
-		if NotHere.Adj.IsSet() {
-			Print(NotHere.Adj.Orig+" ", NoNewline)
+	if G.Params.ShldOrphan {
+		if G.NotHere.Adj.IsSet() {
+			Print(G.NotHere.Adj.Orig+" ", NoNewline)
 		}
-		if NotHere.Syn.IsSet() {
-			Print(NotHere.Syn.Orig, NoNewline)
+		if G.NotHere.Syn.IsSet() {
+			Print(G.NotHere.Syn.Orig, NoNewline)
 		}
 		return
 	}
 	if isDir {
-		for idx, wrd := range ParsedSyntx.ObjOrClause1 {
+		for idx, wrd := range G.ParsedSyntx.ObjOrClause1 {
 			if idx != 0 {
 				Print(" ", NoNewline)
 			}
@@ -159,7 +157,7 @@ func NotHerePrint(isDir bool) {
 		}
 		return
 	}
-	for idx, wrd := range ParsedSyntx.ObjOrClause2 {
+	for idx, wrd := range G.ParsedSyntx.ObjOrClause2 {
 		if idx != 0 {
 			Print(" ", NoNewline)
 		}
@@ -168,21 +166,21 @@ func NotHerePrint(isDir bool) {
 }
 
 func SailorFcn(arg ActArg) bool {
-	if ActVerb.Norm == "tell" {
-		Params.Continue = NumUndef
-		Params.InQuotes = false
+	if G.ActVerb.Norm == "tell" {
+		G.Params.Continue = NumUndef
+		G.Params.InQuotes = false
 		Print("You can't talk to the sailor that way.", Newline)
 		return true
 	}
-	if ActVerb.Norm == "examine" {
+	if G.ActVerb.Norm == "examine" {
 		Print("There is no sailor to be seen.", Newline)
 		return true
 	}
-	if ActVerb.Norm == "hello" {
-		HelloSailor++
-		if HelloSailor%20 == 0 {
+	if G.ActVerb.Norm == "hello" {
+		G.HelloSailor++
+		if G.HelloSailor%20 == 0 {
 			Print("You seem to be repeating yourself.", Newline)
-		} else if HelloSailor%10 == 0 {
+		} else if G.HelloSailor%10 == 0 {
 			Print("I think that phrase is getting a bit worn out.", Newline)
 		} else {
 			Print("Nothing happens here.", Newline)
@@ -193,14 +191,14 @@ func SailorFcn(arg ActArg) bool {
 }
 
 func GroundFunction(arg ActArg) bool {
-	if (ActVerb.Norm == "put" || ActVerb.Norm == "put on") && IndirObj == &Ground {
-		Perform(ActionVerb{Norm: "drop", Orig: "drop"}, DirObj, nil)
+	if (G.ActVerb.Norm == "put" || G.ActVerb.Norm == "put on") && G.IndirObj == &Ground {
+		Perform(ActionVerb{Norm: "drop", Orig: "drop"}, G.DirObj, nil)
 		return true
 	}
-	if Here == &SandyCave {
+	if G.Here == &SandyCave {
 		return SandFunction(ActUnk)
 	}
-	if ActVerb.Norm == "dig" {
+	if G.ActVerb.Norm == "dig" {
 		Print("The ground is too hard for digging here.", Newline)
 		return true
 	}
@@ -208,15 +206,15 @@ func GroundFunction(arg ActArg) bool {
 }
 
 func GrueFunction(arg ActArg) bool {
-	if ActVerb.Norm == "examine" {
+	if G.ActVerb.Norm == "examine" {
 		Print("The grue is a sinister, lurking presence in the dark places of the earth. Its favorite diet is adventurers, but its insatiable appetite is tempered by its fear of light. No grue has ever been seen by the light of day, and few have survived its fearsome jaws to tell the tale.", Newline)
 		return true
 	}
-	if ActVerb.Norm == "find" {
+	if G.ActVerb.Norm == "find" {
 		Print("There is no grue here, but I'm sure there is at least one lurking in the darkness nearby. I wouldn't let my light go out if I were you!", Newline)
 		return true
 	}
-	if ActVerb.Norm == "listen" {
+	if G.ActVerb.Norm == "listen" {
 		Print("It makes no sound but is always lurking in the darkness nearby.", Newline)
 		return true
 	}
@@ -224,45 +222,45 @@ func GrueFunction(arg ActArg) bool {
 }
 
 func CretinFcn(arg ActArg) bool {
-	if ActVerb.Norm == "tell" {
-		Params.Continue = NumUndef
-		Params.InQuotes = false
+	if G.ActVerb.Norm == "tell" {
+		G.Params.Continue = NumUndef
+		G.Params.InQuotes = false
 		Print("Talking to yourself is said to be a sign of impending mental collapse.", Newline)
 		return true
 	}
-	if ActVerb.Norm == "give" && IndirObj == &Me {
-		Perform(ActionVerb{Norm: "take", Orig: "take"}, DirObj, nil)
+	if G.ActVerb.Norm == "give" && G.IndirObj == &Me {
+		Perform(ActionVerb{Norm: "take", Orig: "take"}, G.DirObj, nil)
 		return true
 	}
-	if ActVerb.Norm == "make" {
+	if G.ActVerb.Norm == "make" {
 		Print("Only you can do that.", Newline)
 		return true
 	}
-	if ActVerb.Norm == "disembark" {
+	if G.ActVerb.Norm == "disembark" {
 		Print("You'll have to do that on your own.", Newline)
 		return true
 	}
-	if ActVerb.Norm == "eat" {
+	if G.ActVerb.Norm == "eat" {
 		Print("Auto-cannibalism is not the answer.", Newline)
 		return true
 	}
-	if ActVerb.Norm == "attack" || ActVerb.Norm == "mung" {
-		if IndirObj != nil && IndirObj.Has(FlgWeapon) {
+	if G.ActVerb.Norm == "attack" || G.ActVerb.Norm == "mung" {
+		if G.IndirObj != nil && G.IndirObj.Has(FlgWeapon) {
 			return JigsUp("If you insist.... Poof, you're dead!", false)
 		}
 		Print("Suicide is not the answer.", Newline)
 		return true
 	}
-	if ActVerb.Norm == "throw" && DirObj == &Me {
+	if G.ActVerb.Norm == "throw" && G.DirObj == &Me {
 		Print("Why don't you just walk like normal people?", Newline)
 		return true
 	}
-	if ActVerb.Norm == "take" {
+	if G.ActVerb.Norm == "take" {
 		Print("How romantic!", Newline)
 		return true
 	}
-	if ActVerb.Norm == "examine" {
-		if Here == &MirrorRoom1 || Here == &MirrorRoom2 {
+	if G.ActVerb.Norm == "examine" {
+		if G.Here == &MirrorRoom1 || G.Here == &MirrorRoom2 {
 			Print("Your image in the mirror looks tired.", Newline)
 			return true
 		}
@@ -273,15 +271,15 @@ func CretinFcn(arg ActArg) bool {
 }
 
 func PathObject(arg ActArg) bool {
-	if ActVerb.Norm == "take" || ActVerb.Norm == "follow" {
+	if G.ActVerb.Norm == "take" || G.ActVerb.Norm == "follow" {
 		Print("You must specify a direction to go.", Newline)
 		return true
 	}
-	if ActVerb.Norm == "find" {
+	if G.ActVerb.Norm == "find" {
 		Print("I can't help you there....", Newline)
 		return true
 	}
-	if ActVerb.Norm == "dig" {
+	if G.ActVerb.Norm == "dig" {
 		Print("Not a chance.", Newline)
 		return true
 	}
@@ -289,7 +287,7 @@ func PathObject(arg ActArg) bool {
 }
 
 func StairsFcn(arg ActArg) bool {
-	if ActVerb.Norm == "through" {
+	if G.ActVerb.Norm == "through" {
 		Print("You should say whether you want to go up or down.", Newline)
 		return true
 	}
@@ -297,11 +295,11 @@ func StairsFcn(arg ActArg) bool {
 }
 
 func ZorkmidFunction(arg ActArg) bool {
-	if ActVerb.Norm == "examine" {
+	if G.ActVerb.Norm == "examine" {
 		Print("The zorkmid is the unit of currency of the Great Underground Empire.", Newline)
 		return true
 	}
-	if ActVerb.Norm == "find" {
+	if G.ActVerb.Norm == "find" {
 		Print("The best way to find zorkmids is to go out and look for them.", Newline)
 		return true
 	}

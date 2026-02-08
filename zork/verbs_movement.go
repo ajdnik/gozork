@@ -2,14 +2,14 @@ package zork
 
 
 func PreBoard(arg ActArg) bool {
-	if DirObj.Has(FlgVeh) {
-		if !DirObj.IsIn(Here) {
+	if G.DirObj.Has(FlgVeh) {
+		if !G.DirObj.IsIn(G.Here) {
 			Print("The ", NoNewline)
-			PrintObject(DirObj)
+			PrintObject(G.DirObj)
 			Print(" must be on the ground to be boarded.", Newline)
 			return RFatal()
 		}
-		if av := Winner.Location(); av != nil && av.Has(FlgVeh) {
+		if av := G.Winner.Location(); av != nil && av.Has(FlgVeh) {
 			Print("You are already in the ", NoNewline)
 			PrintObject(av)
 			Print("!", Newline)
@@ -17,43 +17,43 @@ func PreBoard(arg ActArg) bool {
 		}
 		return false
 	}
-	if DirObj == &Water || DirObj == &GlobalWater {
-		Perform(ActionVerb{Norm: "swim", Orig: "swim"}, DirObj, nil)
+	if G.DirObj == &Water || G.DirObj == &GlobalWater {
+		Perform(ActionVerb{Norm: "swim", Orig: "swim"}, G.DirObj, nil)
 		return true
 	}
 	Print("You have a theory on how to board a ", NoNewline)
-	PrintObject(DirObj)
+	PrintObject(G.DirObj)
 	Print(", perhaps?", Newline)
 	return RFatal()
 }
 
 func VBoard(arg ActArg) bool {
 	Print("You are now in the ", NoNewline)
-	PrintObject(DirObj)
+	PrintObject(G.DirObj)
 	Print(".", Newline)
-	Winner.MoveTo(DirObj)
-	if DirObj.Action != nil {
-		DirObj.Action(ActEnter)
+	G.Winner.MoveTo(G.DirObj)
+	if G.DirObj.Action != nil {
+		G.DirObj.Action(ActEnter)
 	}
 	return true
 }
 
 func VClimbDown(arg ActArg) bool {
-	return VClimbFcn("down", DirObj)
+	return VClimbFcn("down", G.DirObj)
 }
 
 func VClimbFoo(arg ActArg) bool {
-	return VClimbFcn("up", DirObj)
+	return VClimbFcn("up", G.DirObj)
 }
 
 func VClimbOn(arg ActArg) bool {
-	if !DirObj.Has(FlgVeh) {
+	if !G.DirObj.Has(FlgVeh) {
 		Print("You can't climb onto the ", NoNewline)
-		PrintObject(DirObj)
+		PrintObject(G.DirObj)
 		Print(".", Newline)
 		return true
 	}
-	Perform(ActionVerb{Norm: "board", Orig: "board"}, DirObj, nil)
+	Perform(ActionVerb{Norm: "board", Orig: "board"}, G.DirObj, nil)
 	return true
 }
 
@@ -62,12 +62,12 @@ func VClimbUp(arg ActArg) bool {
 }
 
 func VClimbFcn(dir string, obj *Object) bool {
-	if obj != nil && DirObj != &Rooms {
-		obj = DirObj
+	if obj != nil && G.DirObj != &Rooms {
+		obj = G.DirObj
 	}
-	if tx := Here.GetDir(dir); tx != nil {
+	if tx := G.Here.GetDir(dir); tx != nil {
 		if obj != nil {
-			if len(tx.NExit) > 0 || ((tx.CExit != nil || tx.DExit != nil || tx.UExit) && !IsInGlobal(DirObj, tx.RExit)) {
+			if len(tx.NExit) > 0 || ((tx.CExit != nil || tx.DExit != nil || tx.UExit) && !IsInGlobal(G.DirObj, tx.RExit)) {
 				Print("The ", NoNewline)
 				PrintObject(obj)
 				Print(" do", NoNewline)
@@ -87,11 +87,11 @@ func VClimbFcn(dir string, obj *Object) bool {
 		DoWalk(dir)
 		return true
 	}
-	if obj != nil && DirObj.Is("wall") {
+	if obj != nil && G.DirObj.Is("wall") {
 		Print("Climbing the walls is to no avail.", Newline)
 		return true
 	}
-	if Here != &Path && (obj == nil || obj == &Tree) && IsInGlobal(&Tree, Here) {
+	if G.Here != &Path && (obj == nil || obj == &Tree) && IsInGlobal(&Tree, G.Here) {
 		Print("There are no climbable trees here.", Newline)
 		return true
 	}
@@ -104,18 +104,18 @@ func VClimbFcn(dir string, obj *Object) bool {
 }
 
 func VDisembark(arg ActArg) bool {
-	loc := Winner.Location()
-	if DirObj == &Rooms && loc.Has(FlgVeh) {
+	loc := G.Winner.Location()
+	if G.DirObj == &Rooms && loc.Has(FlgVeh) {
 		Perform(ActionVerb{Norm: "disembark", Orig: "disembark"}, loc, nil)
 		return true
 	}
-	if loc != DirObj {
+	if loc != G.DirObj {
 		Print("You're not in that!", Newline)
 		return RFatal()
 	}
-	if Here.Has(FlgLand) {
+	if G.Here.Has(FlgLand) {
 		Print("You are on your own feet again.", Newline)
-		Winner.MoveTo(Here)
+		G.Winner.MoveTo(G.Here)
 		return true
 	}
 	Print("You realize that getting out here would be fatal.", Newline)
@@ -127,12 +127,12 @@ func VEnter(arg ActArg) bool {
 }
 
 func VExit(arg ActArg) bool {
-	if (DirObj == nil || DirObj == &Rooms) && Winner.Location().Has(FlgVeh) {
-		Perform(ActionVerb{Norm: "disembark", Orig: "disembark"}, Winner.Location(), nil)
+	if (G.DirObj == nil || G.DirObj == &Rooms) && G.Winner.Location().Has(FlgVeh) {
+		Perform(ActionVerb{Norm: "disembark", Orig: "disembark"}, G.Winner.Location(), nil)
 		return true
 	}
-	if DirObj != nil && Winner.IsIn(DirObj) {
-		Perform(ActionVerb{Norm: "disembark", Orig: "disembark"}, DirObj, nil)
+	if G.DirObj != nil && G.Winner.IsIn(G.DirObj) {
+		Perform(ActionVerb{Norm: "disembark", Orig: "disembark"}, G.DirObj, nil)
 		return true
 	}
 	return DoWalk("out")
@@ -144,26 +144,26 @@ func VFollow(arg ActArg) bool {
 }
 
 func VLeap(arg ActArg) bool {
-	if DirObj != nil {
-		if !DirObj.IsIn(Here) {
+	if G.DirObj != nil {
+		if !G.DirObj.IsIn(G.Here) {
 			Print("That would be a good trick.", Newline)
 			return true
 		}
-		if DirObj.Has(FlgPerson) {
+		if G.DirObj.Has(FlgPerson) {
 			Print("The ", NoNewline)
-			PrintObject(DirObj)
+			PrintObject(G.DirObj)
 			Print(" is too big to jump over.", Newline)
 			return true
 		}
 		return VSkip(ActUnk)
 	}
-	tx := Here.GetDir("down")
+	tx := G.Here.GetDir("down")
 	if tx.IsSet() {
 		if len(tx.NExit) > 0 || (tx.CExit != nil && !tx.CExit()) {
 			Print("This was not a very safe place to try jumping.", Newline)
 			return JigsUp(PickOne(JumpLoss), false)
 		}
-		if Here == &UpATree {
+		if G.Here == &UpATree {
 			Print("In a feat of unaccustomed daring, you manage to land on your feet without killing yourself.", Newline)
 			NewLine()
 			DoWalk("down")
@@ -178,7 +178,7 @@ func VLeave(arg ActArg) bool {
 }
 
 func VStand(arg ActArg) bool {
-	loc := Winner.Location()
+	loc := G.Winner.Location()
 	if !loc.Has(FlgVeh) {
 		Print("You are already standing, I think.", Newline)
 		return true
@@ -193,13 +193,13 @@ func VStay(arg ActArg) bool {
 }
 
 func VSwim(arg ActArg) bool {
-	if !IsInGlobal(&GlobalWater, Here) {
+	if !IsInGlobal(&GlobalWater, G.Here) {
 		Print("Go jump in a lake!", Newline)
 		return true
 	}
 	Print("Swimming isn't usually allowed in the ", NoNewline)
-	if DirObj != &Water && DirObj != &GlobalWater {
-		PrintObject(DirObj)
+	if G.DirObj != &Water && G.DirObj != &GlobalWater {
+		PrintObject(G.DirObj)
 		Print(".", Newline)
 		return true
 	}
@@ -212,22 +212,22 @@ func VThrough(arg ActArg) bool {
 }
 
 func Through(obj *Object) bool {
-	m := OtherSide(DirObj)
-	if DirObj.Has(FlgDoor) && len(m) > 0 {
+	m := OtherSide(G.DirObj)
+	if G.DirObj.Has(FlgDoor) && len(m) > 0 {
 		DoWalk(m)
 		return true
 	}
-	if obj != nil && DirObj.Has(FlgVeh) {
-		Perform(ActionVerb{Norm: "board", Orig: "board"}, DirObj, nil)
+	if obj != nil && G.DirObj.Has(FlgVeh) {
+		Perform(ActionVerb{Norm: "board", Orig: "board"}, G.DirObj, nil)
 		return true
 	}
-	if obj != nil || !DirObj.Has(FlgTake) {
+	if obj != nil || !G.DirObj.Has(FlgTake) {
 		Print("You hit your head against the ", NoNewline)
-		PrintObject(DirObj)
+		PrintObject(G.DirObj)
 		Print(" as you attempt this feat.", Newline)
 		return true
 	}
-	if DirObj.IsIn(Winner) {
+	if G.DirObj.IsIn(G.Winner) {
 		Print("That would involve quite a contortion!", Newline)
 		return true
 	}
@@ -238,7 +238,7 @@ func Through(obj *Object) bool {
 func OtherSide(dobj *Object) string {
 	dirs := []string{"north", "east", "west", "south", "northeast", "northwest", "southeast", "southwest", "up", "down", "in", "out", "land"}
 	for _, d := range dirs {
-		dirObj := Here.GetDir(d)
+		dirObj := G.Here.GetDir(d)
 		if dirObj == nil {
 			continue
 		}
@@ -250,14 +250,14 @@ func OtherSide(dobj *Object) string {
 }
 
 func VWalk(arg ActArg) bool {
-	if len(Params.WalkDir) == 0 {
-		Perform(ActionVerb{Norm: "walk to", Orig: "walk to"}, DirObj, nil)
+	if len(G.Params.WalkDir) == 0 {
+		Perform(ActionVerb{Norm: "walk to", Orig: "walk to"}, G.DirObj, nil)
 		return true
 	}
-	props := Here.GetDir(Params.WalkDir)
+	props := G.Here.GetDir(G.Params.WalkDir)
 	if props == nil {
-		if !Lit && Prob(80, false) && Winner == &Adventurer && !Here.Has(FlgNonLand) {
-			if IsSprayed {
+		if !G.Lit && Prob(80, false) && G.Winner == &Adventurer && !G.Here.Has(FlgNonLand) {
+			if G.IsSprayed {
 				Print("There are odd noises in the darkness, and there is no exit in that direction.", Newline)
 				return RFatal()
 			}
@@ -318,7 +318,7 @@ func VWalkAround(arg ActArg) bool {
 }
 
 func VWalkTo(arg ActArg) bool {
-	if DirObj != nil && (DirObj.IsIn(Here) || IsInGlobal(DirObj, Here)) {
+	if G.DirObj != nil && (G.DirObj.IsIn(G.Here) || IsInGlobal(G.DirObj, G.Here)) {
 		Print("It's here!", Newline)
 		return true
 	}
@@ -327,7 +327,7 @@ func VWalkTo(arg ActArg) bool {
 }
 
 func DoWalk(dir string) bool {
-	Params.WalkDir = dir
+	G.Params.WalkDir = dir
 	dirObj := ToDirObj(dir)
 	if Perform(ActionVerb{Norm: "walk", Orig: "walk"}, dirObj, nil) == PerfHndld {
 		return true
@@ -347,10 +347,10 @@ func NoGoTell(av Flags, wloc *Object) {
 
 func Goto(rm *Object, isV bool) bool {
 	lb := rm.Has(FlgLand) || rm.Has(FlgRLand)
-	wloc := Winner.Location()
+	wloc := G.Winner.Location()
 	var av Flags
-	olit := Lit
-	ohere := Here
+	olit := G.Lit
+	ohere := G.Here
 	if wloc.Has(FlgVeh) {
 		av = wloc.VehType
 	}
@@ -362,7 +362,7 @@ func Goto(rm *Object, isV bool) bool {
 		NoGoTell(av, wloc)
 		return false
 	}
-	if Here.Has(FlgLand) && lb && av != FlgUnk && av != FlgLand && !rm.Has(av) {
+	if G.Here.Has(FlgLand) && lb && av != FlgUnk && av != FlgLand && !rm.Has(av) {
 		NoGoTell(av, wloc)
 		return false
 	}
@@ -370,7 +370,7 @@ func Goto(rm *Object, isV bool) bool {
 		Print(rm.LongDesc, Newline)
 		return false
 	}
-	if lb && !Here.Has(FlgLand) && !Dead && wloc.Has(FlgVeh) {
+	if lb && !G.Here.Has(FlgLand) && !G.Dead && wloc.Has(FlgVeh) {
 		Print("The ", NoNewline)
 		PrintObject(wloc)
 		Print(" comes to a rest on the shore.", Newline)
@@ -379,15 +379,15 @@ func Goto(rm *Object, isV bool) bool {
 	if av != FlgUnk {
 		wloc.MoveTo(rm)
 	} else {
-		Winner.MoveTo(rm)
+		G.Winner.MoveTo(rm)
 	}
-	Here = rm
-	Lit = IsLit(Here, true)
-	if !olit && !Lit && Prob(80, false) {
-		if !IsSprayed {
+	G.Here = rm
+	G.Lit = IsLit(G.Here, true)
+	if !olit && !G.Lit && Prob(80, false) {
+		if !G.IsSprayed {
 			Print("Oh, no! A lurking grue slithered into the ", NoNewline)
-			if Winner.Location().Has(FlgVeh) {
-				PrintObject(Winner.Location())
+			if G.Winner.Location().Has(FlgVeh) {
+				PrintObject(G.Winner.Location())
 			} else {
 				Print("room", NoNewline)
 			}
@@ -396,28 +396,28 @@ func Goto(rm *Object, isV bool) bool {
 		}
 		Print("There are sinister gurgling noises in the darkness all around you!", Newline)
 	}
-	if !Lit && Winner == &Adventurer {
+	if !G.Lit && G.Winner == &Adventurer {
 		Print("You have moved into a dark place.", Newline)
-		Params.Continue = NumUndef
+		G.Params.Continue = NumUndef
 	}
-	if Here.Action != nil {
-		Here.Action(ActEnter)
+	if G.Here.Action != nil {
+		G.Here.Action(ActEnter)
 	}
 	ScoreObj(rm)
 	// If the room's enter action teleported the player elsewhere, stop here.
-	if Here != rm {
+	if G.Here != rm {
 		return true
 	}
-	if Winner != &Adventurer && Adventurer.IsIn(ohere) {
+	if G.Winner != &Adventurer && Adventurer.IsIn(ohere) {
 		Print("The ", NoNewline)
-		PrintObject(Winner)
+		PrintObject(G.Winner)
 		Print(" leaves the room.", Newline)
 		return true
 	}
-	if Here == ohere && Here == &EnteranceToHades {
+	if G.Here == ohere && G.Here == &EnteranceToHades {
 		return true
 	}
-	if isV && Winner == &Adventurer {
+	if isV && G.Winner == &Adventurer {
 		VFirstLook(ActUnk)
 	}
 	return true

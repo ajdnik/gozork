@@ -4,28 +4,28 @@ import "encoding/binary"
 
 
 func VVerbose(arg ActArg) bool {
-	Verbose = true
-	SuperBrief = false
+	G.Verbose = true
+	G.SuperBrief = false
 	Print("Maximum verbosity.", Newline)
 	return true
 }
 
 func VBrief(arg ActArg) bool {
-	Verbose = false
-	SuperBrief = false
+	G.Verbose = false
+	G.SuperBrief = false
 	Print("Brief descriptions.", Newline)
 	return true
 }
 
 func VSuperBrief(arg ActArg) bool {
-	SuperBrief = true
+	G.SuperBrief = true
 	Print("Superbrief descriptions.", Newline)
 	return true
 }
 
 func VInventory(arg ActArg) bool {
-	if Winner.HasChildren() {
-		return PrintCont(Winner, false, 0)
+	if G.Winner.HasChildren() {
+		return PrintCont(G.Winner, false, 0)
 	}
 	Print("You are empty-handed.", Newline)
 	return true
@@ -36,7 +36,7 @@ func VRestart(arg ActArg) bool {
 	Print("Do you wish to restart? (Y is affirmative): ", NoNewline)
 	if IsYes() {
 		Print("Restarting.", Newline)
-		if Restart() {
+		if G.Restart() {
 			VVersion(ActUnk)
 			NewLine()
 			VFirstLook(ActUnk)
@@ -49,7 +49,7 @@ func VRestart(arg ActArg) bool {
 }
 
 func VRestore(arg ActArg) bool {
-	if Restore() {
+	if G.Restore() {
 		Print("Ok.", Newline)
 		return VFirstLook(ActUnk)
 	}
@@ -58,7 +58,7 @@ func VRestore(arg ActArg) bool {
 }
 
 func VSave(arg ActArg) bool {
-	if Save() {
+	if G.Save() {
 		Print("Ok.", Newline)
 		return true
 	}
@@ -69,7 +69,7 @@ func VSave(arg ActArg) bool {
 func VScript(arg ActArg) bool {
 	// This code turns on the first bit in the 8th word from the beginning
 	// Put(0, 8, Bor(Get(0, 8), 1))
-	Script = true
+	G.Script = true
 	Print("Here begins a transcript of interaction with", Newline)
 	VVersion(ActUnk)
 	return true
@@ -80,7 +80,7 @@ func VUnscript(arg ActArg) bool {
 	VVersion(ActUnk)
 	// This code turns off the first bit in the 8th word from the beginning
 	// Put(0, 8, Band(Get(0, 8), -2))
-	Script = false
+	G.Script = false
 	return true
 }
 
@@ -162,7 +162,7 @@ func Wait(num int) bool {
 	for i := num; i > 0; i-- {
 		Clocker()
 	}
-	ClockWait = true
+	G.ClockWait = true
 	return true
 }
 
@@ -203,13 +203,13 @@ func Finish() bool {
 		}
 		wrd := lex[0]
 		if wrd.Norm == "restart" {
-			if !Restart() {
+			if !G.Restart() {
 				Print("Failed.", Newline)
 			}
 			return true
 		}
 		if wrd.Norm == "restore" {
-			if Restore() {
+			if G.Restore() {
 				Print("Ok.", Newline)
 				return true
 			}

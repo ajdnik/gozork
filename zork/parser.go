@@ -123,124 +123,104 @@ type ActionVerb struct {
 	Orig string
 }
 
-var (
-	DirObj            *Object
-	IndirObj          *Object
-	ActVerb           ActionVerb
-	DirObjPossibles   []*Object
-	IndirObjPossibles []*Object
-	Winner            *Object
-	Here              *Object
-	AlwaysLit         bool
-	Search            FindProps
-	ParsedSyntx       ParseTbl
-	OrphanedSyntx     ParseTbl
-	Params            ParseProps
-	DetectedSyntx     *Syntx
-	NotHere           NotHereProps
-	LexRes            []LexItm
-	Reserv            ReserveProps
-	Again             AgainProps
-	Oops              OopsProps
-)
 
 func Parse() bool {
-	if Params.ShldOrphan {
-		OrphanedSyntx.Set(ParsedSyntx)
+	if G.Params.ShldOrphan {
+		G.OrphanedSyntx.Set(G.ParsedSyntx)
 	}
-	ParsedSyntx.Clear()
-	bakWin := Winner
-	bakMerg := Params.HasMerged
-	Params.HasMerged = false
-	Params.EndOnPrep = false
-	Params.Buts = []*Object{}
-	DirObjPossibles = []*Object{}
-	IndirObjPossibles = []*Object{}
-	if !Params.InQuotes && Winner != Player {
-		Winner = Player
-		Here = MetaLoc(Player)
-		Lit = IsLit(Here, true)
+	G.ParsedSyntx.Clear()
+	bakWin := G.Winner
+	bakMerg := G.Params.HasMerged
+	G.Params.HasMerged = false
+	G.Params.EndOnPrep = false
+	G.Params.Buts = []*Object{}
+	G.DirObjPossibles = []*Object{}
+	G.IndirObjPossibles = []*Object{}
+	if !G.Params.InQuotes && G.Winner != G.Player {
+		G.Winner = G.Player
+		G.Here = MetaLoc(G.Player)
+		G.Lit = IsLit(G.Here, true)
 	}
 	beg := 0
-	if Reserv.IdxSet {
-		beg = Reserv.Idx
-		LexRes = append([]LexItm{}, Reserv.Buf...)
-		if !SuperBrief && Player == Winner {
+	if G.Reserv.IdxSet {
+		beg = G.Reserv.Idx
+		G.LexRes = append([]LexItm{}, G.Reserv.Buf...)
+		if !G.SuperBrief && G.Player == G.Winner {
 			NewLine()
 		}
-		Reserv.IdxSet = false
-		Reserv.Buf = nil
-		Params.Continue = NumUndef
-	} else if Params.Continue != NumUndef {
-		beg = Params.Continue
-		if !SuperBrief && Player == Winner && ActVerb.Norm != "say" {
+		G.Reserv.IdxSet = false
+		G.Reserv.Buf = nil
+		G.Params.Continue = NumUndef
+	} else if G.Params.Continue != NumUndef {
+		beg = G.Params.Continue
+		if !G.SuperBrief && G.Player == G.Winner && G.ActVerb.Norm != "say" {
 			NewLine()
 		}
-		Params.Continue = NumUndef
+		G.Params.Continue = NumUndef
 	} else {
-		Winner = Player
-		Params.InQuotes = false
-		if l := Winner.Location(); !l.Has(FlgVeh) {
-			Here = l
+		G.Winner = G.Player
+		G.Params.InQuotes = false
+		if l := G.Winner.Location(); !l.Has(FlgVeh) {
+			G.Here = l
 		}
-		Lit = IsLit(Here, true)
-		if !SuperBrief {
+		G.Lit = IsLit(G.Here, true)
+		if !G.SuperBrief {
 			NewLine()
 		}
 		Print(">", NoNewline)
-		_, LexRes = Read()
+		_, G.LexRes = Read()
 	}
-	Params.BufLen = len(LexRes)
-	if Params.BufLen == 0 {
+	G.Params.BufLen = len(G.LexRes)
+	if G.Params.BufLen == 0 {
 		Print("I beg your pardon?", Newline)
 		return false
 	}
-	if LexRes[beg].Is("oops") {
-		if Params.BufLen > beg+1 && LexRes[beg+1].IsAny(".", ",") {
+	if G.LexRes[beg].Is("oops") {
+		if G.Params.BufLen > beg+1 && G.LexRes[beg+1].IsAny(".", ",") {
 			beg++
-			Params.BufLen--
+			G.Params.BufLen--
 		}
-		if Params.BufLen <= 1 {
+		if G.Params.BufLen <= 1 {
 			Print("I can't help your clumsiness.", Newline)
 			return false
 		}
-		if Oops.UnkSet {
-			if Params.BufLen > beg+1 && LexRes[beg+1].Is("\"") {
+		if G.Oops.UnkSet {
+			if G.Params.BufLen > beg+1 && G.LexRes[beg+1].Is("\"") {
 				Print("Sorry, you can't correct mistakes in quoted text.", Newline)
 				return false
 			}
-			if Params.BufLen > beg+2 {
+			if G.Params.BufLen > beg+2 {
 				Print("Warning: only the first word after OOPS is used.", Newline)
 			}
-			Again.Buf[Oops.Unk].Set(LexRes[beg+1])
-			Winner = bakWin
-			LexRes = append([]LexItm{}, Again.Buf...)
-			Params.BufLen = len(LexRes)
-			beg = Oops.Idx
+			G.Again.Buf[G.Oops.Unk].Set(G.LexRes[beg+1])
+			G.Winner = bakWin
+			G.LexRes = append([]LexItm{}, G.Again.Buf...)
+			G.Params.BufLen = len(G.LexRes)
+			beg = G.Oops.Idx
 		} else {
 			Print("There was no word to replace!", Newline)
 			return false
 		}
-	} else if !LexRes[beg].IsAny("again", "g") {
-		Params.Number = 0
+	} else if !G.LexRes[beg].IsAny("again", "g") {
+		G.Params.Number = 0
 	}
 	var dir string
-	if LexRes[beg].IsAny("again", "g") {
-		if len(Again.Buf) == 0 {
+	if G.LexRes[beg].IsAny("again", "g") {
+		if len(G.Again.Buf) == 0 {
 			Print("Beg pardon?", Newline)
 			return false
 		}
-		if Params.ShldOrphan {
+		if G.Params.ShldOrphan {
 			Print("It's difficult to repeat fragments.", Newline)
 			return false
 		}
-		if !ParserOk {
+		if !G.ParserOk {
 			Print("That would just repeat a mistake.", Newline)
 			return false
 		}
-		tmpLen := len(LexRes)
-		if Params.BufLen > beg+1 {
-			if !LexRes[beg+1].IsAny(".", ",", "then", "and") {
+		tmpLen := len(G.LexRes)
+		if G.Params.BufLen > beg+1 {
+			if !G.LexRes[beg+1].IsAny(".", ",", "then", "and") {
 				Print("I couldn't understand that sentence.", Newline)
 				return false
 			}
@@ -251,58 +231,58 @@ func Parse() bool {
 			tmpLen--
 		}
 		if tmpLen > 0 {
-			Reserv.Idx = beg
-			Reserv.IdxSet = true
-			Reserv.Buf = append([]LexItm{}, LexRes...)
+			G.Reserv.Idx = beg
+			G.Reserv.IdxSet = true
+			G.Reserv.Buf = append([]LexItm{}, G.LexRes...)
 		} else {
-			Reserv.IdxSet = false
+			G.Reserv.IdxSet = false
 		}
-		Winner = bakWin
-		Params.HasMerged = bakMerg
-		LexRes = append([]LexItm{}, Again.Buf...)
-		dir = Again.Dir
-		ParsedSyntx.Set(OrphanedSyntx)
+		G.Winner = bakWin
+		G.Params.HasMerged = bakMerg
+		G.LexRes = append([]LexItm{}, G.Again.Buf...)
+		dir = G.Again.Dir
+		G.ParsedSyntx.Set(G.OrphanedSyntx)
 	} else {
-		Again.Buf = append([]LexItm{}, LexRes...)
-		Oops.Idx = beg
-		Reserv.IdxSet = false
-		Params.ObjOrClauseCnt = 0
-		Params.GetType = GetUndef
-		ln := Params.BufLen
+		G.Again.Buf = append([]LexItm{}, G.LexRes...)
+		G.Oops.Idx = beg
+		G.Reserv.IdxSet = false
+		G.Params.ObjOrClauseCnt = 0
+		G.Params.GetType = GetUndef
+		ln := G.Params.BufLen
 		var lw, nw LexItm
 		var vrb string
 		var isOf bool
-		Params.BufLen--
-		for i := beg; Params.BufLen > -1; i, Params.BufLen = i+1, Params.BufLen-1 {
+		G.Params.BufLen--
+		for i := beg; G.Params.BufLen > -1; i, G.Params.BufLen = i+1, G.Params.BufLen-1 {
 			HandleNumber(i)
-			wrd := LexRes[i]
+			wrd := G.LexRes[i]
 			if wrd.Types == nil && !wrd.Is("intnum") {
 				UnknownWord(i)
 				return false
 			}
-			if Params.BufLen == 0 {
+			if G.Params.BufLen == 0 {
 				nw.Clear()
 			} else {
-				nw.Set(LexRes[i+1])
+				nw.Set(G.LexRes[i+1])
 			}
 			if wrd.Is("to") && vrb == "tell" {
 				wrd.Set(mkBuzz("\""))
-			} else if wrd.Is("then") && Params.BufLen > 0 && len(vrb) == 0 && !Params.InQuotes {
+			} else if wrd.Is("then") && G.Params.BufLen > 0 && len(vrb) == 0 && !G.Params.InQuotes {
 				if !lw.IsSet() || lw.Is(".") {
 					wrd.Set(mkBuzz("the"))
 				} else {
-					ParsedSyntx.Verb.Norm = "tell"
-					ParsedSyntx.Verb.Orig = "tell"
-					ParsedSyntx.Verb.Types = WordTypes{WordVerb}
+					G.ParsedSyntx.Verb.Norm = "tell"
+					G.ParsedSyntx.Verb.Orig = "tell"
+					G.ParsedSyntx.Verb.Types = WordTypes{WordVerb}
 					wrd.Set(mkBuzz("\""))
 				}
 			}
 			if wrd.IsAny("then", ".", "\"") {
 				if wrd.Is("\"") {
-					Params.InQuotes = !Params.InQuotes
+					G.Params.InQuotes = !G.Params.InQuotes
 				}
-				if Params.BufLen != 0 {
-					Params.Continue = i + 1
+				if G.Params.BufLen != 0 {
+					G.Params.Continue = i + 1
 				}
 				break
 			} else if wrd.Types.Has(WordDir) &&
@@ -310,38 +290,38 @@ func Parse() bool {
 				(ln == 1 ||
 					(ln == 2 && vrb == "walk") ||
 					(nw.IsAny("then", ".", "\"") && ln >= 2) ||
-					(Params.InQuotes && ln == 2 && nw.Is("\"")) ||
+					(G.Params.InQuotes && ln == 2 && nw.Is("\"")) ||
 					(ln > 2 && nw.IsAny(",", "and"))) {
 				dir = wrd.Norm
 				if nw.IsAny(",", "and") {
-					LexRes[i+1].Set(mkBuzz("then"))
+					G.LexRes[i+1].Set(mkBuzz("then"))
 				}
 				if ln <= 2 {
-					Params.InQuotes = false
+					G.Params.InQuotes = false
 					break
 				}
 			} else if wrd.Types.Has(WordVerb) && len(vrb) == 0 {
 				vrb = wrd.Norm
-				ParsedSyntx.Verb.Set(wrd)
+				G.ParsedSyntx.Verb.Set(wrd)
 			} else if wrd.Types.Has(WordPrep) || wrd.IsAny("all", "one") || wrd.Types.Has(WordAdj) || wrd.Types.Has(WordObj) {
-				if Params.BufLen > 1 && nw.Is("of") && !wrd.Types.Has(WordPrep) && !wrd.IsAny("all", "one", "a") {
+				if G.Params.BufLen > 1 && nw.Is("of") && !wrd.Types.Has(WordPrep) && !wrd.IsAny("all", "one", "a") {
 					isOf = true
-				} else if wrd.Types.Has(WordPrep) && (Params.BufLen == 0 || nw.IsAny("then", ".")) {
-					Params.EndOnPrep = true
-					if Params.ObjOrClauseCnt < 2 {
-						ParsedSyntx.Prep1.Set(wrd)
+				} else if wrd.Types.Has(WordPrep) && (G.Params.BufLen == 0 || nw.IsAny("then", ".")) {
+					G.Params.EndOnPrep = true
+					if G.Params.ObjOrClauseCnt < 2 {
+						G.ParsedSyntx.Prep1.Set(wrd)
 					}
-				} else if Params.ObjOrClauseCnt == 2 {
+				} else if G.Params.ObjOrClauseCnt == 2 {
 					Print("There were too many nouns in that sentence.", Newline)
 					return false
 				} else {
-					Params.ObjOrClauseCnt++
+					G.Params.ObjOrClauseCnt++
 					ok, i := Clause(i, wrd)
 					if !ok {
 						return false
 					}
 					if i < 0 {
-						Params.InQuotes = false
+						G.Params.InQuotes = false
 						break
 					}
 				}
@@ -354,7 +334,7 @@ func Parse() bool {
 			} else if wrd.Types.Has(WordBuzz) {
 				lw.Set(wrd)
 				continue
-			} else if vrb == "tell" && wrd.Types.Has(WordVerb) && Winner == Player {
+			} else if vrb == "tell" && wrd.Types.Has(WordVerb) && G.Winner == G.Player {
 				Print("Please consult your manual for the correct way to talk to other people or creatures.", Newline)
 				return false
 			} else {
@@ -363,24 +343,24 @@ func Parse() bool {
 			}
 			lw.Set(wrd)
 		}
-		if Params.BufLen < 1 {
-			Params.InQuotes = false
+		if G.Params.BufLen < 1 {
+			G.Params.InQuotes = false
 		}
 	}
-	Oops.UnkSet = false
+	G.Oops.UnkSet = false
 	if len(dir) != 0 {
-		ActVerb.Norm = "walk"
-		ActVerb.Orig = "walk"
-		DirObj = ToDirObj(dir)
-		Params.ShldOrphan = false
-		Params.WalkDir = dir
-		Again.Dir = dir
+		G.ActVerb.Norm = "walk"
+		G.ActVerb.Orig = "walk"
+		G.DirObj = ToDirObj(dir)
+		G.Params.ShldOrphan = false
+		G.Params.WalkDir = dir
+		G.Again.Dir = dir
 	} else {
-		if Params.ShldOrphan {
+		if G.Params.ShldOrphan {
 			OrphanMerge()
 		}
-		Params.WalkDir = ""
-		Again.Dir = ""
+		G.Params.WalkDir = ""
+		G.Again.Dir = ""
 		if !SyntaxCheck() {
 			return false
 		}
@@ -407,57 +387,57 @@ func mkBuzz(wrd string) LexItm {
 
 func Clause(idx int, wrd LexItm) (bool, int) {
 	if wrd.Types.Has(WordPrep) {
-		if Params.ObjOrClauseCnt == 1 {
-			ParsedSyntx.Prep1.Set(wrd)
-		} else if Params.ObjOrClauseCnt == 2 {
-			ParsedSyntx.Prep2.Set(wrd)
+		if G.Params.ObjOrClauseCnt == 1 {
+			G.ParsedSyntx.Prep1.Set(wrd)
+		} else if G.Params.ObjOrClauseCnt == 2 {
+			G.ParsedSyntx.Prep2.Set(wrd)
 		}
 		idx++
 	} else {
-		Params.BufLen++
+		G.Params.BufLen++
 	}
-	if Params.BufLen == 0 {
-		Params.ObjOrClauseCnt--
+	if G.Params.BufLen == 0 {
+		G.Params.ObjOrClauseCnt--
 		return true, -1
 	}
 	cpyStart := idx
-	if LexRes[idx].IsAny("the", "a", "an") {
+	if G.LexRes[idx].IsAny("the", "a", "an") {
 		cpyStart++
 	}
 	var lw, nw LexItm
 	isFirst := true
 	var isAnd bool
 	var i int
-	Params.BufLen--
-	for i = idx; Params.BufLen > -1; i, Params.BufLen = i+1, Params.BufLen-1 {
+	G.Params.BufLen--
+	for i = idx; G.Params.BufLen > -1; i, G.Params.BufLen = i+1, G.Params.BufLen-1 {
 		HandleNumber(i)
-		cw := LexRes[i]
+		cw := G.LexRes[i]
 		if cw.Types == nil && !cw.Is("intnum") {
 			UnknownWord(i)
 			return false, -1
 		}
-		if Params.BufLen == 0 {
+		if G.Params.BufLen == 0 {
 			nw.Clear()
 		} else {
-			nw.Set(LexRes[i+1])
+			nw.Set(G.LexRes[i+1])
 		}
 		if cw.IsAny("and", ",") {
 			isAnd = true
 		} else if cw.IsAny("and", ",") {
 			if nw.Is("of") {
-				Params.BufLen--
+				G.Params.BufLen--
 				i++
 			}
-		} else if cw.IsAny("then", ".") || (cw.Types.Has(WordPrep) && ParsedSyntx.Verb.IsSet() && !isFirst) {
-			Params.BufLen++
-			if Params.ObjOrClauseCnt == 1 {
-				ParsedSyntx.ObjOrClause1 = append([]LexItm{}, LexRes[cpyStart:i]...)
-			} else if Params.ObjOrClauseCnt == 2 {
-				ParsedSyntx.ObjOrClause2 = append([]LexItm{}, LexRes[cpyStart:i]...)
+		} else if cw.IsAny("then", ".") || (cw.Types.Has(WordPrep) && G.ParsedSyntx.Verb.IsSet() && !isFirst) {
+			G.Params.BufLen++
+			if G.Params.ObjOrClauseCnt == 1 {
+				G.ParsedSyntx.ObjOrClause1 = append([]LexItm{}, G.LexRes[cpyStart:i]...)
+			} else if G.Params.ObjOrClauseCnt == 2 {
+				G.ParsedSyntx.ObjOrClause2 = append([]LexItm{}, G.LexRes[cpyStart:i]...)
 			}
 			return true, i - 1
 		} else if cw.Types.Has(WordObj) {
-			if Params.BufLen > 0 && nw.Is("of") && !cw.IsAny("all", "one") {
+			if G.Params.BufLen > 0 && nw.Is("of") && !cw.IsAny("all", "one") {
 				lw.Set(cw)
 				isFirst = false
 				continue
@@ -468,23 +448,23 @@ func Clause(idx int, wrd LexItm) (bool, int) {
 				continue
 			}
 			if !isAnd && !nw.IsAny("but", "except", "and", ",") {
-				if Params.ObjOrClauseCnt == 1 {
-					ParsedSyntx.ObjOrClause1 = append([]LexItm{}, LexRes[cpyStart:i+1]...)
-				} else if Params.ObjOrClauseCnt == 2 {
-					ParsedSyntx.ObjOrClause2 = append([]LexItm{}, LexRes[cpyStart:i+1]...)
+				if G.Params.ObjOrClauseCnt == 1 {
+					G.ParsedSyntx.ObjOrClause1 = append([]LexItm{}, G.LexRes[cpyStart:i+1]...)
+				} else if G.Params.ObjOrClauseCnt == 2 {
+					G.ParsedSyntx.ObjOrClause2 = append([]LexItm{}, G.LexRes[cpyStart:i+1]...)
 				}
 				return true, i
 			}
 			isAnd = true
-		} else if (Params.HasMerged || Params.ShldOrphan || ParsedSyntx.Verb.IsSet()) &&
+		} else if (G.Params.HasMerged || G.Params.ShldOrphan || G.ParsedSyntx.Verb.IsSet()) &&
 			(cw.Types.Has(WordAdj) || cw.Types.Has(WordBuzz)) {
 			lw.Set(cw)
 			isFirst = false
 			continue
 		} else if isAnd && (cw.Types.Has(WordDir) || cw.Types.Has(WordVerb)) {
 			i -= 2
-			Params.BufLen += 2
-			LexRes[i].Set(mkBuzz("then"))
+			G.Params.BufLen += 2
+			G.LexRes[i].Set(mkBuzz("then"))
 		} else if cw.Types.Has(WordPrep) {
 			lw.Set(cw)
 			isFirst = false
@@ -496,44 +476,44 @@ func Clause(idx int, wrd LexItm) (bool, int) {
 		lw.Set(cw)
 		isFirst = false
 	}
-	if Params.ObjOrClauseCnt == 1 {
-		ParsedSyntx.ObjOrClause1 = append([]LexItm{}, LexRes[cpyStart:i]...)
-	} else if Params.ObjOrClauseCnt == 2 {
-		ParsedSyntx.ObjOrClause2 = append([]LexItm{}, LexRes[cpyStart:i]...)
+	if G.Params.ObjOrClauseCnt == 1 {
+		G.ParsedSyntx.ObjOrClause1 = append([]LexItm{}, G.LexRes[cpyStart:i]...)
+	} else if G.Params.ObjOrClauseCnt == 2 {
+		G.ParsedSyntx.ObjOrClause2 = append([]LexItm{}, G.LexRes[cpyStart:i]...)
 	}
 	return true, -1
 }
 
 func UnknownWord(idx int) {
-	Oops.UnkSet = true
-	Oops.Unk = idx
-	if ActVerb.Norm == "say" {
+	G.Oops.UnkSet = true
+	G.Oops.Unk = idx
+	if G.ActVerb.Norm == "say" {
 		Print("Nothing happens.", Newline)
 		return
 	}
 	Print("I don't know the word \"", NoNewline)
-	Print(LexRes[idx].Orig, NoNewline)
+	Print(G.LexRes[idx].Orig, NoNewline)
 	Print("\".", Newline)
-	Params.InQuotes = false
-	Params.ShldOrphan = false
+	G.Params.InQuotes = false
+	G.Params.ShldOrphan = false
 }
 
 func CantUse(idx int) {
-	if ActVerb.Norm == "say" {
+	if G.ActVerb.Norm == "say" {
 		Print("Nothing happens.", Newline)
 		return
 	}
 	Print("You used the word \"", NoNewline)
-	Print(LexRes[idx].Orig, NoNewline)
+	Print(G.LexRes[idx].Orig, NoNewline)
 	Print("\" in a way that I don't understand.", Newline)
-	Params.InQuotes = false
-	Params.ShldOrphan = false
+	G.Params.InQuotes = false
+	G.Params.ShldOrphan = false
 }
 
 // HandleNumber converts the lex item pointed
 // to by idx into a number if possible.
 func HandleNumber(idx int) {
-	wrd := LexRes[idx]
+	wrd := G.LexRes[idx]
 	var tim, sum int
 	for _, chr := range wrd.Orig {
 		if chr == 58 {
@@ -547,7 +527,7 @@ func HandleNumber(idx int) {
 			return
 		}
 	}
-	LexRes[idx].Norm = "intnum"
+	G.LexRes[idx].Norm = "intnum"
 	if sum > 1000 {
 		return
 	} else if tim != 0 {
@@ -558,72 +538,72 @@ func HandleNumber(idx int) {
 		}
 		sum = tim*60 + sum
 	}
-	Params.Number = sum
+	G.Params.Number = sum
 }
 
 func OrphanMerge() {
-	Params.ShldOrphan = false
+	G.Params.ShldOrphan = false
 	isAdj := false
-	if ParsedSyntx.Verb.Types.Equals(OrphanedSyntx.Verb.Types) || ParsedSyntx.Verb.Types.Has(WordAdj) {
+	if G.ParsedSyntx.Verb.Types.Equals(G.OrphanedSyntx.Verb.Types) || G.ParsedSyntx.Verb.Types.Has(WordAdj) {
 		isAdj = true
-	} else if ParsedSyntx.Verb.Types.Has(WordObj) && Params.ObjOrClauseCnt == 0 {
-		ParsedSyntx.Verb.Clear()
-		ParsedSyntx.ObjOrClause1 = []LexItm{LexRes[0], LexRes[1]}
-		Params.ObjOrClauseCnt = 1
+	} else if G.ParsedSyntx.Verb.Types.Has(WordObj) && G.Params.ObjOrClauseCnt == 0 {
+		G.ParsedSyntx.Verb.Clear()
+		G.ParsedSyntx.ObjOrClause1 = []LexItm{G.LexRes[0], G.LexRes[1]}
+		G.Params.ObjOrClauseCnt = 1
 	}
-	if ParsedSyntx.Verb.IsSet() && !isAdj && !ParsedSyntx.Verb.Matches(OrphanedSyntx.Verb) {
+	if G.ParsedSyntx.Verb.IsSet() && !isAdj && !G.ParsedSyntx.Verb.Matches(G.OrphanedSyntx.Verb) {
 		return
 	}
-	if Params.ObjOrClauseCnt == 2 {
+	if G.Params.ObjOrClauseCnt == 2 {
 		return
 	}
-	if OrphanedSyntx.ObjOrClause1 != nil && len(OrphanedSyntx.ObjOrClause1) == 0 {
-		if !ParsedSyntx.Prep1.Matches(OrphanedSyntx.Prep1) && ParsedSyntx.Prep1.IsSet() {
+	if G.OrphanedSyntx.ObjOrClause1 != nil && len(G.OrphanedSyntx.ObjOrClause1) == 0 {
+		if !G.ParsedSyntx.Prep1.Matches(G.OrphanedSyntx.Prep1) && G.ParsedSyntx.Prep1.IsSet() {
 			return
 		}
 		if isAdj {
-			if Params.ObjOrClauseCnt == 0 {
-				Params.ObjOrClauseCnt = 1
+			if G.Params.ObjOrClauseCnt == 0 {
+				G.Params.ObjOrClauseCnt = 1
 			}
-			if len(ParsedSyntx.ObjOrClause1) == 0 {
-				OrphanedSyntx.ObjOrClause1 = []LexItm{LexRes[0], LexRes[1]}
+			if len(G.ParsedSyntx.ObjOrClause1) == 0 {
+				G.OrphanedSyntx.ObjOrClause1 = []LexItm{G.LexRes[0], G.LexRes[1]}
 			} else {
-				OrphanedSyntx.ObjOrClause1 = LexRes[0:ParsedSyntx.Obj1End]
+				G.OrphanedSyntx.ObjOrClause1 = G.LexRes[0:G.ParsedSyntx.Obj1End]
 			}
 		} else {
-			OrphanedSyntx.ObjOrClause1 = append([]LexItm{}, ParsedSyntx.ObjOrClause1...)
+			G.OrphanedSyntx.ObjOrClause1 = append([]LexItm{}, G.ParsedSyntx.ObjOrClause1...)
 		}
-	} else if OrphanedSyntx.ObjOrClause2 != nil && len(OrphanedSyntx.ObjOrClause2) == 0 {
-		if !ParsedSyntx.Prep1.Matches(OrphanedSyntx.Prep2) && ParsedSyntx.Prep1.IsSet() {
+	} else if G.OrphanedSyntx.ObjOrClause2 != nil && len(G.OrphanedSyntx.ObjOrClause2) == 0 {
+		if !G.ParsedSyntx.Prep1.Matches(G.OrphanedSyntx.Prep2) && G.ParsedSyntx.Prep1.IsSet() {
 			return
 		}
 		if isAdj {
-			if len(ParsedSyntx.ObjOrClause1) == 0 {
-				OrphanedSyntx.ObjOrClause2 = []LexItm{LexRes[0], LexRes[1]}
+			if len(G.ParsedSyntx.ObjOrClause1) == 0 {
+				G.OrphanedSyntx.ObjOrClause2 = []LexItm{G.LexRes[0], G.LexRes[1]}
 			} else {
-				OrphanedSyntx.ObjOrClause2 = LexRes[0:ParsedSyntx.Obj1End]
+				G.OrphanedSyntx.ObjOrClause2 = G.LexRes[0:G.ParsedSyntx.Obj1End]
 			}
 		} else {
-			OrphanedSyntx.ObjOrClause2 = append([]LexItm{}, ParsedSyntx.ObjOrClause1...)
+			G.OrphanedSyntx.ObjOrClause2 = append([]LexItm{}, G.ParsedSyntx.ObjOrClause1...)
 		}
-		Params.ObjOrClauseCnt = 2
-	} else if Params.AdjClause.Type != ClauseUnk {
-		if Params.ObjOrClauseCnt != 1 && !isAdj {
-			Params.AdjClause.Type = ClauseUnk
+		G.Params.ObjOrClauseCnt = 2
+	} else if G.Params.AdjClause.Type != ClauseUnk {
+		if G.Params.ObjOrClauseCnt != 1 && !isAdj {
+			G.Params.AdjClause.Type = ClauseUnk
 			return
 		}
-		beg := ParsedSyntx.Obj1Start
+		beg := G.ParsedSyntx.Obj1Start
 		if isAdj {
 			beg = 0
 			isAdj = false
 		}
 		var adj LexItm
-		if ParsedSyntx.Obj1End == 0 {
-			ParsedSyntx.Obj1End = 1
+		if G.ParsedSyntx.Obj1End == 0 {
+			G.ParsedSyntx.Obj1End = 1
 		}
 		broken := false
-		for i := beg; i < ParsedSyntx.Obj1End; i++ {
-			wrd := LexRes[i]
+		for i := beg; i < G.ParsedSyntx.Obj1End; i++ {
+			wrd := G.LexRes[i]
 			if !isAdj && (wrd.Types.Has(WordAdj) || wrd.IsAny("all", "one")) {
 				adj.Set(wrd)
 			} else if wrd.Is("one") {
@@ -631,7 +611,7 @@ func OrphanMerge() {
 				broken = true
 				break
 			} else if wrd.Types.Has(WordObj) {
-				if wrd.Matches(Params.AdjClause.Syn) {
+				if wrd.Matches(G.Params.AdjClause.Syn) {
 					AclauseWin(adj)
 				} else {
 					NclauseWin()
@@ -641,60 +621,60 @@ func OrphanMerge() {
 			}
 		}
 		if !broken {
-			if ParsedSyntx.Obj1End == 1 {
-				ParsedSyntx.ObjOrClause1 = []LexItm{LexRes[0]}
-				Params.ObjOrClauseCnt = 1
+			if G.ParsedSyntx.Obj1End == 1 {
+				G.ParsedSyntx.ObjOrClause1 = []LexItm{G.LexRes[0]}
+				G.Params.ObjOrClauseCnt = 1
 			}
 			if !adj.IsSet() {
-				Params.AdjClause.Type = ClauseUnk
+				G.Params.AdjClause.Type = ClauseUnk
 				return
 			}
 			AclauseWin(adj)
 		}
 	}
-	ParsedSyntx.Set(OrphanedSyntx)
-	Params.HasMerged = true
+	G.ParsedSyntx.Set(G.OrphanedSyntx)
+	G.Params.HasMerged = true
 }
 
 func AclauseWin(adj LexItm) {
-	ParsedSyntx.Verb.Set(OrphanedSyntx.Verb)
+	G.ParsedSyntx.Verb.Set(G.OrphanedSyntx.Verb)
 	var tbl *[]LexItm = &[]LexItm{}
-	if Params.AdjClause.Type == Clause1 {
-		tbl = &OrphanedSyntx.ObjOrClause1
-	} else if Params.AdjClause.Type == Clause2 {
-		tbl = &OrphanedSyntx.ObjOrClause2
+	if G.Params.AdjClause.Type == Clause1 {
+		tbl = &G.OrphanedSyntx.ObjOrClause1
+	} else if G.Params.AdjClause.Type == Clause2 {
+		tbl = &G.OrphanedSyntx.ObjOrClause2
 	}
 	for idx, obj := range *tbl {
-		if obj.Matches(Params.AdjClause.Adj) {
+		if obj.Matches(G.Params.AdjClause.Adj) {
 			*tbl = append((*tbl)[0:idx], append([]LexItm{adj}, (*tbl)[idx:len(*tbl)]...)...)
 			break
 		}
 	}
-	if OrphanedSyntx.ObjOrClause2 != nil {
-		Params.ObjOrClauseCnt = 2
+	if G.OrphanedSyntx.ObjOrClause2 != nil {
+		G.Params.ObjOrClauseCnt = 2
 	}
-	Params.AdjClause.Type = ClauseUnk
+	G.Params.AdjClause.Type = ClauseUnk
 }
 
 func NclauseWin() {
-	if Params.AdjClause.Type == Clause1 {
-		OrphanedSyntx.ObjOrClause1 = append([]LexItm{}, ParsedSyntx.ObjOrClause1...)
-		OrphanedSyntx.Obj1Start = ParsedSyntx.Obj1Start
-		OrphanedSyntx.Obj1End = ParsedSyntx.Obj1End
-	} else if Params.AdjClause.Type == Clause2 {
-		OrphanedSyntx.ObjOrClause2 = append([]LexItm{}, ParsedSyntx.ObjOrClause1...)
+	if G.Params.AdjClause.Type == Clause1 {
+		G.OrphanedSyntx.ObjOrClause1 = append([]LexItm{}, G.ParsedSyntx.ObjOrClause1...)
+		G.OrphanedSyntx.Obj1Start = G.ParsedSyntx.Obj1Start
+		G.OrphanedSyntx.Obj1End = G.ParsedSyntx.Obj1End
+	} else if G.Params.AdjClause.Type == Clause2 {
+		G.OrphanedSyntx.ObjOrClause2 = append([]LexItm{}, G.ParsedSyntx.ObjOrClause1...)
 	}
-	if OrphanedSyntx.ObjOrClause2 != nil {
-		Params.ObjOrClauseCnt = 2
+	if G.OrphanedSyntx.ObjOrClause2 != nil {
+		G.Params.ObjOrClauseCnt = 2
 	}
-	Params.AdjClause.Type = ClauseUnk
+	G.Params.AdjClause.Type = ClauseUnk
 }
 
 func TakeCheck() bool {
-	if !ITakeCheck(DirObjPossibles, DetectedSyntx.Obj1.LocFlags) {
+	if !ITakeCheck(G.DirObjPossibles, G.DetectedSyntx.Obj1.LocFlags) {
 		return false
 	}
-	return ITakeCheck(IndirObjPossibles, DetectedSyntx.Obj2.LocFlags)
+	return ITakeCheck(G.IndirObjPossibles, G.DetectedSyntx.Obj2.LocFlags)
 }
 
 func ITakeCheck(tbl []*Object, ibits LocFlags) bool {
@@ -703,25 +683,25 @@ func ITakeCheck(tbl []*Object, ibits LocFlags) bool {
 	}
 	for _, obj := range tbl {
 		if obj == &It {
-			if !IsAccessible(Params.ItObj) {
+			if !IsAccessible(G.Params.ItObj) {
 				Print("I don't see what you're referring to.", Newline)
 				return false
 			}
-			obj = Params.ItObj
+			obj = G.Params.ItObj
 		}
 		var taken bool
 		if !IsHeld(obj) && obj != &Hands && obj != &Me {
-			DirObjPossibles = []*Object{obj}
+			G.DirObjPossibles = []*Object{obj}
 			if obj.Has(FlgTryTake) {
 				taken = true
-			} else if Winner != &Adventurer {
+			} else if G.Winner != &Adventurer {
 				taken = false
 			} else if LocTake.In(ibits) && ITake(false) {
 				taken = false
 			} else {
 				taken = true
 			}
-			if taken && LocHave.In(ibits) && Winner == &Adventurer {
+			if taken && LocHave.In(ibits) && G.Winner == &Adventurer {
 				if obj == &NotHereObject {
 					Print("You don't have that!", Newline)
 					return false
@@ -731,7 +711,7 @@ func ITakeCheck(tbl []*Object, ibits LocFlags) bool {
 				Print(".", Newline)
 				return false
 			}
-			if !taken && Winner == &Adventurer {
+			if !taken && G.Winner == &Adventurer {
 				Print("(Taken)", Newline)
 			}
 		}
@@ -741,9 +721,9 @@ func ITakeCheck(tbl []*Object, ibits LocFlags) bool {
 
 func ManyCheck() bool {
 	loss := 0
-	if len(DirObjPossibles) > 1 && !LocMany.In(DetectedSyntx.Obj1.LocFlags) {
+	if len(G.DirObjPossibles) > 1 && !LocMany.In(G.DetectedSyntx.Obj1.LocFlags) {
 		loss = 1
-	} else if len(IndirObjPossibles) > 1 && !LocMany.In(DetectedSyntx.Obj2.LocFlags) {
+	} else if len(G.IndirObjPossibles) > 1 && !LocMany.In(G.DetectedSyntx.Obj2.LocFlags) {
 		loss = 2
 	}
 	if loss == 0 {
@@ -754,42 +734,42 @@ func ManyCheck() bool {
 		Print("in", NoNewline)
 	}
 	Print("direct objects with \"", NoNewline)
-	if !ParsedSyntx.Verb.IsSet() {
+	if !G.ParsedSyntx.Verb.IsSet() {
 		Print("tell", NoNewline)
-	} else if Params.ShldOrphan || Params.HasMerged {
-		Print(ParsedSyntx.Verb.Norm, NoNewline)
+	} else if G.Params.ShldOrphan || G.Params.HasMerged {
+		Print(G.ParsedSyntx.Verb.Norm, NoNewline)
 	} else {
-		Print(ParsedSyntx.Verb.Orig, NoNewline)
+		Print(G.ParsedSyntx.Verb.Orig, NoNewline)
 	}
 	Print("\".", Newline)
 	return false
 }
 
 func SnarfObjects() bool {
-	Params.Buts = []*Object{}
-	if ParsedSyntx.ObjOrClause2 != nil {
-		Search.LocFlags = DetectedSyntx.Obj2.LocFlags
-		res := Snarfem(false, ParsedSyntx.ObjOrClause2)
+	G.Params.Buts = []*Object{}
+	if G.ParsedSyntx.ObjOrClause2 != nil {
+		G.Search.LocFlags = G.DetectedSyntx.Obj2.LocFlags
+		res := Snarfem(false, G.ParsedSyntx.ObjOrClause2)
 		if res == nil {
 			return false
 		}
-		IndirObjPossibles = append(IndirObjPossibles, res...)
+		G.IndirObjPossibles = append(G.IndirObjPossibles, res...)
 	}
-	if ParsedSyntx.ObjOrClause1 != nil {
-		Search.LocFlags = DetectedSyntx.Obj1.LocFlags
-		res := Snarfem(true, ParsedSyntx.ObjOrClause1)
+	if G.ParsedSyntx.ObjOrClause1 != nil {
+		G.Search.LocFlags = G.DetectedSyntx.Obj1.LocFlags
+		res := Snarfem(true, G.ParsedSyntx.ObjOrClause1)
 		if res == nil {
 			return false
 		}
-		DirObjPossibles = append(DirObjPossibles, res...)
+		G.DirObjPossibles = append(G.DirObjPossibles, res...)
 	}
-	if len(Params.Buts) != 0 {
-		l := len(DirObjPossibles)
-		if len(ParsedSyntx.ObjOrClause1) != 0 {
-			DirObjPossibles = ButMerge(DirObjPossibles)
+	if len(G.Params.Buts) != 0 {
+		l := len(G.DirObjPossibles)
+		if len(G.ParsedSyntx.ObjOrClause1) != 0 {
+			G.DirObjPossibles = ButMerge(G.DirObjPossibles)
 		}
-		if len(ParsedSyntx.ObjOrClause2) != 0 && (len(ParsedSyntx.ObjOrClause1) == 0 || l == len(DirObjPossibles)) {
-			IndirObjPossibles = ButMerge(IndirObjPossibles)
+		if len(G.ParsedSyntx.ObjOrClause2) != 0 && (len(G.ParsedSyntx.ObjOrClause1) == 0 || l == len(G.DirObjPossibles)) {
+			G.IndirObjPossibles = ButMerge(G.IndirObjPossibles)
 		}
 	}
 	return true
@@ -797,7 +777,7 @@ func SnarfObjects() bool {
 
 func ButMerge(tbl []*Object) []*Object {
 	res := []*Object{}
-	for _, bts := range Params.Buts {
+	for _, bts := range G.Params.Buts {
 		for _, obj := range tbl {
 			if obj == bts {
 				res = append(res, obj)
@@ -808,12 +788,12 @@ func ButMerge(tbl []*Object) []*Object {
 }
 
 func Snarfem(isDirect bool, wrds []LexItm) []*Object {
-	Params.HasAnd = false
+	G.Params.HasAnd = false
 	wasall := false
-	if Params.GetType == GetAll {
+	if G.Params.GetType == GetAll {
 		wasall = true
 	}
-	Search.ObjFlags = 0
+	G.Search.ObjFlags = 0
 	res := []*Object{}
 	var but *[]*Object
 	var nw LexItm
@@ -824,7 +804,7 @@ func Snarfem(isDirect bool, wrds []LexItm) []*Object {
 			nw.Clear()
 		}
 		if wrd.Is("all") {
-			Params.GetType = GetAll
+			G.Params.GetType = GetAll
 			if nw.Is("of") {
 				continue
 			}
@@ -838,16 +818,16 @@ func Snarfem(isDirect bool, wrds []LexItm) []*Object {
 			} else {
 				res = append(res, out...)
 			}
-			but = &Params.Buts
+			but = &G.Params.Buts
 			*but = []*Object{}
 		} else if wrd.IsAny("a", "one") {
-			if !Search.Adj.IsSet() {
-				Params.GetType = GetOne
+			if !G.Search.Adj.IsSet() {
+				G.Params.GetType = GetOne
 				if nw.Is("of") {
 					continue
 				}
 			} else {
-				Search.Syn.Set(Params.OneObj)
+				G.Search.Syn.Set(G.Params.OneObj)
 				out := GetObject(isDirect, true)
 				if out == nil {
 					return nil
@@ -862,7 +842,7 @@ func Snarfem(isDirect bool, wrds []LexItm) []*Object {
 				}
 			}
 		} else if wrd.IsAny("and", ",") && !nw.IsAny("and", ",") {
-			Params.HasAnd = true
+			G.Params.HasAnd = true
 			out := GetObject(isDirect, true)
 			if out == nil {
 				return nil
@@ -878,19 +858,19 @@ func Snarfem(isDirect bool, wrds []LexItm) []*Object {
 		} else if wrd.IsAny("and", ",") {
 			continue
 		} else if wrd.Is("of") {
-			if Params.GetType == GetUndef {
-				Params.GetType = GetInhibit
+			if G.Params.GetType == GetUndef {
+				G.Params.GetType = GetInhibit
 			}
-		} else if wrd.Types.Has(WordAdj) && !Search.Adj.IsSet() {
-			Search.Adj.Set(wrd)
+		} else if wrd.Types.Has(WordAdj) && !G.Search.Adj.IsSet() {
+			G.Search.Adj.Set(wrd)
 		} else if wrd.Types.Has(WordObj) {
-			Search.Syn.Set(wrd)
-			Params.OneObj.Set(wrd)
+			G.Search.Syn.Set(wrd)
+			G.Params.OneObj.Set(wrd)
 		}
 	}
 	out := GetObject(isDirect, true)
 	if wasall {
-		Params.GetType = GetAll
+		G.Params.GetType = GetAll
 	}
 	if out == nil {
 		return nil
@@ -906,27 +886,27 @@ func Snarfem(isDirect bool, wrds []LexItm) []*Object {
 // SyntaxCheck tries to find a matching syntax based on
 // the parsed syntax.
 func SyntaxCheck() bool {
-	if !ParsedSyntx.Verb.IsSet() {
+	if !G.ParsedSyntx.Verb.IsSet() {
 		Print("There was no verb in that sentence!", Newline)
 		return false
 	}
 	var findFirst, findSecond *Syntx
 	for _, syn := range Commands {
-		if !ParsedSyntx.Verb.Is(syn.Verb) {
+		if !G.ParsedSyntx.Verb.Is(syn.Verb) {
 			continue
 		}
-		if Params.ObjOrClauseCnt > syn.NumObjects() {
+		if G.Params.ObjOrClauseCnt > syn.NumObjects() {
 			continue
 		}
-		if syn.NumObjects() >= 1 && Params.ObjOrClauseCnt == 0 && (!ParsedSyntx.Prep1.IsSet() || syn.IsVrbPrep(ParsedSyntx.Prep1.Norm)) {
+		if syn.NumObjects() >= 1 && G.Params.ObjOrClauseCnt == 0 && (!G.ParsedSyntx.Prep1.IsSet() || syn.IsVrbPrep(G.ParsedSyntx.Prep1.Norm)) {
 			findFirst = &syn
-		} else if syn.IsVrbPrep(ParsedSyntx.Prep1.Norm) {
-			if syn.NumObjects() == 2 && Params.ObjOrClauseCnt == 1 {
+		} else if syn.IsVrbPrep(G.ParsedSyntx.Prep1.Norm) {
+			if syn.NumObjects() == 2 && G.Params.ObjOrClauseCnt == 1 {
 				findSecond = &syn
-			} else if syn.IsObjPrep(ParsedSyntx.Prep2.Norm) {
-				DetectedSyntx = &syn
-				ActVerb.Norm = syn.GetNormVerb()
-				ActVerb.Orig = syn.GetActionVerb()
+			} else if syn.IsObjPrep(G.ParsedSyntx.Prep2.Norm) {
+				G.DetectedSyntx = &syn
+				G.ActVerb.Norm = syn.GetNormVerb()
+				G.ActVerb.Orig = syn.GetActionVerb()
 				return true
 			}
 		}
@@ -939,38 +919,38 @@ func SyntaxCheck() bool {
 	if findFirst != nil {
 		obj := FindWhatIMean(findFirst.Obj1.ObjFlags, findFirst.Obj1.LocFlags, findFirst.VrbPrep)
 		if obj != nil {
-			DirObjPossibles = []*Object{obj}
-			DetectedSyntx = findFirst
-			ActVerb.Norm = findFirst.GetNormVerb()
-			ActVerb.Orig = findFirst.GetActionVerb()
+			G.DirObjPossibles = []*Object{obj}
+			G.DetectedSyntx = findFirst
+			G.ActVerb.Norm = findFirst.GetNormVerb()
+			G.ActVerb.Orig = findFirst.GetActionVerb()
 			found = true
 		}
 	}
 	if findSecond != nil && !found {
 		obj := FindWhatIMean(findSecond.Obj2.ObjFlags, findSecond.Obj2.LocFlags, findSecond.ObjPrep)
 		if obj != nil {
-			IndirObjPossibles = []*Object{obj}
-			DetectedSyntx = findSecond
-			ActVerb.Norm = findSecond.GetNormVerb()
-			ActVerb.Orig = findSecond.GetActionVerb()
+			G.IndirObjPossibles = []*Object{obj}
+			G.DetectedSyntx = findSecond
+			G.ActVerb.Norm = findSecond.GetNormVerb()
+			G.ActVerb.Orig = findSecond.GetActionVerb()
 			found = true
 		}
 	}
-	if ParsedSyntx.Verb.Is("find") && !found {
+	if G.ParsedSyntx.Verb.Is("find") && !found {
 		Print("That question can't be answered.", Newline)
 		return false
 	}
-	if Winner != Player && !found {
+	if G.Winner != G.Player && !found {
 		CanNotOrphan()
 		return false
 	}
 	if !found {
 		Orphan(findFirst, findSecond)
 		Print("What do you want to ", NoNewline)
-		if !OrphanedSyntx.Verb.IsSet() {
+		if !G.OrphanedSyntx.Verb.IsSet() {
 			Print("tell", NoNewline)
 		} else {
-			Print(OrphanedSyntx.Verb.Orig, NoNewline)
+			Print(G.OrphanedSyntx.Verb.Orig, NoNewline)
 		}
 		if findSecond != nil {
 			Print(" ", NoNewline)
@@ -988,23 +968,23 @@ func SyntaxCheck() bool {
 }
 
 func Orphan(first, second *Syntx) {
-	OrphanedSyntx.Set(ParsedSyntx)
-	if Params.ObjOrClauseCnt < 2 {
-		OrphanedSyntx.ObjOrClause2 = []LexItm{}
+	G.OrphanedSyntx.Set(G.ParsedSyntx)
+	if G.Params.ObjOrClauseCnt < 2 {
+		G.OrphanedSyntx.ObjOrClause2 = []LexItm{}
 	}
-	if Params.ObjOrClauseCnt < 1 {
-		OrphanedSyntx.ObjOrClause1 = []LexItm{}
+	if G.Params.ObjOrClauseCnt < 1 {
+		G.OrphanedSyntx.ObjOrClause1 = []LexItm{}
 	}
 	if first != nil {
-		OrphanedSyntx.Prep1.Norm = first.VrbPrep
-		OrphanedSyntx.Prep1.Orig = first.VrbPrep
-		OrphanedSyntx.Prep1.Types = WordTypes{WordPrep}
-		OrphanedSyntx.ObjOrClause1 = []LexItm{}
+		G.OrphanedSyntx.Prep1.Norm = first.VrbPrep
+		G.OrphanedSyntx.Prep1.Orig = first.VrbPrep
+		G.OrphanedSyntx.Prep1.Types = WordTypes{WordPrep}
+		G.OrphanedSyntx.ObjOrClause1 = []LexItm{}
 	} else if second != nil {
-		OrphanedSyntx.Prep2.Norm = second.ObjPrep
-		OrphanedSyntx.Prep2.Orig = second.ObjPrep
-		OrphanedSyntx.Prep2.Types = WordTypes{WordPrep}
-		OrphanedSyntx.ObjOrClause2 = []LexItm{}
+		G.OrphanedSyntx.Prep2.Norm = second.ObjPrep
+		G.OrphanedSyntx.Prep2.Orig = second.ObjPrep
+		G.OrphanedSyntx.Prep2.Types = WordTypes{WordPrep}
+		G.OrphanedSyntx.ObjOrClause2 = []LexItm{}
 	}
 }
 
@@ -1016,15 +996,15 @@ func FindWhatIMean(objFlags Flags, locFlags LocFlags, prep string) *Object {
 	if objFlags&FlgKludge != 0 {
 		return &Rooms
 	}
-	Search.ObjFlags = objFlags
-	Search.LocFlags = locFlags
+	G.Search.ObjFlags = objFlags
+	G.Search.LocFlags = locFlags
 	res := GetObject(false, false)
-	Search.ObjFlags = 0
+	G.Search.ObjFlags = 0
 	if len(res) != 1 {
 		return nil
 	}
 	Print("(", NoNewline)
-	if len(prep) == 0 || Params.EndOnPrep {
+	if len(prep) == 0 || G.Params.EndOnPrep {
 		PrintObject(res[0])
 		Print(")", Newline)
 		return res[0]
@@ -1044,22 +1024,22 @@ func FindWhatIMean(objFlags Flags, locFlags LocFlags, prep string) *Object {
 }
 
 func GetObject(isDirect, vrb bool) []*Object {
-	if Params.GetType == GetInhibit {
+	if G.Params.GetType == GetInhibit {
 		return []*Object{}
 	}
-	if !Search.Syn.IsSet() && Search.Adj.IsSet() && Search.Adj.Types.Has(WordObj) {
-		Search.Syn.Set(Search.Adj)
-		Search.Adj.Clear()
+	if !G.Search.Syn.IsSet() && G.Search.Adj.IsSet() && G.Search.Adj.Types.Has(WordObj) {
+		G.Search.Syn.Set(G.Search.Adj)
+		G.Search.Adj.Clear()
 	}
-	if !Search.Syn.IsSet() && !Search.Adj.IsSet() && Params.GetType != GetAll && Search.ObjFlags == 0 {
+	if !G.Search.Syn.IsSet() && !G.Search.Adj.IsSet() && G.Params.GetType != GetAll && G.Search.ObjFlags == 0 {
 		if vrb {
 			Print("There seems to be a noun missing in that sentence!", Newline)
 		}
 		return nil
 	}
-	xbits := Search.LocFlags
-	if Params.GetType != GetAll || len(Search.LocFlags) == 0 {
-		Search.LocFlags.All()
+	xbits := G.Search.LocFlags
+	if G.Params.GetType != GetAll || len(G.Search.LocFlags) == 0 {
+		G.Search.LocFlags.All()
 	}
 	res := []*Object{}
 	gcheck := false
@@ -1068,32 +1048,32 @@ func GetObject(isDirect, vrb bool) []*Object {
 		if gcheck {
 			res = append(res, GlobalCheck()...)
 		} else {
-			if Lit {
-				Player.Take(FlgTrans)
-				res = append(res, DoSL(Here, LocOnGrnd, LocInRoom)...)
-				Player.Give(FlgTrans)
+			if G.Lit {
+				G.Player.Take(FlgTrans)
+				res = append(res, DoSL(G.Here, LocOnGrnd, LocInRoom)...)
+				G.Player.Give(FlgTrans)
 			}
-			res = append(res, DoSL(Player, LocHeld, LocCarried)...)
+			res = append(res, DoSL(G.Player, LocHeld, LocCarried)...)
 		}
 		// Deduplicate results
 		res = dedup(res)
 		ln := len(res)
-		if Params.GetType == GetAll {
-			Search.LocFlags = xbits
-			Search.Syn.Clear()
-			Search.Adj.Clear()
+		if G.Params.GetType == GetAll {
+			G.Search.LocFlags = xbits
+			G.Search.Syn.Clear()
+			G.Search.Adj.Clear()
 			return res
 		}
-		if Params.GetType == GetOne && ln != 0 {
+		if G.Params.GetType == GetOne && ln != 0 {
 			if ln > 1 {
 				res = []*Object{res[rand.Intn(len(res))]}
 				Print("(How about the ", NoNewline)
 				PrintObject(res[0])
 				Print("?)", Newline)
 			}
-		} else if ln > 1 || (ln == 0 && Search.LocFlags.HasAll()) {
-			if Search.LocFlags.HasAll() {
-				Search.LocFlags = xbits
+		} else if ln > 1 || (ln == 0 && G.Search.LocFlags.HasAll()) {
+			if G.Search.LocFlags.HasAll() {
+				G.Search.LocFlags = xbits
 				olen = ln
 				res = []*Object{}
 				continue
@@ -1101,52 +1081,52 @@ func GetObject(isDirect, vrb bool) []*Object {
 			if ln == 0 {
 				ln = olen
 			}
-			if Winner != Player {
+			if G.Winner != G.Player {
 				CanNotOrphan()
 				return nil
 			}
-			if vrb && Search.Syn.IsSet() {
+			if vrb && G.Search.Syn.IsSet() {
 				WhichPrint(isDirect, res)
 				if isDirect {
-					Params.AdjClause.Type = Clause1
+					G.Params.AdjClause.Type = Clause1
 				} else {
-					Params.AdjClause.Type = Clause2
+					G.Params.AdjClause.Type = Clause2
 				}
-				Params.AdjClause.Syn.Set(Search.Syn)
-				Params.AdjClause.Adj.Set(Search.Adj)
+				G.Params.AdjClause.Syn.Set(G.Search.Syn)
+				G.Params.AdjClause.Adj.Set(G.Search.Adj)
 				Orphan(nil, nil)
-				Params.ShldOrphan = true
+				G.Params.ShldOrphan = true
 			} else if vrb {
 				Print("There seems to be a noun missing in that sentence!", Newline)
 			}
-			Search.Syn.Clear()
-			Search.Adj.Clear()
+			G.Search.Syn.Clear()
+			G.Search.Adj.Clear()
 			return nil
 		}
 		if ln == 0 && gcheck {
 			if vrb {
-				Search.LocFlags = xbits
-				if Lit || ActVerb.Norm == "tell" {
+				G.Search.LocFlags = xbits
+				if G.Lit || G.ActVerb.Norm == "tell" {
 					res = append(res, &NotHereObject)
-					NotHere.Syn.Set(Search.Syn)
-					NotHere.Adj.Set(Search.Adj)
-					Search.Syn.Clear()
-					Search.Adj.Clear()
+					G.NotHere.Syn.Set(G.Search.Syn)
+					G.NotHere.Adj.Set(G.Search.Adj)
+					G.Search.Syn.Clear()
+					G.Search.Adj.Clear()
 					return res
 				}
 				Print("It's too dark to see!", Newline)
 			}
-			Search.Syn.Clear()
-			Search.Adj.Clear()
+			G.Search.Syn.Clear()
+			G.Search.Adj.Clear()
 			return nil
 		}
 		if ln == 0 {
 			gcheck = true
 			continue
 		}
-		Search.LocFlags = xbits
-		Search.Syn.Clear()
-		Search.Adj.Clear()
+		G.Search.LocFlags = xbits
+		G.Search.Syn.Clear()
+		G.Search.Adj.Clear()
 		return res
 	}
 }
@@ -1155,11 +1135,11 @@ func GetObject(isDirect, vrb bool) []*Object {
 // when the game parser matches multiple game objects.
 func WhichPrint(isDirect bool, tbl []*Object) {
 	Print("Which ", NoNewline)
-	if Params.ShldOrphan || Params.HasMerged || Params.HasAnd {
-		if Search.Syn.IsSet() {
-			Print(Search.Syn.Norm, NoNewline)
-		} else if Search.Adj.IsSet() {
-			Print(Search.Adj.Norm, NoNewline)
+	if G.Params.ShldOrphan || G.Params.HasMerged || G.Params.HasAnd {
+		if G.Search.Syn.IsSet() {
+			Print(G.Search.Syn.Norm, NoNewline)
+		} else if G.Search.Adj.IsSet() {
+			Print(G.Search.Adj.Norm, NoNewline)
 		} else {
 			Print("one", NoNewline)
 		}
@@ -1190,16 +1170,16 @@ func WhichPrint(isDirect bool, tbl []*Object) {
 // the parameters defined in the Search global variable
 func GlobalCheck() []*Object {
 	res := []*Object{}
-	if len(Here.Global) != 0 {
-		for _, obj := range Here.Global {
+	if len(G.Here.Global) != 0 {
+		for _, obj := range G.Here.Global {
 			if IsThisIt(obj) {
 				res = append(res, obj)
 			}
 		}
 	}
-	if len(Here.Pseudo) != 0 {
-		for _, obj := range Here.Pseudo {
-			if Search.Syn.Is(obj.Synonym) {
+	if len(G.Here.Pseudo) != 0 {
+		for _, obj := range G.Here.Pseudo {
+			if G.Search.Syn.Is(obj.Synonym) {
 				PseudoObject.Action = obj.Action
 				res = append(res, &PseudoObject)
 				break
@@ -1210,8 +1190,8 @@ func GlobalCheck() []*Object {
 		if g := SearchList(&GlobalObjects, FindAll); g != nil {
 			res = append(res, g...)
 		}
-		if len(res) == 0 && (ActVerb.Norm == "look inside" || ActVerb.Norm == "search" || ActVerb.Norm == "examine") {
-			if LocHave.In(Search.LocFlags) {
+		if len(res) == 0 && (G.ActVerb.Norm == "look inside" || G.ActVerb.Norm == "search" || G.ActVerb.Norm == "examine") {
+			if LocHave.In(G.Search.LocFlags) {
 				if r := SearchList(&Rooms, FindAll); r != nil {
 					res = append(res, r...)
 				}
@@ -1224,9 +1204,9 @@ func GlobalCheck() []*Object {
 func ThingPrint(isDirect, isThe bool) {
 	nsp, isFirst := true, true
 	pn := false
-	search := &ParsedSyntx.ObjOrClause1
+	search := &G.ParsedSyntx.ObjOrClause1
 	if !isDirect {
-		search = &ParsedSyntx.ObjOrClause2
+		search = &G.ParsedSyntx.ObjOrClause2
 	}
 	for _, wrd := range *search {
 		if wrd.Is(",") {
@@ -1242,16 +1222,16 @@ func ThingPrint(isDirect, isThe bool) {
 			PrintObject(&Me)
 			pn = true
 		} else if wrd.Is("intnum") {
-			PrintNumber(Params.Number)
+			PrintNumber(G.Params.Number)
 			pn = true
 		} else {
 			if isFirst && !pn && isThe {
 				Print("the ", NoNewline)
 			}
-			if Params.ShldOrphan || Params.HasMerged {
+			if G.Params.ShldOrphan || G.Params.HasMerged {
 				Print(wrd.Norm, NoNewline)
-			} else if wrd.Is("it") && IsAccessible(Params.ItObj) {
-				PrintObject(Params.ItObj)
+			} else if wrd.Is("it") && IsAccessible(G.Params.ItObj) {
+				PrintObject(G.Params.ItObj)
 			} else {
 				Print(wrd.Orig, NoNewline)
 			}
@@ -1262,25 +1242,25 @@ func ThingPrint(isDirect, isThe bool) {
 
 // IsLit checks if the current game room is lit.
 func IsLit(room *Object, rmChk bool) bool {
-	if AlwaysLit && Winner == Player {
+	if G.AlwaysLit && G.Winner == G.Player {
 		return true
 	}
-	Search.ObjFlags = FlgOn
-	bak := Here
-	Here = room
+	G.Search.ObjFlags = FlgOn
+	bak := G.Here
+	G.Here = room
 	if rmChk && room.Has(FlgOn) {
-		Here = bak
-		Search.ObjFlags = 0
+		G.Here = bak
+		G.Search.ObjFlags = 0
 		return true
 	}
-	Search.LocFlags = nil
+	G.Search.LocFlags = nil
 	res := []*Object{}
 	if bak == room {
-		if nr := SearchList(Winner, FindAll); nr != nil {
+		if nr := SearchList(G.Winner, FindAll); nr != nil {
 			res = append(res, nr...)
 		}
-		if Winner != Player && Player.IsIn(room) {
-			if nr := SearchList(Player, FindAll); nr != nil {
+		if G.Winner != G.Player && G.Player.IsIn(room) {
+			if nr := SearchList(G.Player, FindAll); nr != nil {
 				res = append(res, nr...)
 			}
 		}
@@ -1288,8 +1268,8 @@ func IsLit(room *Object, rmChk bool) bool {
 	if nr := SearchList(room, FindAll); nr != nil {
 		res = append(res, nr...)
 	}
-	Here = bak
-	Search.ObjFlags = 0
+	G.Here = bak
+	G.Search.ObjFlags = 0
 	if len(res) > 0 {
 		return true
 	}
@@ -1300,11 +1280,11 @@ func IsLit(room *Object, rmChk bool) bool {
 // based on the provided location flags and
 // parameters defined in the Search global variable.
 func DoSL(obj *Object, f1, f2 LocFlag) []*Object {
-	if f1.In(Search.LocFlags) && f2.In(Search.LocFlags) {
+	if f1.In(G.Search.LocFlags) && f2.In(G.Search.LocFlags) {
 		return SearchList(obj, FindAll)
-	} else if f1.In(Search.LocFlags) {
+	} else if f1.In(G.Search.LocFlags) {
 		return SearchList(obj, FindTop)
-	} else if f2.In(Search.LocFlags) {
+	} else if f2.In(G.Search.LocFlags) {
 		return SearchList(obj, FindBottom)
 	}
 	return []*Object{}
@@ -1344,13 +1324,13 @@ func IsThisIt(obj *Object) bool {
 	if obj.Has(FlgInvis) {
 		return false
 	}
-	if Search.Syn.IsSet() && !obj.Is(Search.Syn.Norm) {
+	if G.Search.Syn.IsSet() && !obj.Is(G.Search.Syn.Norm) {
 		return false
 	}
-	if Search.Adj.IsSet() && (len(obj.Adjectives) == 0 || !obj.Is(Search.Adj.Norm)) {
+	if G.Search.Adj.IsSet() && (len(obj.Adjectives) == 0 || !obj.Is(G.Search.Adj.Norm)) {
 		return false
 	}
-	if !AnyFlagIn(Search.ObjFlags, obj.Flags) {
+	if !AnyFlagIn(G.Search.ObjFlags, obj.Flags) {
 		return false
 	}
 	return true
@@ -1369,14 +1349,14 @@ func IsAccessible(obj *Object) bool {
 	if l == &GlobalObjects {
 		return true
 	}
-	if l == &LocalGlobals && IsInGlobal(obj, Here) {
+	if l == &LocalGlobals && IsInGlobal(obj, G.Here) {
 		return true
 	}
 	ml := MetaLoc(obj)
-	if ml != Here && Winner != nil && ml != Winner.Location() {
+	if ml != G.Here && G.Winner != nil && ml != G.Winner.Location() {
 		return false
 	}
-	if l == Winner || l == Here || (Winner != nil && l == Winner.Location()) {
+	if l == G.Winner || l == G.Here || (G.Winner != nil && l == G.Winner.Location()) {
 		return true
 	}
 	if obj.Has(FlgOpen) && IsAccessible(l) {

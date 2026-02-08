@@ -211,81 +211,81 @@ func captureState() *gameState {
 	}
 
 	// Capture global game flags
-	s.Dead = Dead
-	s.Deaths = Deaths
-	s.Score = Score
-	s.BaseScore = BaseScore
-	s.Moves = Moves
-	s.Lit = Lit
-	s.SuperBrief = SuperBrief
-	s.Verbose = Verbose
-	s.WonGame = WonGame
-	s.HelloSailor = HelloSailor
-	s.IsSprayed = IsSprayed
-	s.Lucky = Lucky
-	s.FumbleNumber = FumbleNumber
-	s.FumbleProb = FumbleProb
+	s.Dead = G.Dead
+	s.Deaths = G.Deaths
+	s.Score = G.Score
+	s.BaseScore = G.BaseScore
+	s.Moves = G.Moves
+	s.Lit = G.Lit
+	s.SuperBrief = G.SuperBrief
+	s.Verbose = G.Verbose
+	s.WonGame = G.WonGame
+	s.HelloSailor = G.HelloSailor
+	s.IsSprayed = G.IsSprayed
+	s.Lucky = G.Lucky
+	s.FumbleNumber = G.FumbleNumber
+	s.FumbleProb = G.FumbleProb
 
 	// Capture dungeon flags
-	s.TrollFlag = TrollFlag
-	s.CyclopsFlag = CyclopsFlag
-	s.MagicFlag = MagicFlag
-	s.LowTide = LowTide
-	s.DomeFlag = DomeFlag
-	s.EmptyHanded = EmptyHanded
-	s.LLDFlag = LLDFlag
-	s.RainbowFlag = RainbowFlag
-	s.DeflateFlag = DeflateFlag
-	s.CoffinCure = CoffinCure
-	s.GrateRevealed = GrateRevealed
-	s.KitchenWindowFlag = KitchenWindowFlag
-	s.CageTop = CageTop
-	s.RugMoved = RugMoved
-	s.GrUnlock = GrUnlock
-	s.CycloWrath = CycloWrath
-	s.MirrorMung = MirrorMung
-	s.GateFlag = GateFlag
-	s.GatesOpen = GatesOpen
-	s.WaterLevel = WaterLevel
-	s.MatchCount = MatchCount
-	s.EggSolve = EggSolve
-	s.ThiefHere = ThiefHere
-	s.ThiefEngrossed = ThiefEngrossed
-	s.LoudFlag = LoudFlag
-	s.SingSong = SingSong
-	s.BuoyFlag = BuoyFlag
-	s.BeachDig = BeachDig
-	s.LightShaft = LightShaft
-	s.XB = XB
-	s.XC = XC
-	s.Deflate = Deflate
-	s.LampTableIdx = LampTableIdx
-	s.CandleTableIdx = CandleTableIdx
-	s.LoadAllowed = LoadAllowed
-	s.LoadMax = LoadMax
+	s.TrollFlag = G.TrollFlag
+	s.CyclopsFlag = G.CyclopsFlag
+	s.MagicFlag = G.MagicFlag
+	s.LowTide = G.LowTide
+	s.DomeFlag = G.DomeFlag
+	s.EmptyHanded = G.EmptyHanded
+	s.LLDFlag = G.LLDFlag
+	s.RainbowFlag = G.RainbowFlag
+	s.DeflateFlag = G.DeflateFlag
+	s.CoffinCure = G.CoffinCure
+	s.GrateRevealed = G.GrateRevealed
+	s.KitchenWindowFlag = G.KitchenWindowFlag
+	s.CageTop = G.CageTop
+	s.RugMoved = G.RugMoved
+	s.GrUnlock = G.GrUnlock
+	s.CycloWrath = G.CycloWrath
+	s.MirrorMung = G.MirrorMung
+	s.GateFlag = G.GateFlag
+	s.GatesOpen = G.GatesOpen
+	s.WaterLevel = G.WaterLevel
+	s.MatchCount = G.MatchCount
+	s.EggSolve = G.EggSolve
+	s.ThiefHere = G.ThiefHere
+	s.ThiefEngrossed = G.ThiefEngrossed
+	s.LoudFlag = G.LoudFlag
+	s.SingSong = G.SingSong
+	s.BuoyFlag = G.BuoyFlag
+	s.BeachDig = G.BeachDig
+	s.LightShaft = G.LightShaft
+	s.XB = G.XB
+	s.XC = G.XC
+	s.Deflate = G.Deflate
+	s.LampTableIdx = G.LampTableIdx
+	s.CandleTableIdx = G.CandleTableIdx
+	s.LoadAllowed = G.LoadAllowed
+	s.LoadMax = G.LoadMax
 
 	// Capture key references
-	s.HereIdx = objToIdx(Here)
-	s.WinnerIdx = objToIdx(Winner)
-	s.PlayerIdx = objToIdx(Player)
-	s.ItObjIdx = objToIdx(Params.ItObj)
-	s.DescObjIdx = objToIdx(DescObj)
+	s.HereIdx = objToIdx(G.Here)
+	s.WinnerIdx = objToIdx(G.Winner)
+	s.PlayerIdx = objToIdx(G.Player)
+	s.ItObjIdx = objToIdx(G.Params.ItObj)
+	s.DescObjIdx = objToIdx(G.DescObj)
 
 	// Capture clock state
-	for i := range QueueItms {
+	for i := range G.QueueItms {
 		s.QueueItems[i] = savedQueueItem{
-			Run:     QueueItms[i].Run,
-			Tick:    QueueItms[i].Tick,
-			RtnName: rtnName(QueueItms[i].Rtn),
+			Run:     G.QueueItms[i].Run,
+			Tick:    G.QueueItms[i].Tick,
+			RtnName: rtnName(G.QueueItms[i].Rtn),
 		}
 	}
-	s.QueueInts = QueueInts
-	s.QueueDmns = QueueDmns
-	s.ClockWait = ClockWait
+	s.QueueInts = G.QueueInts
+	s.QueueDmns = G.QueueDmns
+	s.ClockWait = G.ClockWait
 
 	// Capture villain probabilities
-	s.VillainProbs = make([]savedVillain, len(Villains))
-	for i, v := range Villains {
+	s.VillainProbs = make([]savedVillain, len(G.Villains))
+	for i, v := range G.Villains {
 		s.VillainProbs[i] = savedVillain{Prob: v.Prob}
 	}
 
@@ -320,95 +320,95 @@ func applyState(s *gameState) {
 	}
 
 	// Restore global game flags
-	Dead = s.Dead
-	Deaths = s.Deaths
-	Score = s.Score
-	BaseScore = s.BaseScore
-	Moves = s.Moves
-	Lit = s.Lit
-	SuperBrief = s.SuperBrief
-	Verbose = s.Verbose
-	WonGame = s.WonGame
-	HelloSailor = s.HelloSailor
-	IsSprayed = s.IsSprayed
-	Lucky = s.Lucky
-	FumbleNumber = s.FumbleNumber
-	FumbleProb = s.FumbleProb
+	G.Dead = s.Dead
+	G.Deaths = s.Deaths
+	G.Score = s.Score
+	G.BaseScore = s.BaseScore
+	G.Moves = s.Moves
+	G.Lit = s.Lit
+	G.SuperBrief = s.SuperBrief
+	G.Verbose = s.Verbose
+	G.WonGame = s.WonGame
+	G.HelloSailor = s.HelloSailor
+	G.IsSprayed = s.IsSprayed
+	G.Lucky = s.Lucky
+	G.FumbleNumber = s.FumbleNumber
+	G.FumbleProb = s.FumbleProb
 
 	// Restore dungeon flags
-	TrollFlag = s.TrollFlag
-	CyclopsFlag = s.CyclopsFlag
-	MagicFlag = s.MagicFlag
-	LowTide = s.LowTide
-	DomeFlag = s.DomeFlag
-	EmptyHanded = s.EmptyHanded
-	LLDFlag = s.LLDFlag
-	RainbowFlag = s.RainbowFlag
-	DeflateFlag = s.DeflateFlag
-	CoffinCure = s.CoffinCure
-	GrateRevealed = s.GrateRevealed
-	KitchenWindowFlag = s.KitchenWindowFlag
-	CageTop = s.CageTop
-	RugMoved = s.RugMoved
-	GrUnlock = s.GrUnlock
-	CycloWrath = s.CycloWrath
-	MirrorMung = s.MirrorMung
-	GateFlag = s.GateFlag
-	GatesOpen = s.GatesOpen
-	WaterLevel = s.WaterLevel
-	MatchCount = s.MatchCount
-	EggSolve = s.EggSolve
-	ThiefHere = s.ThiefHere
-	ThiefEngrossed = s.ThiefEngrossed
-	LoudFlag = s.LoudFlag
-	SingSong = s.SingSong
-	BuoyFlag = s.BuoyFlag
-	BeachDig = s.BeachDig
-	LightShaft = s.LightShaft
-	XB = s.XB
-	XC = s.XC
-	Deflate = s.Deflate
-	LampTableIdx = s.LampTableIdx
-	CandleTableIdx = s.CandleTableIdx
-	LoadAllowed = s.LoadAllowed
-	LoadMax = s.LoadMax
+	G.TrollFlag = s.TrollFlag
+	G.CyclopsFlag = s.CyclopsFlag
+	G.MagicFlag = s.MagicFlag
+	G.LowTide = s.LowTide
+	G.DomeFlag = s.DomeFlag
+	G.EmptyHanded = s.EmptyHanded
+	G.LLDFlag = s.LLDFlag
+	G.RainbowFlag = s.RainbowFlag
+	G.DeflateFlag = s.DeflateFlag
+	G.CoffinCure = s.CoffinCure
+	G.GrateRevealed = s.GrateRevealed
+	G.KitchenWindowFlag = s.KitchenWindowFlag
+	G.CageTop = s.CageTop
+	G.RugMoved = s.RugMoved
+	G.GrUnlock = s.GrUnlock
+	G.CycloWrath = s.CycloWrath
+	G.MirrorMung = s.MirrorMung
+	G.GateFlag = s.GateFlag
+	G.GatesOpen = s.GatesOpen
+	G.WaterLevel = s.WaterLevel
+	G.MatchCount = s.MatchCount
+	G.EggSolve = s.EggSolve
+	G.ThiefHere = s.ThiefHere
+	G.ThiefEngrossed = s.ThiefEngrossed
+	G.LoudFlag = s.LoudFlag
+	G.SingSong = s.SingSong
+	G.BuoyFlag = s.BuoyFlag
+	G.BeachDig = s.BeachDig
+	G.LightShaft = s.LightShaft
+	G.XB = s.XB
+	G.XC = s.XC
+	G.Deflate = s.Deflate
+	G.LampTableIdx = s.LampTableIdx
+	G.CandleTableIdx = s.CandleTableIdx
+	G.LoadAllowed = s.LoadAllowed
+	G.LoadMax = s.LoadMax
 
 	// Restore key references
-	Here = idxToObj(s.HereIdx)
-	Winner = idxToObj(s.WinnerIdx)
-	Player = idxToObj(s.PlayerIdx)
-	Params.ItObj = idxToObj(s.ItObjIdx)
-	DescObj = idxToObj(s.DescObjIdx)
+	G.Here = idxToObj(s.HereIdx)
+	G.Winner = idxToObj(s.WinnerIdx)
+	G.Player = idxToObj(s.PlayerIdx)
+	G.Params.ItObj = idxToObj(s.ItObjIdx)
+	G.DescObj = idxToObj(s.DescObjIdx)
 
 	// Restore clock state
-	for i := range QueueItms {
-		QueueItms[i].Run = s.QueueItems[i].Run
-		QueueItms[i].Tick = s.QueueItems[i].Tick
+	for i := range G.QueueItms {
+		G.QueueItms[i].Run = s.QueueItems[i].Run
+		G.QueueItms[i].Tick = s.QueueItems[i].Tick
 		if s.QueueItems[i].RtnName != "" {
-			QueueItms[i].Rtn = nameToRtn[s.QueueItems[i].RtnName]
+			G.QueueItms[i].Rtn = nameToRtn[s.QueueItems[i].RtnName]
 		} else {
-			QueueItms[i].Rtn = nil
+			G.QueueItms[i].Rtn = nil
 		}
 	}
-	QueueInts = s.QueueInts
-	QueueDmns = s.QueueDmns
-	ClockWait = s.ClockWait
+	G.QueueInts = s.QueueInts
+	G.QueueDmns = s.QueueDmns
+	G.ClockWait = s.ClockWait
 
 	// Restore villain probabilities
-	for i := range Villains {
+	for i := range G.Villains {
 		if i < len(s.VillainProbs) {
-			Villains[i].Prob = s.VillainProbs[i].Prob
+			G.Villains[i].Prob = s.VillainProbs[i].Prob
 		}
 	}
 }
 
 // promptFilename prompts the user for a save filename and returns it.
 func promptFilename(action string) string {
-	fmt.Fprintf(GameOutput, "Enter a file name (default is \"%s\"): ", SaveFile)
-	if Reader == nil {
+	fmt.Fprintf(G.GameOutput, "Enter a file name (default is \"%s\"): ", SaveFile)
+	if G.Reader == nil {
 		InitReader()
 	}
-	txt, err := Reader.ReadString('\n')
+	txt, err := G.Reader.ReadString('\n')
 	if err != nil && len(txt) == 0 {
 		return SaveFile
 	}
@@ -425,9 +425,9 @@ func promptFilename(action string) string {
 func initSaveSystem() {
 	buildObjIndex()
 	buildRtnRegistry()
-	Save = doSave
-	Restore = doRestore
-	Restart = doRestart
+	G.Save = doSave
+	G.Restore = doRestore
+	G.Restart = doRestart
 }
 
 // doSave serializes the current game state to a file.
@@ -470,7 +470,7 @@ func doRestore() bool {
 
 	applyState(&s)
 	// Recalculate lighting after restoring state
-	Lit = IsLit(Here, true)
+	G.Lit = IsLit(G.Here, true)
 	return true
 }
 
@@ -492,17 +492,17 @@ func doRestart() bool {
 	Def2Res[3] = Def2B[4]
 	Def3Res[1] = Def3A[2]
 	Def3Res[3] = Def3B[2]
-	Here = &WestOfHouse
+	G.Here = &WestOfHouse
 	ThisIsIt(&Mailbox)
-	Lit = true
-	Winner = &Adventurer
-	Player = Winner
-	Winner.MoveTo(Here)
+	G.Lit = true
+	G.Winner = &Adventurer
+	G.Player = G.Winner
+	G.Winner.MoveTo(G.Here)
 
 	// Re-register save system for the fresh game
 	buildObjIndex()
-	Save = doSave
-	Restore = doRestore
-	Restart = doRestart
+	G.Save = doSave
+	G.Restore = doRestore
+	G.Restart = doRestart
 	return true
 }

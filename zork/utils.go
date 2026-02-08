@@ -47,7 +47,7 @@ func Prob(base int, isLooser bool) bool {
 // Zprob is the "loser" version of Prob that accounts for the Lucky flag.
 // ZIL: <G? .BASE <RANDOM 100>> when lucky, <G? .BASE <RANDOM 300>> otherwise.
 func Zprob(base int) bool {
-	if Lucky {
+	if G.Lucky {
 		return base > rand.Intn(100)+1
 	}
 	return base > rand.Intn(300)+1

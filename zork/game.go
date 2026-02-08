@@ -2,12 +2,6 @@ package zork
 
 import "os"
 
-var (
-	ParserOk bool
-	Script   bool
-	Player   *Object
-)
-
 type PerfRet int
 
 const (
@@ -20,29 +14,14 @@ const (
 // This allows tests to catch quit without os.Exit terminating the process.
 var ErrQuit = "game-quit"
 
-// PerformFatal is set by action handlers to signal the equivalent of ZIL's
-// RFATAL return. When set, the Perform function returns PerfFatal instead
-// of PerfHndld, which causes the main loop to stop the multi-object loop
-// and clear the continuation flag.
-var PerformFatal bool
-
 // RFatal signals a fatal action result (equivalent to ZIL's <RFATAL>).
+// It sets G.PerformFatal, which makes Perform return PerfFatal.
 // Call this in an action handler and return its result to stop the
 // Perform chain and the multi-object loop in the main loop.
 func RFatal() bool {
-	PerformFatal = true
+	G.PerformFatal = true
 	return true
 }
-
-// Save, Restore, and Restart are function variables that start as stubs.
-// They are replaced with real implementations in InitGame (from save.go)
-// to break the init cycle between package-level variable initializers and
-// the Objects slice.
-var (
-	Save    = func() bool { return false }
-	Restore = func() bool { return false }
-	Restart = func() bool { return false }
-)
 
 func Quit() {
 	panic(ErrQuit)
@@ -55,102 +34,27 @@ func Verify() bool {
 	return true
 }
 
-// ResetGameState resets all mutable global state so a fresh game can be started.
-// This is essential for tests that run multiple games in one process.
+// ResetGameState creates a fresh GameState with all defaults and restores the
+// object tree. Tests and restart use this to get a clean game.
 func ResetGameState() {
-	// Reset clock
-	QueueItms = [30]QueueItm{}
-	QueueInts = 30
-	QueueDmns = 30
-	ClockWait = false
-
-	// Reset perform state
-	PerformFatal = false
-
-	// Reset parser/game state
-	ParserOk = false
-	Dead = false
-	Deaths = 0
-	Score = 0
-	BaseScore = 0
-	Moves = 0
-	Lit = false
-	SuperBrief = false
-	Verbose = false
-	WonGame = false
-	HelloSailor = 0
-	IsSprayed = false
-	Lucky = true
-	FumbleNumber = 7
-	FumbleProb = 8
-	DescObj = nil
-
-	// Reset dungeon flags
-	TrollFlag = false
-	CyclopsFlag = false
-	MagicFlag = false
-	LowTide = false
-	DomeFlag = false
-	EmptyHanded = false
-	LLDFlag = false
-	RainbowFlag = false
-	DeflateFlag = false
-	CoffinCure = false
-	GrateRevealed = false
-	KitchenWindowFlag = false
-	CageTop = true
-	RugMoved = false
-	GrUnlock = false
-	CycloWrath = 0
-	MirrorMung = false
-	GateFlag = false
-	GatesOpen = false
-	WaterLevel = 0
-	MatchCount = 6
-	EggSolve = false
-	ThiefHere = false
-	ThiefEngrossed = false
-	LoudFlag = false
-	SingSong = false
-	BuoyFlag = true
-	BeachDig = -1
-	LightShaft = 13
-	XB = false
-	XC = false
-	Deflate = false
-	LampTableIdx = 0
-	CandleTableIdx = 0
-
-	// Reset carry limits
-	LoadAllowed = 100
-	LoadMax = 100
-
-	// Reset input state
-	InputExhausted = false
-
-	// Reset parser internals
-	DirObjPossibles = nil
-	IndirObjPossibles = nil
-	LexRes = nil
-	Params = ParseProps{}
-	Reserv = ReserveProps{}
-	Again = AgainProps{}
-	Oops = OopsProps{}
-	ActVerb = ActionVerb{}
-	DirObj = nil
-	IndirObj = nil
-	Winner = nil
-	Here = nil
-	DetectedSyntx = nil
-	ParsedSyntx = ParseTbl{}
-	OrphanedSyntx = ParseTbl{}
-
+	// Preserve I/O handles if they were set (e.g. by tests)
+	var out, in_ = G.GameOutput, G.GameInput
+	G = NewGameState()
+	if out != nil {
+		G.GameOutput = out
+	}
+	if in_ != nil {
+		G.GameInput = in_
+	}
 	// Restore object tree to initial state
 	ResetObjectTree()
 }
 
 // InitGame sets up all game state for a fresh game. Call once before MainLoop.
 func InitGame() {
+	if G == nil {
+		G = NewGameState()
+	}
 	ResetGameState()
 	FinalizeGameObjects()
 	BuildObjectTree()
@@ -170,12 +74,12 @@ func InitGame() {
 	Def2Res[3] = Def2B[4]
 	Def3Res[1] = Def3A[2]
 	Def3Res[3] = Def3B[2]
-	Here = &WestOfHouse
+	G.Here = &WestOfHouse
 	ThisIsIt(&Mailbox)
-	Lit = true
-	Winner = &Adventurer
-	Player = Winner
-	Winner.MoveTo(Here)
+	G.Lit = true
+	G.Winner = &Adventurer
+	G.Player = G.Winner
+	G.Winner.MoveTo(G.Here)
 }
 
 func Run() {
@@ -189,7 +93,7 @@ func Run() {
 	}()
 
 	InitGame()
-	if !Here.Has(FlgTouch) {
+	if !G.Here.Has(FlgTouch) {
 		VVersion(ActUnk)
 		NewLine()
 	}
@@ -198,31 +102,31 @@ func Run() {
 }
 
 func MainLoop() {
-	Params.Continue = NumUndef
+	G.Params.Continue = NumUndef
 	for {
-		if InputExhausted {
+		if G.InputExhausted {
 			return
 		}
-		ParserOk = Parse()
-		if InputExhausted {
+		G.ParserOk = Parse()
+		if G.InputExhausted {
 			return
 		}
-		if !ParserOk {
-			Params.Continue = NumUndef
+		if !G.ParserOk {
+			G.Params.Continue = NumUndef
 			continue
 		}
-		if Params.ItObj != nil && IsAccessible(Params.ItObj) {
+		if G.Params.ItObj != nil && IsAccessible(G.Params.ItObj) {
 			found := false
-			for idx, obj := range IndirObjPossibles {
+			for idx, obj := range G.IndirObjPossibles {
 				if obj == &It {
-					IndirObjPossibles[idx] = Params.ItObj
+					G.IndirObjPossibles[idx] = G.Params.ItObj
 					found = true
 				}
 			}
 			if !found {
-				for idx, obj := range DirObjPossibles {
+				for idx, obj := range G.DirObjPossibles {
 					if obj == &It {
-						DirObjPossibles[idx] = Params.ItObj
+						G.DirObjPossibles[idx] = G.Params.ItObj
 					}
 				}
 			}
@@ -230,31 +134,31 @@ func MainLoop() {
 		numObj := 1
 		var obj *Object
 		isDir := true
-		if len(DirObjPossibles) == 0 {
+		if len(G.DirObjPossibles) == 0 {
 			numObj = 0
-		} else if len(DirObjPossibles) > 1 {
-			if len(IndirObjPossibles) == 0 {
+		} else if len(G.DirObjPossibles) > 1 {
+			if len(G.IndirObjPossibles) == 0 {
 				obj = nil
 			} else {
-				obj = IndirObjPossibles[0]
+				obj = G.IndirObjPossibles[0]
 			}
-			numObj = len(DirObjPossibles)
-		} else if len(IndirObjPossibles) > 1 {
+			numObj = len(G.DirObjPossibles)
+		} else if len(G.IndirObjPossibles) > 1 {
 			isDir = false
-			obj = DirObjPossibles[0]
-			numObj = len(IndirObjPossibles)
+			obj = G.DirObjPossibles[0]
+			numObj = len(G.IndirObjPossibles)
 		}
-		if obj == nil && len(IndirObjPossibles) == 1 {
-			obj = IndirObjPossibles[0]
+		if obj == nil && len(G.IndirObjPossibles) == 1 {
+			obj = G.IndirObjPossibles[0]
 		}
 		var res PerfRet
-		if ActVerb.Norm == "walk" && len(Params.WalkDir) != 0 {
-			res = Perform(ActVerb, DirObj, nil)
+		if G.ActVerb.Norm == "walk" && len(G.Params.WalkDir) != 0 {
+			res = Perform(G.ActVerb, G.DirObj, nil)
 		} else if numObj == 0 {
-			if DetectedSyntx.NumObjects() == 0 {
-				res = Perform(ActVerb, nil, nil)
-				DirObj = nil
-			} else if !Lit {
+			if G.DetectedSyntx.NumObjects() == 0 {
+				res = Perform(G.ActVerb, nil, nil)
+				G.DirObj = nil
+			} else if !G.Lit {
 				Print("It's too dark to see.", Newline)
 				res = PerfNotHndld
 			} else {
@@ -268,45 +172,45 @@ func MainLoop() {
 			var indir, dir *Object
 			for i := 0; i < numObj; i++ {
 				if isDir {
-					obj1 = DirObjPossibles[i]
+					obj1 = G.DirObjPossibles[i]
 					dir, indir = obj1, obj
 				} else {
-					obj1 = IndirObjPossibles[i]
+					obj1 = G.IndirObjPossibles[i]
 					dir, indir = obj, obj1
 				}
-				if numObj > 1 || (len(ParsedSyntx.ObjOrClause1) > 0 && ParsedSyntx.ObjOrClause1[0].Is("all")) {
+				if numObj > 1 || (len(G.ParsedSyntx.ObjOrClause1) > 0 && G.ParsedSyntx.ObjOrClause1[0].Is("all")) {
 					if dir == &NotHereObject {
 						notHere++
 						continue
 					}
-					if ActVerb.Norm == "take" &&
+					if G.ActVerb.Norm == "take" &&
 						indir != nil &&
-						len(ParsedSyntx.ObjOrClause1) > 0 &&
-						ParsedSyntx.ObjOrClause1[0].Is("all") &&
+						len(G.ParsedSyntx.ObjOrClause1) > 0 &&
+						G.ParsedSyntx.ObjOrClause1[0].Is("all") &&
 						dir != nil &&
 						!dir.IsIn(indir) {
 						continue
 					}
-					if l := dir.Location(); Params.GetType == GetAll &&
-						ActVerb.Norm == "take" &&
-						((l != Winner &&
-							l != Here &&
-							l != Winner.Location() &&
+					if l := dir.Location(); G.Params.GetType == GetAll &&
+						G.ActVerb.Norm == "take" &&
+						((l != G.Winner &&
+							l != G.Here &&
+							l != G.Winner.Location() &&
 							l != indir &&
 							!l.Has(FlgSurf)) ||
 							!(dir.Has(FlgTake) || dir.Has(FlgTryTake))) {
 						continue
 					}
 					if obj1 == &It {
-						PrintObject(Params.ItObj)
+						PrintObject(G.Params.ItObj)
 					} else {
 						PrintObject(obj1)
 					}
 					Print(": ", NoNewline)
 				}
-				DirObj, IndirObj = dir, indir
+				G.DirObj, G.IndirObj = dir, indir
 				tmp = true
-				res = Perform(ActVerb, DirObj, IndirObj)
+				res = Perform(G.ActVerb, G.DirObj, G.IndirObj)
 				if res == PerfFatal {
 					break
 				}
@@ -331,7 +235,7 @@ func MainLoop() {
 				Print("There's nothing here you can take.", Newline)
 			}
 		}
-		if l := Winner.Location(); res != PerfFatal && l != nil && l.Action != nil {
+		if l := G.Winner.Location(); res != PerfFatal && l != nil && l.Action != nil {
 			if l.Action(ActEnd) {
 				res = PerfHndld
 			} else {
@@ -339,9 +243,9 @@ func MainLoop() {
 			}
 		}
 		if res == PerfFatal {
-			Params.Continue = -1
+			G.Params.Continue = -1
 		}
-		if ActVerb.Norm == "tell" || ActVerb.Norm == "brief" || ActVerb.Norm == "superbrief" || ActVerb.Norm == "verbose" || ActVerb.Norm == "save" || ActVerb.Norm == "version" || ActVerb.Norm == "quit" || ActVerb.Norm == "restart" || ActVerb.Norm == "score" || ActVerb.Norm == "script" || ActVerb.Norm == "unscript" || ActVerb.Norm == "restore" {
+		if G.ActVerb.Norm == "tell" || G.ActVerb.Norm == "brief" || G.ActVerb.Norm == "superbrief" || G.ActVerb.Norm == "verbose" || G.ActVerb.Norm == "save" || G.ActVerb.Norm == "version" || G.ActVerb.Norm == "quit" || G.ActVerb.Norm == "restart" || G.ActVerb.Norm == "score" || G.ActVerb.Norm == "script" || G.ActVerb.Norm == "unscript" || G.ActVerb.Norm == "restore" {
 			continue
 		} else {
 			Clocker()
@@ -353,8 +257,8 @@ func MainLoop() {
 // Returns the appropriate PerfRet and whether the chain should stop.
 func callHandler(fn func(ActArg) bool, arg ActArg) (PerfRet, bool) {
 	result := fn(arg)
-	if PerformFatal {
-		PerformFatal = false
+	if G.PerformFatal {
+		G.PerformFatal = false
 		return PerfFatal, true
 	}
 	if result {
@@ -366,47 +270,47 @@ func callHandler(fn func(ActArg) bool, arg ActArg) (PerfRet, bool) {
 func Perform(a ActionVerb, o, i *Object) PerfRet {
 	// Save old globals so nested Perform calls don't corrupt the outer
 	// call's state. This mirrors ZIL's save/restore of PRSA, PRSO, PRSI.
-	oldActVerb := ActVerb
-	oldDirObj := DirObj
-	oldIndirObj := IndirObj
+	oldActVerb := G.ActVerb
+	oldDirObj := G.DirObj
+	oldIndirObj := G.IndirObj
 	defer func() {
-		ActVerb = oldActVerb
-		DirObj = oldDirObj
-		IndirObj = oldIndirObj
+		G.ActVerb = oldActVerb
+		G.DirObj = oldDirObj
+		G.IndirObj = oldIndirObj
 	}()
 
 	// Clear any stale fatal flag (e.g. from parser's ITake call).
-	PerformFatal = false
-	if (o == &It || i == &It) && !IsAccessible(Params.ItObj) {
+	G.PerformFatal = false
+	if (o == &It || i == &It) && !IsAccessible(G.Params.ItObj) {
 		Print("I don't see what you are referring to.", Newline)
 		return PerfFatal
 	}
 	if o == &It {
-		o = Params.ItObj
+		o = G.Params.ItObj
 	}
 	if i == &It {
-		i = Params.ItObj
+		i = G.Params.ItObj
 	}
 	// Set globals from parameters (like ZIL's SETG PRSA/PRSO/PRSI).
-	ActVerb = a
-	DirObj = o
+	G.ActVerb = a
+	G.DirObj = o
 	// Track "it" for non-walk commands (ZIL: <NOT <VERB? WALK>>).
 	if o != nil && a.Norm != "walk" {
-		Params.ItObj = o
+		G.Params.ItObj = o
 	}
-	IndirObj = i
+	G.IndirObj = i
 
 	if o == &NotHereObject || i == &NotHereObject {
 		if ret, done := callHandler(NotHereObjectFcn, ActUnk); done {
 			return ret
 		}
 	}
-	if Winner != nil && Winner.Action != nil {
-		if ret, done := callHandler(Winner.Action, ActUnk); done {
+	if G.Winner != nil && G.Winner.Action != nil {
+		if ret, done := callHandler(G.Winner.Action, ActUnk); done {
 			return ret
 		}
 	}
-	if l := Winner.Location(); l != nil && l.Action != nil {
+	if l := G.Winner.Location(); l != nil && l.Action != nil {
 		if ret, done := callHandler(l.Action, ActBegin); done {
 			return ret
 		}
