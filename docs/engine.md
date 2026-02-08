@@ -316,4 +316,4 @@ The engine provides object-index mapping for serialization:
 - `BuildObjIndex()` builds a `map[*Object]int` from `G.AllObjects`.
 - `ObjToIdx(o)` / `IdxToObj(idx)` convert between pointers and stable indices.
 
-The actual save/restore/restart logic is provided by the game package via function hooks (`G.Save`, `G.Restore`, `G.Restart`).
+The actual save/restore/restart logic is provided by the game package via function hooks (`G.Save`, `G.Restore`, `G.Restart`). Each hook returns `error` (`nil` on success) so that callers can report the specific failure reason to the player.

@@ -2,6 +2,7 @@ package engine
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"math/rand"
 	"os"
@@ -79,9 +80,9 @@ type GameState struct {
 	Rand RNG
 
 	// ---- Save/Restore/Restart function hooks ----
-	Save    func() bool
-	Restore func() bool
-	Restart func() bool
+	Save    func() error
+	Restore func() error
+	Restart func() error
 
 	// ---- Well-known objects (set by game during init) ----
 	AllObjects     []*Object // complete list of all game objects
@@ -128,9 +129,9 @@ func NewGameState() *GameState {
 		Rand: rand.New(rand.NewSource(time.Now().UnixNano())),
 
 		// Stub function hooks (replaced by game's initSaveSystem)
-		Save:    func() bool { return false },
-		Restore: func() bool { return false },
-		Restart: func() bool { return false },
+		Save:    func() error { return fmt.Errorf("save system not initialized") },
+		Restore: func() error { return fmt.Errorf("restore system not initialized") },
+		Restart: func() error { return fmt.Errorf("restart system not initialized") },
 
 		// Initialize maps
 		Actions:    make(map[string]VrbAction),

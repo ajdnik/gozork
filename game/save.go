@@ -324,48 +324,48 @@ func initSaveSystem() {
 	G.Restart = doRestart
 }
 
-func doSave() bool {
+func doSave() error {
 	fname := promptFilename("save")
 	s := captureState()
 
 	f, err := os.Create(fname)
 	if err != nil {
-		return false
+		return fmt.Errorf("create save file: %w", err)
 	}
 	defer f.Close()
 
 	enc := gob.NewEncoder(f)
 	if err := enc.Encode(s); err != nil {
-		return false
+		return fmt.Errorf("encode save data: %w", err)
 	}
-	return true
+	return nil
 }
 
-func doRestore() bool {
+func doRestore() error {
 	fname := promptFilename("restore")
 
 	f, err := os.Open(fname)
 	if err != nil {
-		return false
+		return fmt.Errorf("open save file: %w", err)
 	}
 	defer f.Close()
 
 	var s gameState
 	dec := gob.NewDecoder(f)
 	if err := dec.Decode(&s); err != nil {
-		return false
+		return fmt.Errorf("decode save data: %w", err)
 	}
 
 	if len(s.ObjStates) != len(G.AllObjects) {
-		return false
+		return fmt.Errorf("save file has %d objects, expected %d", len(s.ObjStates), len(G.AllObjects))
 	}
 
 	applyState(&s)
 	G.Lit = IsLit(G.Here, true)
-	return true
+	return nil
 }
 
-func doRestart() bool {
+func doRestart() error {
 	G.GameData = NewZorkData()
 	registerWellKnownObjects()
 	G.ITakeFunc = ITake
@@ -396,5 +396,5 @@ func doRestart() bool {
 	G.Save = doSave
 	G.Restore = doRestore
 	G.Restart = doRestart
-	return true
+	return nil
 }

@@ -93,7 +93,7 @@ Vocabulary map      ←── built ────  synonyms, objects, adjectives
 Commands slice      ←── set ──────  GameCommands (syntax_data.go)
 G.ClockFuncs map    ←── filled ───  initClockFuncs() (init.go)
 G.Save/Restore/     ←── wired ───  doSave/doRestore/doRestart (save.go)
-  Restart hooks
+  Restart hooks                     (return error, nil on success)
 ```
 
 ## Testing Strategy

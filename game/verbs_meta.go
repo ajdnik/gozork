@@ -38,33 +38,33 @@ func VRestart(arg ActArg) bool {
 	Printf("Do you wish to restart? (Y is affirmative): ")
 	if IsYes() {
 		Printf("Restarting.\n")
-		if G.Restart() {
-			VVersion(ActUnk)
-			Printf("\n")
-			VFirstLook(ActUnk)
+		if err := G.Restart(); err != nil {
+			Printf("Failed: %s\n", err)
 			return true
 		}
-		Printf("Failed.\n")
+		VVersion(ActUnk)
+		Printf("\n")
+		VFirstLook(ActUnk)
 		return true
 	}
 	return false
 }
 
 func VRestore(arg ActArg) bool {
-	if G.Restore() {
-		Printf("Ok.\n")
-		return VFirstLook(ActUnk)
+	if err := G.Restore(); err != nil {
+		Printf("Failed: %s\n", err)
+		return true
 	}
-	Printf("Failed.\n")
-	return true
+	Printf("Ok.\n")
+	return VFirstLook(ActUnk)
 }
 
 func VSave(arg ActArg) bool {
-	if G.Save() {
-		Printf("Ok.\n")
+	if err := G.Save(); err != nil {
+		Printf("Failed: %s\n", err)
 		return true
 	}
-	Printf("Failed.\n")
+	Printf("Ok.\n")
 	return true
 }
 
@@ -202,17 +202,17 @@ func Finish() bool {
 		}
 		wrd := lex[0]
 		if wrd.Norm == "restart" {
-			if !G.Restart() {
-				Printf("Failed.\n")
+			if err := G.Restart(); err != nil {
+				Printf("Failed: %s\n", err)
 			}
 			return true
 		}
 		if wrd.Norm == "restore" {
-			if G.Restore() {
-				Printf("Ok.\n")
+			if err := G.Restore(); err != nil {
+				Printf("Failed: %s\n", err)
 				return true
 			}
-			Printf("Failed.\n")
+			Printf("Ok.\n")
 			return true
 		}
 		if wrd.Norm == "quit" {

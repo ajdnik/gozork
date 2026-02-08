@@ -349,9 +349,11 @@ type gameState struct {
 
 ### Operations
 
-- `doSave()` — prompts for filename, captures state, encodes to file
-- `doRestore()` — prompts for filename, decodes, applies state, rebuilds object tree
-- `doRestart()` — reinitializes everything from scratch (same as `InitGame()` but preserves I/O)
+All three functions return `error` (`nil` on success), propagating the underlying cause so verb handlers can display a meaningful message to the player (e.g. "Failed: open save file: no such file or directory").
+
+- `doSave() error` — prompts for filename, captures state, encodes to file
+- `doRestore() error` — prompts for filename, decodes, validates object count, applies state, rebuilds object tree
+- `doRestart() error` — reinitializes everything from scratch (same as `InitGame()` but preserves I/O)
 
 ## Key Puzzles and Mechanics
 
