@@ -1072,7 +1072,7 @@ func GetObject(isDirect, vrb bool) []*Object {
 		return nil
 	}
 	xbits := G.Search.LocFlags
-	if G.Params.GetType != GetAll || len(G.Search.LocFlags) == 0 {
+	if G.Params.GetType != GetAll || G.Search.LocFlags == 0 {
 		G.Search.LocFlags.All()
 	}
 	res := []*Object{}
@@ -1280,7 +1280,7 @@ func IsLit(room *Object, rmChk bool) bool {
 		G.Search.ObjFlags = 0
 		return true
 	}
-	G.Search.LocFlags = nil
+	G.Search.LocFlags = 0
 	res := []*Object{}
 	if bak == room {
 		if nr := SearchList(G.Winner, FindAll); nr != nil {

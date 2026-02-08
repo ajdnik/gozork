@@ -1,11 +1,11 @@
 package engine
 
 // LocFlag represents a single location constraint for parser object resolution.
-type LocFlag int
+type LocFlag uint8
 
 const (
 	// LocHeld means the object must be directly held by the actor.
-	LocHeld LocFlag = iota
+	LocHeld LocFlag = 1 << iota
 	// LocCarried means the object must be carried (held or in a carried container).
 	LocCarried
 	// LocInRoom means the object must be in the current room.
@@ -18,32 +18,36 @@ const (
 	LocMany
 	// LocHave means the object must already be possessed.
 	LocHave
-
-	NumLocFlags = 7
 )
 
 // In returns true if this flag appears in the given flag set.
 func (lf LocFlag) In(flgs LocFlags) bool {
-	for _, flg := range flgs {
-		if flg == lf {
-			return true
-		}
-	}
-	return false
+	return flgs&LocFlags(lf) != 0
 }
 
 // LocFlags is a set of LocFlag constraints.
-type LocFlags []LocFlag
+type LocFlags uint8
+
+const LocAll LocFlags = LocFlags(LocHeld | LocCarried | LocInRoom | LocOnGrnd | LocTake | LocMany | LocHave)
+
+// LocSet builds a LocFlags bitset from a list of flags.
+func LocSet(flags ...LocFlag) LocFlags {
+	var res LocFlags
+	for _, flg := range flags {
+		res |= LocFlags(flg)
+	}
+	return res
+}
 
 // All replaces the set with every possible LocFlag value.
 func (lfs *LocFlags) All() LocFlags {
-	*lfs = LocFlags{LocHeld, LocCarried, LocInRoom, LocOnGrnd, LocTake, LocMany, LocHave}
+	*lfs = LocAll
 	return *lfs
 }
 
 // HasAll returns true if all LocFlag values are present.
 func (lfs LocFlags) HasAll() bool {
-	return len(lfs) == NumLocFlags
+	return lfs == LocAll
 }
 
 // VerbAction is a handler function invoked when a verb is performed.
