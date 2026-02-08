@@ -394,9 +394,9 @@ func WhiteHouseFcn(arg ActArg) bool {
 	return false
 }
 
-func GoNext(tbl []*Object) int {
-	val := Lkp(G.Here, tbl)
-	if val == nil {
+func GoNext(tbl map[*Object]*Object) int {
+	val, ok := tbl[G.Here]
+	if !ok {
 		return NumUndef
 	}
 	if !Goto(val, true) {

@@ -453,8 +453,8 @@ func IRiver() bool {
 		QueueInt(IRiver, false).Run = false
 		return false
 	}
-	rm := Lkp(G.Here, RiverNext)
-	if rm != nil {
+	rm, ok := RiverNext[G.Here]
+	if ok {
 		Print("The flow of the river carries you downstream.", Newline)
 		NewLine()
 		Goto(rm, true)

@@ -59,18 +59,23 @@ var (
 		&River4: 2,
 		&River5: 1,
 	}
-	// ZIL: <LTABLE (PURE) RIVER-1 RIVER-2 RIVER-3 RIVER-4 RIVER-5>
-	// Lkp finds the item and returns the next element — must be a flat sequential list.
-	RiverNext = []*Object{&River1, &River2, &River3, &River4, &River5}
-	RiverLaunch = []*Object{
-		&DamBase, &River1,
-		&WhiteCliffsNorth, &River3,
-		&WhiteCliffsSouth, &River4,
-		&Shore, &River5,
-		&SandyBeach, &River4,
-		&ReservoirSouth, &Reservoir,
-		&ReservoirNorth, &Reservoir,
-		&StreamView, &InStream,
+	// RiverNext maps each river room to the next one downstream.
+	RiverNext = map[*Object]*Object{
+		&River1: &River2,
+		&River2: &River3,
+		&River3: &River4,
+		&River4: &River5,
+	}
+	// RiverLaunch maps a room to the river room you enter when launching from it.
+	RiverLaunch = map[*Object]*Object{
+		&DamBase:          &River1,
+		&WhiteCliffsNorth: &River3,
+		&WhiteCliffsSouth: &River4,
+		&Shore:            &River5,
+		&SandyBeach:       &River4,
+		&ReservoirSouth:   &Reservoir,
+		&ReservoirNorth:   &Reservoir,
+		&StreamView:       &InStream,
 	}
 
 	// Lamp/Candle countdown tables
@@ -97,26 +102,26 @@ var (
 	// TABLES
 	// ================================================================
 
-	InHouseAround = []*Object{
-		&LivingRoom,
-		&Kitchen,
-		&Attic,
-		&Kitchen,
+	// InHouseAround maps each interior room to the next in a circular walk.
+	InHouseAround = map[*Object]*Object{
+		&LivingRoom: &Kitchen,
+		&Kitchen:    &Attic,
+		&Attic:      &Kitchen,
 	}
-	HouseAround = []*Object{
-		&WestOfHouse,
-		&NorthOfHouse,
-		&EastOfHouse,
-		&SouthOfHouse,
-		&WestOfHouse,
+	// HouseAround maps each exterior room to the next in a circular walk.
+	HouseAround = map[*Object]*Object{
+		&WestOfHouse:  &NorthOfHouse,
+		&NorthOfHouse: &EastOfHouse,
+		&EastOfHouse:  &SouthOfHouse,
+		&SouthOfHouse: &WestOfHouse,
 	}
-	ForestAround = []*Object{
-		&Forest1,
-		&Forest2,
-		&Forest3,
-		&Path,
-		&Clearing,
-		&Forest1,
+	// ForestAround maps each forest room to the next in a circular walk.
+	ForestAround = map[*Object]*Object{
+		&Forest1:   &Forest2,
+		&Forest2:   &Forest3,
+		&Forest3:   &Path,
+		&Path:      &Clearing,
+		&Clearing:  &Forest1,
 	}
 	AboveGround = []*Object{
 		&WestOfHouse,
