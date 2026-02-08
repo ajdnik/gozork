@@ -16,7 +16,7 @@ func TestFullPlaythrough(t *testing.T) {
 		Step{Command: "go south", Contains: []string{"South of House"}},
 		Step{Command: "go east", Contains: []string{"Behind House"}},
 		Step{Command: "open window", Contains: []string{"open"}},
-		Step{Command: "enter house", Contains: []string{"Kitchen"}},
+		Step{Command: "enter house", Contains: []string{"kitchen"}},
 	)
 
 	// === Living Room: take lamp, open underground ===
@@ -28,22 +28,22 @@ func TestFullPlaythrough(t *testing.T) {
 		Step{Command: "turn on lamp", Contains: []string{"now on"}},
 	)
 
-	// === Underground: Gallery painting ===
+	// === Underground: gallery painting ===
 	steps = append(steps,
-		Step{Command: "go down", Contains: []string{"Cellar"}},
+		Step{Command: "go down", Contains: []string{"cellar"}},
 		Step{Command: "go south", Contains: []string{"East of Chasm"}},
-		Step{Command: "go east", Contains: []string{"Gallery"}},
+		Step{Command: "go east", Contains: []string{"gallery"}},
 		Step{Command: "take painting", Contains: []string{"Taken"}},
-		Step{Command: "go north", Contains: []string{"Studio"}},
-		Step{Command: "go up", Contains: []string{"Kitchen"}}, // chimney
+		Step{Command: "go north", Contains: []string{"studio"}},
+		Step{Command: "go up", Contains: []string{"kitchen"}}, // chimney
 	)
 
-	// === Attic: knife and rope ===
+	// === attic: knife and rope ===
 	steps = append(steps,
-		Step{Command: "go up", Contains: []string{"Attic"}},
+		Step{Command: "go up", Contains: []string{"attic"}},
 		Step{Command: "take knife", Contains: []string{"Taken"}},
 		Step{Command: "take rope", Contains: []string{"Taken"}},
-		Step{Command: "go down", Contains: []string{"Kitchen"}},
+		Step{Command: "go down", Contains: []string{"kitchen"}},
 	)
 
 	// === Living Room: store painting, get sword ===
@@ -55,11 +55,11 @@ func TestFullPlaythrough(t *testing.T) {
 		Step{Command: "take sword", Contains: []string{"Taken"}},
 	)
 
-	// === Troll fight (troll dies quickly with seed 1) ===
+	// === troll fight (troll dies quickly with seed 1) ===
 	steps = append(steps,
 		Step{Command: "open trap door", Contains: []string{"rickety staircase"}},
-		Step{Command: "go down", Contains: []string{"Cellar"}},
-		Step{Command: "go north", Contains: []string{"Troll Room"}},
+		Step{Command: "go down", Contains: []string{"cellar"}},
+		Step{Command: "go north", Contains: []string{"troll Room"}},
 	)
 	for i := 0; i < 5; i++ {
 		steps = append(steps, Step{Command: "kill troll with sword"})
@@ -72,34 +72,34 @@ func TestFullPlaythrough(t *testing.T) {
 	steps = append(steps,
 		Step{Command: "go east", Contains: []string{"East-West Passage"}},
 		Step{Command: "go east", Contains: []string{"Round Room"}},
-		Step{Command: "go southeast", Contains: []string{"Engravings Cave"}},
+		Step{Command: "go southeast", Contains: []string{"engravings Cave"}},
 		Step{Command: "go east", Contains: []string{"Dome Room"}},
 		Step{Command: "tie rope to railing", Contains: []string{"rope"}},
-		Step{Command: "go down", Contains: []string{"Torch Room"}},
+		Step{Command: "go down", Contains: []string{"torch Room"}},
 	)
 
-	// === Temple, Egyptian Room, Altar, Pray ===
+	// === Temple, Egyptian Room, altar, Pray ===
 	steps = append(steps,
 		Step{Command: "go south", Contains: []string{"Temple"}},
 		Step{Command: "go east", Contains: []string{"Egyptian Room"}},
 		Step{Command: "take coffin", Contains: []string{"Taken"}},
 		Step{Command: "go west", Contains: []string{"Temple"}},
-		Step{Command: "go south", Contains: []string{"Altar"}},
-		Step{Command: "pray", Contains: []string{"Forest"}},
+		Step{Command: "go south", Contains: []string{"altar"}},
+		Step{Command: "pray", Contains: []string{"forest"}},
 	)
 
-	// === Surface: Canyon to End of Rainbow ===
+	// === Surface: Canyon to End of rainbow ===
 	steps = append(steps,
 		Step{Command: "turn off lamp", Contains: []string{"now off"}},
-		Step{Command: "go south", Contains: []string{"Forest"}},
-		Step{Command: "go north", Contains: []string{"Clearing"}},
+		Step{Command: "go south", Contains: []string{"forest"}},
+		Step{Command: "go north", Contains: []string{"clearing"}},
 		Step{Command: "go east", Contains: []string{"Canyon View"}},
 		Step{Command: "go down", Contains: []string{"Rocky Ledge"}},
 		Step{Command: "go down", Contains: []string{"Canyon Bottom"}},
-		Step{Command: "go north", Contains: []string{"End of Rainbow"}},
+		Step{Command: "go north", Contains: []string{"End of rainbow"}},
 	)
 
-	// === Rainbow puzzle ===
+	// === rainbow puzzle ===
 	steps = append(steps,
 		Step{Command: "drop coffin", Contains: []string{"Dropped"}},
 		Step{Command: "open coffin", Contains: []string{"sceptre"}},
@@ -114,9 +114,9 @@ func TestFullPlaythrough(t *testing.T) {
 		Step{Command: "go southwest", Contains: []string{"Canyon Bottom"}},
 		Step{Command: "go up", Contains: []string{"Rocky Ledge"}},
 		Step{Command: "go up", Contains: []string{"Canyon View"}},
-		Step{Command: "go northwest", Contains: []string{"Clearing"}},
+		Step{Command: "go northwest", Contains: []string{"clearing"}},
 		Step{Command: "go west", Contains: []string{"Behind House"}},
-		Step{Command: "enter house", Contains: []string{"Kitchen"}},
+		Step{Command: "enter house", Contains: []string{"kitchen"}},
 		Step{Command: "open bag", Contains: []string{"lunch"}},
 		Step{Command: "take garlic", Contains: []string{"Taken"}},
 		Step{Command: "go west", Contains: []string{"Living Room"}},
@@ -125,45 +125,45 @@ func TestFullPlaythrough(t *testing.T) {
 		Step{Command: "put sceptre in case", Contains: []string{"Done"}},
 	)
 
-	// === Dam sequence ===
+	// === dam sequence ===
 	steps = append(steps,
 		Step{Command: "open trap door", Contains: []string{"rickety staircase"}},
 		Step{Command: "turn on lamp", Contains: []string{"now on"}},
-		Step{Command: "go down", Contains: []string{"Cellar"}},
-		Step{Command: "go north", Contains: []string{"Troll Room"}},
+		Step{Command: "go down", Contains: []string{"cellar"}},
+		Step{Command: "go north", Contains: []string{"troll Room"}},
 		Step{Command: "go east", Contains: []string{"East-West Passage"}},
 		Step{Command: "go north", Contains: []string{"Chasm"}},
-		Step{Command: "go northeast", Contains: []string{"Reservoir South"}},
-		Step{Command: "go east", Contains: []string{"Dam"}},
-		Step{Command: "go north", Contains: []string{"Dam Lobby"}},
+		Step{Command: "go northeast", Contains: []string{"reservoir South"}},
+		Step{Command: "go east", Contains: []string{"dam"}},
+		Step{Command: "go north", Contains: []string{"dam Lobby"}},
 		Step{Command: "take matches", Contains: []string{"Taken"}},
 		Step{Command: "go north", Contains: []string{"Maintenance Room"}},
 		Step{Command: "take wrench", Contains: []string{"Taken"}},
 		Step{Command: "take screwdriver", Contains: []string{"Taken"}},
 		Step{Command: "push yellow button"},
-		Step{Command: "go south", Contains: []string{"Dam Lobby"}},
-		Step{Command: "go south", Contains: []string{"Dam"}},
+		Step{Command: "go south", Contains: []string{"dam Lobby"}},
+		Step{Command: "go south", Contains: []string{"dam"}},
 		Step{Command: "turn bolt with wrench", Contains: []string{"sluice gates"}},
 		Step{Command: "drop wrench", Contains: []string{"Dropped"}},
 	)
 
-	// === Deep Canyon to Torch Room (avoid loud room bounce) ===
+	// === Deep Canyon to torch Room (avoid loud room bounce) ===
 	steps = append(steps,
 		Step{Command: "go south", Contains: []string{"Deep Canyon"}},
 		Step{Command: "go southwest", Contains: []string{"Passage"}},
 		Step{Command: "go south", Contains: []string{"Round Room"}},
-		Step{Command: "go southeast", Contains: []string{"Engravings Cave"}},
+		Step{Command: "go southeast", Contains: []string{"engravings Cave"}},
 		Step{Command: "go east", Contains: []string{"Dome Room"}},
-		Step{Command: "go down", Contains: []string{"Torch Room"}},
+		Step{Command: "go down", Contains: []string{"torch Room"}},
 		Step{Command: "take torch", Contains: []string{"Taken"}},
 		Step{Command: "turn off lamp", Contains: []string{"now off"}},
 	)
 
-	// === Temple: bell, Altar: candles+book, Hades ===
+	// === Temple: bell, altar: candles+book, Hades ===
 	steps = append(steps,
 		Step{Command: "go south", Contains: []string{"Temple"}},
 		Step{Command: "take bell", Contains: []string{"Taken"}},
-		Step{Command: "go south", Contains: []string{"Altar"}},
+		Step{Command: "go south", Contains: []string{"altar"}},
 		Step{Command: "take candles", Contains: []string{"Taken"}},
 		Step{Command: "take book", Contains: []string{"Taken"}},
 		Step{Command: "go down", Contains: []string{"Cave"}},
@@ -193,42 +193,42 @@ func TestFullPlaythrough(t *testing.T) {
 		Step{Command: "go north", Contains: []string{"Mirror Room"}},
 		Step{Command: "rub mirror", Contains: []string{"rumble"}},
 		Step{Command: "go north", Contains: []string{"Cold Passage"}},
-		Step{Command: "go west", Contains: []string{"Slide Room"}},
+		Step{Command: "go west", Contains: []string{"slide Room"}},
 		Step{Command: "go north", Contains: []string{"Mine Entrance"}},
 		Step{Command: "go west", Contains: []string{"Squeaky Room"}},
 	)
 
-	// === Bat Room, Shaft Room: deposit torch+screwdriver in basket ===
+	// === bat Room, Shaft Room: deposit torch+screwdriver in basket ===
 	steps = append(steps,
-		Step{Command: "go north", Contains: []string{"Bat Room"}},
+		Step{Command: "go north", Contains: []string{"bat Room"}},
 		Step{Command: "go east", Contains: []string{"Shaft Room"}},
 		Step{Command: "put torch in basket", Contains: []string{"Done"}},
 		Step{Command: "put screwdriver in basket", Contains: []string{"Done"}},
 		Step{Command: "turn on lamp", Contains: []string{"now on"}},
 	)
 
-	// === Coal Mine: get coal ===
+	// === coal Mine: get coal ===
 	steps = append(steps,
 		Step{Command: "go north", Contains: []string{"Smelly Room"}},
 		Step{Command: "go down", Contains: []string{"Gas Room"}},
-		Step{Command: "go east", Contains: []string{"Coal Mine"}},
-		Step{Command: "go northeast", Contains: []string{"Coal Mine"}},
-		Step{Command: "go southeast", Contains: []string{"Coal Mine"}},
-		Step{Command: "go southwest", Contains: []string{"Coal Mine"}},
-		Step{Command: "go down", Contains: []string{"Ladder Top"}},
-		Step{Command: "go down", Contains: []string{"Ladder Bottom"}},
+		Step{Command: "go east", Contains: []string{"coal Mine"}},
+		Step{Command: "go northeast", Contains: []string{"coal Mine"}},
+		Step{Command: "go southeast", Contains: []string{"coal Mine"}},
+		Step{Command: "go southwest", Contains: []string{"coal Mine"}},
+		Step{Command: "go down", Contains: []string{"ladder Top"}},
+		Step{Command: "go down", Contains: []string{"ladder Bottom"}},
 		Step{Command: "go south", Contains: []string{"Dead End"}},
 		Step{Command: "take coal", Contains: []string{"Taken"}},
 	)
 
 	// === Back to Shaft Room with coal ===
 	steps = append(steps,
-		Step{Command: "go north", Contains: []string{"Ladder Bottom"}},
-		Step{Command: "go up", Contains: []string{"Ladder Top"}},
-		Step{Command: "go up", Contains: []string{"Coal Mine"}},
-		Step{Command: "go north", Contains: []string{"Coal Mine"}},
-		Step{Command: "go east", Contains: []string{"Coal Mine"}},
-		Step{Command: "go south", Contains: []string{"Coal Mine"}},
+		Step{Command: "go north", Contains: []string{"ladder Bottom"}},
+		Step{Command: "go up", Contains: []string{"ladder Top"}},
+		Step{Command: "go up", Contains: []string{"coal Mine"}},
+		Step{Command: "go north", Contains: []string{"coal Mine"}},
+		Step{Command: "go east", Contains: []string{"coal Mine"}},
+		Step{Command: "go south", Contains: []string{"coal Mine"}},
 		Step{Command: "go north", Contains: []string{"Gas Room"}},
 		Step{Command: "go up", Contains: []string{"Smelly Room"}},
 		Step{Command: "go south", Contains: []string{"Shaft Room"}},
@@ -240,23 +240,23 @@ func TestFullPlaythrough(t *testing.T) {
 		Step{Command: "lower basket"},
 		Step{Command: "go north", Contains: []string{"Smelly Room"}},
 		Step{Command: "go down", Contains: []string{"Gas Room"}},
-		Step{Command: "go east", Contains: []string{"Coal Mine"}},
-		Step{Command: "go northeast", Contains: []string{"Coal Mine"}},
-		Step{Command: "go southeast", Contains: []string{"Coal Mine"}},
-		Step{Command: "go southwest", Contains: []string{"Coal Mine"}},
-		Step{Command: "go down", Contains: []string{"Ladder Top"}},
-		Step{Command: "go down", Contains: []string{"Ladder Bottom"}},
+		Step{Command: "go east", Contains: []string{"coal Mine"}},
+		Step{Command: "go northeast", Contains: []string{"coal Mine"}},
+		Step{Command: "go southeast", Contains: []string{"coal Mine"}},
+		Step{Command: "go southwest", Contains: []string{"coal Mine"}},
+		Step{Command: "go down", Contains: []string{"ladder Top"}},
+		Step{Command: "go down", Contains: []string{"ladder Bottom"}},
 		Step{Command: "go west", Contains: []string{"Timber Room"}},
 		Step{Command: "drop all"},
 	)
 
-	// === Drafty Room: Machine Room diamond ===
+	// === Drafty Room: machine Room diamond ===
 	steps = append(steps,
 		Step{Command: "go west", Contains: []string{"Drafty Room"}},
 		Step{Command: "take coal", Contains: []string{"Taken"}},
 		Step{Command: "take screwdriver", Contains: []string{"Taken"}},
 		Step{Command: "take torch", Contains: []string{"Taken"}},
-		Step{Command: "go south", Contains: []string{"Machine Room"}},
+		Step{Command: "go south", Contains: []string{"machine Room"}},
 		Step{Command: "open lid", Contains: []string{"lid opens"}},
 		Step{Command: "put coal in machine", Contains: []string{"Done"}},
 		Step{Command: "close lid", Contains: []string{"lid closes"}},
@@ -279,12 +279,12 @@ func TestFullPlaythrough(t *testing.T) {
 
 	// === Back up through mine to Shaft Room ===
 	steps = append(steps,
-		Step{Command: "go east", Contains: []string{"Ladder Bottom"}},
-		Step{Command: "go up", Contains: []string{"Ladder Top"}},
-		Step{Command: "go up", Contains: []string{"Coal Mine"}},
-		Step{Command: "go north", Contains: []string{"Coal Mine"}},
-		Step{Command: "go east", Contains: []string{"Coal Mine"}},
-		Step{Command: "go south", Contains: []string{"Coal Mine"}},
+		Step{Command: "go east", Contains: []string{"ladder Bottom"}},
+		Step{Command: "go up", Contains: []string{"ladder Top"}},
+		Step{Command: "go up", Contains: []string{"coal Mine"}},
+		Step{Command: "go north", Contains: []string{"coal Mine"}},
+		Step{Command: "go east", Contains: []string{"coal Mine"}},
+		Step{Command: "go south", Contains: []string{"coal Mine"}},
 		Step{Command: "go north", Contains: []string{"Gas Room"}},
 		Step{Command: "take bracelet", Contains: []string{"Taken"}},
 		Step{Command: "go up", Contains: []string{"Smelly Room"}},
@@ -299,14 +299,14 @@ func TestFullPlaythrough(t *testing.T) {
 		Step{Command: "turn off lamp", Contains: []string{"now off"}},
 	)
 
-	// === Bat Room to Living Room via slide ===
+	// === bat Room to Living Room via slide ===
 	steps = append(steps,
-		Step{Command: "go west", Contains: []string{"Bat Room"}},
+		Step{Command: "go west", Contains: []string{"bat Room"}},
 		Step{Command: "take jade", Contains: []string{"Taken"}},
 		Step{Command: "go south", Contains: []string{"Squeaky Room"}},
 		Step{Command: "go east", Contains: []string{"Mine Entrance"}},
-		Step{Command: "go south", Contains: []string{"Slide Room"}},
-		Step{Command: "go down", Contains: []string{"Cellar"}},
+		Step{Command: "go south", Contains: []string{"slide Room"}},
+		Step{Command: "go down", Contains: []string{"cellar"}},
 		Step{Command: "go up", Contains: []string{"Living Room"}},
 	)
 
@@ -316,17 +316,17 @@ func TestFullPlaythrough(t *testing.T) {
 		Step{Command: "put diamond in case", Contains: []string{"Done"}},
 	)
 
-	// === Reservoir: trunk and pump ===
+	// === reservoir: trunk and pump ===
 	steps = append(steps,
 		Step{Command: "turn on lamp", Contains: []string{"now on"}},
-		Step{Command: "go down", Contains: []string{"Cellar"}},
-		Step{Command: "go north", Contains: []string{"Troll Room"}},
+		Step{Command: "go down", Contains: []string{"cellar"}},
+		Step{Command: "go north", Contains: []string{"troll Room"}},
 		Step{Command: "go east", Contains: []string{"East-West Passage"}},
 		Step{Command: "go north", Contains: []string{"Chasm"}},
-		Step{Command: "go northeast", Contains: []string{"Reservoir South"}},
-		Step{Command: "go north", Contains: []string{"Reservoir"}},
+		Step{Command: "go northeast", Contains: []string{"reservoir South"}},
+		Step{Command: "go north", Contains: []string{"reservoir"}},
 		Step{Command: "take trunk", Contains: []string{"Taken"}},
-		Step{Command: "go north", Contains: []string{"Reservoir North"}},
+		Step{Command: "go north", Contains: []string{"reservoir North"}},
 		Step{Command: "take pump", Contains: []string{"Taken"}},
 	)
 
@@ -337,25 +337,25 @@ func TestFullPlaythrough(t *testing.T) {
 		Step{Command: "take trident", Contains: []string{"Taken"}},
 	)
 
-	// === Dam Base: inflate boat, river journey ===
+	// === dam Base: inflate boat, river journey ===
 	steps = append(steps,
-		Step{Command: "go south", Contains: []string{"Reservoir North"}},
-		Step{Command: "go south", Contains: []string{"Reservoir"}},
-		Step{Command: "go south", Contains: []string{"Reservoir South"}},
-		Step{Command: "go east", Contains: []string{"Dam"}},
-		Step{Command: "go east", Contains: []string{"Dam Base"}},
+		Step{Command: "go south", Contains: []string{"reservoir North"}},
+		Step{Command: "go south", Contains: []string{"reservoir"}},
+		Step{Command: "go south", Contains: []string{"reservoir South"}},
+		Step{Command: "go east", Contains: []string{"dam"}},
+		Step{Command: "go east", Contains: []string{"dam Base"}},
 		Step{Command: "inflate plastic with pump", Contains: []string{"boat inflates"}},
 		Step{Command: "drop pump", Contains: []string{"Dropped"}},
 	)
 
-	// === River (ZIL speeds: River1=4, River2=4, River3=3, River4=2, River5=1)
-	// VWait runs Clocker 3x per call.
-	// Launch: River1, tick=4. EOT: 4→3.
-	// wait1 (3 ticks): 3→2→1→0 fire! → River2. Queue(4).
+	// === river (ZIL speeds: river1=4, river2=4, river3=3, river4=2, river5=1)
+	// vWait runs Clocker 3x per call.
+	// Launch: river1, tick=4. EOT: 4→3.
+	// wait1 (3 ticks): 3→2→1→0 fire! → river2. Queue(4).
 	// wait2 (3 ticks): 4→3→2→1.
-	// wait3 (3 ticks): 1→0 fire! → River3. Queue(3). 3→2→1.
-	// look (1 tick): 1→0 fire! → River4. Queue(2). Player sees River4!
-	// take buoy (1 tick): 2→1. Still at River4!
+	// wait3 (3 ticks): 1→0 fire! → river3. Queue(3). 3→2→1.
+	// look (1 tick): 1→0 fire! → river4. Queue(2). Player sees river4!
+	// take buoy (1 tick): 2→1. Still at river4!
 	// go east (1 tick): lands at Sandy Beach.
 	steps = append(steps,
 		Step{Command: "board boat"},
@@ -383,15 +383,15 @@ func TestFullPlaythrough(t *testing.T) {
 		Step{Command: "take scarab", Contains: []string{"Taken"}},
 	)
 
-	// === Buoy emerald, cross rainbow ===
+	// === buoy emerald, cross rainbow ===
 	steps = append(steps,
 		Step{Command: "go southwest", Contains: []string{"Sandy Beach"}},
 		Step{Command: "open buoy", Contains: []string{"emerald"}},
 		Step{Command: "take emerald", Contains: []string{"Taken"}},
 		Step{Command: "take garlic", Contains: []string{"Taken"}},
-		Step{Command: "go south", Contains: []string{"Shore"}},
+		Step{Command: "go south", Contains: []string{"shore"}},
 		Step{Command: "go south", Contains: []string{"Aragain Falls"}},
-		Step{Command: "cross rainbow", Contains: []string{"End of Rainbow"}},
+		Step{Command: "cross rainbow", Contains: []string{"End of rainbow"}},
 		Step{Command: "turn off lamp", Contains: []string{"now off"}},
 	)
 
@@ -400,9 +400,9 @@ func TestFullPlaythrough(t *testing.T) {
 		Step{Command: "go southwest", Contains: []string{"Canyon Bottom"}},
 		Step{Command: "go up", Contains: []string{"Rocky Ledge"}},
 		Step{Command: "go up", Contains: []string{"Canyon View"}},
-		Step{Command: "go northwest", Contains: []string{"Clearing"}},
+		Step{Command: "go northwest", Contains: []string{"clearing"}},
 		Step{Command: "go west", Contains: []string{"Behind House"}},
-		Step{Command: "enter house", Contains: []string{"Kitchen"}},
+		Step{Command: "enter house", Contains: []string{"kitchen"}},
 		Step{Command: "go west", Contains: []string{"Living Room"}},
 		Step{Command: "put emerald in case", Contains: []string{"Done"}},
 		Step{Command: "put scarab in case", Contains: []string{"Done"}},
@@ -412,24 +412,24 @@ func TestFullPlaythrough(t *testing.T) {
 
 	// === Get egg from tree ===
 	steps = append(steps,
-		Step{Command: "go east", Contains: []string{"Kitchen"}},
+		Step{Command: "go east", Contains: []string{"kitchen"}},
 		Step{Command: "go east", Contains: []string{"Behind House"}},
 		Step{Command: "go north", Contains: []string{"North of House"}},
-		Step{Command: "go north", Contains: []string{"Forest Path"}},
-		Step{Command: "climb tree", Contains: []string{"Up a Tree"}},
+		Step{Command: "go north", Contains: []string{"forest path"}},
+		Step{Command: "climb tree", Contains: []string{"Up a tree"}},
 		Step{Command: "take egg", Contains: []string{"Taken"}},
-		Step{Command: "go down", Contains: []string{"Forest Path"}},
+		Step{Command: "go down", Contains: []string{"forest path"}},
 		Step{Command: "go south", Contains: []string{"North of House"}},
 		Step{Command: "go east", Contains: []string{"Behind House"}},
-		Step{Command: "enter house", Contains: []string{"Kitchen"}},
+		Step{Command: "enter house", Contains: []string{"kitchen"}},
 		Step{Command: "go west", Contains: []string{"Living Room"}},
 	)
 
-	// === Maze to Cyclops Room ===
+	// === Maze to cyclops Room ===
 	steps = append(steps,
 		Step{Command: "turn on lamp", Contains: []string{"now on"}},
-		Step{Command: "go down", Contains: []string{"Cellar"}},
-		Step{Command: "go north", Contains: []string{"Troll Room"}},
+		Step{Command: "go down", Contains: []string{"cellar"}},
+		Step{Command: "go north", Contains: []string{"troll Room"}},
 		Step{Command: "go west", Contains: []string{"Maze"}},
 		Step{Command: "go south", Contains: []string{"Maze"}},
 		Step{Command: "go east", Contains: []string{"Maze"}},
@@ -439,22 +439,22 @@ func TestFullPlaythrough(t *testing.T) {
 		Step{Command: "go southwest", Contains: []string{"Maze"}},
 		Step{Command: "go east", Contains: []string{"Maze"}},
 		Step{Command: "go south", Contains: []string{"Maze"}},
-		Step{Command: "go southeast", Contains: []string{"Cyclops Room"}},
+		Step{Command: "go southeast", Contains: []string{"cyclops Room"}},
 		Step{Command: "ulysses", Contains: []string{"cyclops"}},
 	)
 
-	// === Thief: give egg, navigate, fight ===
+	// === thief: give egg, navigate, fight ===
 	// After "ulysses", the cyclops flees. Go up to Treasure Room, give egg.
 	steps = append(steps,
 		Step{Command: "go up", Contains: []string{"Treasure Room"}},
 		Step{Command: "give egg to thief", Contains: []string{"thief"}},
-		Step{Command: "go down", Contains: []string{"Cyclops Room"}},
+		Step{Command: "go down", Contains: []string{"cyclops Room"}},
 		Step{Command: "go east", Contains: []string{"Strange Passage"}},
 		Step{Command: "go east", Contains: []string{"Living Room"}},
 		Step{Command: "put coins in case", Contains: []string{"Done"}},
 		Step{Command: "take knife", Contains: []string{"Taken"}},
 		Step{Command: "go west", Contains: []string{"Strange Passage"}},
-		Step{Command: "go west", Contains: []string{"Cyclops Room"}},
+		Step{Command: "go west", Contains: []string{"cyclops Room"}},
 		Step{Command: "go up", Contains: []string{"Treasure Room"}},
 	)
 	for i := 0; i < 5; i++ {
@@ -471,7 +471,7 @@ func TestFullPlaythrough(t *testing.T) {
 
 	// === Maze to Grating Room ===
 	steps = append(steps,
-		Step{Command: "go down", Contains: []string{"Cyclops Room"}},
+		Step{Command: "go down", Contains: []string{"cyclops Room"}},
 		Step{Command: "go northwest", Contains: []string{"Maze"}},
 		Step{Command: "go south", Contains: []string{"Maze"}},
 		Step{Command: "go west", Contains: []string{"Maze"}},
@@ -480,15 +480,15 @@ func TestFullPlaythrough(t *testing.T) {
 		Step{Command: "go northeast", Contains: []string{"Grating Room"}},
 		Step{Command: "unlock grate with key"},
 		Step{Command: "open grate", Contains: []string{"grating opens"}},
-		Step{Command: "go up", Contains: []string{"Clearing"}},
+		Step{Command: "go up", Contains: []string{"clearing"}},
 	)
 
-	// === Canary bauble from tree ===
+	// === canary bauble from tree ===
 	steps = append(steps,
-		Step{Command: "go south", Contains: []string{"Forest Path"}},
-		Step{Command: "climb tree", Contains: []string{"Up a Tree"}},
+		Step{Command: "go south", Contains: []string{"forest path"}},
+		Step{Command: "climb tree", Contains: []string{"Up a tree"}},
 		Step{Command: "wind up canary", Contains: []string{"bauble"}},
-		Step{Command: "go down", Contains: []string{"Forest Path"}},
+		Step{Command: "go down", Contains: []string{"forest path"}},
 		Step{Command: "drop knife"},
 		Step{Command: "take bauble", Contains: []string{"Taken"}},
 	)
@@ -497,7 +497,7 @@ func TestFullPlaythrough(t *testing.T) {
 	steps = append(steps,
 		Step{Command: "go south", Contains: []string{"North of House"}},
 		Step{Command: "go east", Contains: []string{"Behind House"}},
-		Step{Command: "enter house", Contains: []string{"Kitchen"}},
+		Step{Command: "enter house", Contains: []string{"kitchen"}},
 		Step{Command: "go west", Contains: []string{"Living Room"}},
 		Step{Command: "put bauble in case", Contains: []string{"Done"}},
 		Step{Command: "put chalice in case", Contains: []string{"Done"}},
@@ -510,8 +510,8 @@ func TestFullPlaythrough(t *testing.T) {
 
 	// === Echo Room: platinum bar ===
 	steps = append(steps,
-		Step{Command: "go down", Contains: []string{"Cellar"}},
-		Step{Command: "go north", Contains: []string{"Troll Room"}},
+		Step{Command: "go down", Contains: []string{"cellar"}},
+		Step{Command: "go north", Contains: []string{"troll Room"}},
 		Step{Command: "go east", Contains: []string{"East-West Passage"}},
 		Step{Command: "go east", Contains: []string{"Round Room"}},
 		Step{Command: "go east", Contains: []string{"Loud Room"}},
@@ -523,8 +523,8 @@ func TestFullPlaythrough(t *testing.T) {
 	steps = append(steps,
 		Step{Command: "go west", Contains: []string{"Round Room"}},
 		Step{Command: "go west", Contains: []string{"East-West Passage"}},
-		Step{Command: "go west", Contains: []string{"Troll Room"}},
-		Step{Command: "go south", Contains: []string{"Cellar"}},
+		Step{Command: "go west", Contains: []string{"troll Room"}},
+		Step{Command: "go south", Contains: []string{"cellar"}},
 		Step{Command: "go up", Contains: []string{"Living Room"}},
 		Step{Command: "put bar in case", Contains: []string{"Done"}},
 	)

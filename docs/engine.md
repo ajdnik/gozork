@@ -56,7 +56,7 @@ type Object struct {
     Flags      Flags        // bitfield properties (FlgTake, FlgOpen, FlgLight, ...)
     In         *Object      // parent in the containment tree
     Children   []*Object    // child objects
-    Synonyms   []string     // nouns the parser matches
+    synonyms   []string     // nouns the parser matches
     Adjectives []string     // adjectives for disambiguation
     Desc       string       // short description ("brass lantern")
     LongDesc   string       // room/first-visit description
@@ -90,22 +90,22 @@ Nil-safe getters/setters (e.g. `GetSize()`, `SetStrength()`) allocate the facet 
 Objects form a tree via `In` (parent) and `Children` (kids):
 
 ```
-Rooms
-  ├─ WestOfHouse
-  │    ├─ Mailbox
+rooms
+  ├─ westOfHouse
+  │    ├─ mailbox
   │    │    └─ Leaflet
-  │    └─ Adventurer (player)
-  │         ├─ Sword
-  │         └─ Lamp
-  └─ Kitchen
-       └─ KitchenTable
-            ├─ Bottle
+  │    └─ adventurer (player)
+  │         ├─ sword
+  │         └─ lamp
+  └─ kitchen
+       └─ kitchenTable
+            ├─ bottle
             └─ Sack
-GlobalObjects
-  ├─ It (pronoun sentinel)
-  ├─ Hands
-  ├─ Me
-  └─ Grue
+globalObjects
+  ├─ it (pronoun sentinel)
+  ├─ hands
+  ├─ me
+  └─ grue
 ```
 
 Key tree operations:
@@ -281,7 +281,7 @@ The clock provides timed events (interrupts) and always-ticking daemons.
 
 ```go
 type ClockEvent struct {
-    Key  string       // unique identifier (e.g. "ILantern")
+    Key  string       // unique identifier (e.g. "iLantern")
     Run  bool         // whether active
     Tick int          // countdown; fires at 0 (-1 = daemon, always fires)
     Fn   func() bool  // handler

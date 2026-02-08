@@ -6,22 +6,22 @@ The `game` package implements Zork I on top of the generic engine. It defines ev
 
 | File | Responsibility |
 |------|---------------|
-| `zork_data.go` | `ZorkData` struct (game-specific mutable state), `GD()` accessor |
+| `zork_data.go` | `ZorkData` struct (game-specific mutable state), `gD()` accessor |
 | `init.go` | `InitGame()`, `Run()`, clock function registration, well-known object wiring |
-| `globals.go` | Global objects (It, Me, Hands, Adventurer, etc.), sentinel objects, NPC action funcs |
+| `globals.go` | Global objects (it, me, hands, adventurer, etc.), sentinel objects, NPC action funcs |
 | `items.go` | All game objects — rooms, items, NPCs — declared as package-level `Object` vars |
 | `rooms_surface.go` | Surface world rooms (white house, forest, clearing, etc.) |
 | `rooms_underground.go` | Underground rooms (cellar, troll room, temple, mine, etc.) |
 | `rooms_maze.go` | Maze rooms and dead ends |
 | `dungeon.go` | Lookup tables, random-selection pools, string data, navigation maps |
-| `syntax_data.go` | `GameCommands` (all syntax definitions), `BuzzWords`, `Synonyms` map |
-| `verbs.go` | Default verb handlers (VTake, VDrop, VOpen, VLook, etc.) |
-| `verbs_movement.go` | Movement verbs (VWalk, VBoard, VClimb, VDisembark, VLaunch, etc.) |
-| `verbs_meta.go` | Meta verbs (VScore, VInventory, VSave, VRestore, VRestart, VVersion, etc.) |
+| `syntax_data.go` | `gameCommands` (all syntax definitions), `buzzWords`, `synonyms` map |
+| `verbs.go` | Default verb handlers (vTake, vDrop, vOpen, vLook, etc.) |
+| `verbs_movement.go` | Movement verbs (vWalk, vBoard, VClimb, vDisembark, vLaunch, etc.) |
+| `verbs_meta.go` | Meta verbs (vScore, vInventory, vSave, vRestore, vRestart, vVersion, etc.) |
 | `actions.go` | Object action functions, room action functions, puzzle logic, interrupt routines |
 | `combat.go` | Combat system: melee tables, blow resolution, villain/hero attack logic |
-| `thief.go` | Thief NPC: stealing, treasure room, IThief daemon |
-| `river.go` | River/boat system, dam/reservoir mechanics, water-level interrupts |
+| `thief.go` | thief NPC: stealing, treasure room, iThief daemon |
+| `river.go` | river/boat system, dam/reservoir mechanics, water-level interrupts |
 | `save.go` | Save/restore/restart implementation using `encoding/gob` |
 | `game_test.go` | Test helpers and playthrough infrastructure |
 | `playthrough_test.go` | Partial playthrough tests |
@@ -57,10 +57,10 @@ type ZorkData struct {
 }
 ```
 
-Accessed everywhere via `GD()`:
+Accessed everywhere via `gD()`:
 
 ```go
-func GD() *ZorkData {
+func gD() *ZorkData {
     return G.GameData.(*ZorkData)
 }
 ```
@@ -71,8 +71,8 @@ func GD() *ZorkData {
 
 1. Creates `GameState` and `ZorkData`
 2. Registers well-known objects (`RoomsObj`, `GlobalObj`, `NotHereObj`, `MeObj`, etc.)
-3. Sets the implicit-take handler (`ITake`)
-4. Calls `FinalizeGameObjects()` to attach action functions and set item properties
+3. Sets the implicit-take handler (`iTake`)
+4. Calls `finalizeGameObjects()` to attach action functions and set item properties
 5. Builds the object tree and vocabulary
 6. Schedules initial clock events (thief daemon, combat daemon, lantern timer, candle timer)
 7. Places the player at West of House
@@ -83,10 +83,10 @@ func GD() *ZorkData {
 
 ### Rooms
 
-Rooms are `Object` values with `Exits` maps and `Action` functions. They are children of the `Rooms` sentinel object and are defined across three files by region:
+Rooms are `Object` values with `Exits` maps and `Action` functions. They are children of the `rooms` sentinel object and are defined across three files by region:
 
 - **Surface** (`rooms_surface.go`): White house perimeter, forest, clearing, canyon view, up a tree
-- **Underground** (`rooms_underground.go`): Cellar, troll room, maze areas, temple, mine, treasure room, dam, reservoir, loud room, cyclops room, and many more
+- **Underground** (`rooms_underground.go`): cellar, troll room, maze areas, temple, mine, treasure room, dam, reservoir, loud room, cyclops room, and many more
 - **Maze** (`rooms_maze.go`): The twisty maze passages, dead ends
 
 Each room's `Action` function handles `ActLook` (room description), `ActBegin` (before command), `ActEnter` (on entry), and `ActEnd` (after command).
@@ -96,9 +96,9 @@ Each room's `Action` function handles `ActLook` (room description), `ActBegin` (
 Items are `Object` values with `Synonyms`, `Adjectives`, `Desc`, flags, and optional `Action` functions. Items are defined in `items.go` and wired to their starting locations via `In` pointers.
 
 Key item categories:
-- **Treasures**: Egg, canary, painting, chalice, pot of gold, jeweled scarab, trunk of jewels, etc. Each has a `TValue` that contributes to score when placed in the trophy case.
-- **Tools**: Lamp, sword, knife, shovel, screwdriver, wrench, keys, matches, rope
-- **Containers**: Mailbox, trophy case, machine, bottle, bag, basket, coffin
+- **Treasures**: egg, canary, painting, chalice, pot of gold, jeweled scarab, trunk of jewels, etc. Each has a `TValue` that contributes to score when placed in the trophy case.
+- **Tools**: lamp, sword, knife, shovel, screwdriver, wrench, keys, matches, rope
+- **Containers**: mailbox, trophy case, machine, bottle, bag, basket, coffin
 - **Vehicles**: Inflatable/inflated/punctured boat
 
 ### NPCs
@@ -108,13 +108,13 @@ NPCs are objects with `FlgPerson` or `FlgActor` and an `Action` function that ha
 - **Normal verb handling**: responds to examine, talk, give, etc.
 - **Combat callbacks**: `ActBusy`, `ActDead`, `ActUnconscious`, `ActConscious`, `ActFirst` — called by the combat system
 
-Major NPCs: Troll, Thief, Cyclops, Bat, Ghosts
+Major NPCs: troll, thief, cyclops, bat, ghosts
 
 ## Verb System
 
 ### Syntax Definitions (`syntax_data.go`)
 
-Every recognizable command is a `Syntx` entry in `GameCommands`. Examples:
+Every recognizable command is a `Syntx` entry in `gameCommands`. Examples:
 
 | Input Pattern | Verb | VrbPrep | Obj1 | ObjPrep | Obj2 |
 |--------------|------|---------|------|---------|------|
@@ -130,23 +130,23 @@ Default handlers for ~80 verbs. Each is a `func(ActArg) bool`. Key verbs:
 
 | Handler | Verbs | Behavior |
 |---------|-------|----------|
-| `VTake` | take, get | Pick up object, check weight/capacity |
-| `VDrop` | drop | Place in room or vehicle |
-| `VOpen` / `VClose` | open, close | Toggle FlgOpen, handle locked doors |
-| `VLook` / `VFirstLook` | look | Describe room, list contents |
-| `VExamine` | examine, x | Describe object in detail |
-| `VRead` | read | Show object's Text field |
-| `VAttack` | attack, kill | Initiate combat via `HeroBlow()` |
-| `VGive` | give | Transfer object to NPC |
-| `VThrow` | throw | Throw at target |
-| `VInventory` | inventory, i | List carried items |
-| `VWalk` | walk, go | Move through exits |
-| `VLampOn` / `VLampOff` | turn on/off | Toggle FlgOn, update lighting |
-| `VEat` / `VDrink` | eat, drink | Consume food/water |
+| `vTake` | take, get | Pick up object, check weight/capacity |
+| `vDrop` | drop | Place in room or vehicle |
+| `vOpen` / `vClose` | open, close | Toggle FlgOpen, handle locked doors |
+| `vLook` / `vFirstLook` | look | Describe room, list contents |
+| `vExamine` | examine, x | Describe object in detail |
+| `vRead` | read | Show object's Text field |
+| `vAttack` | attack, kill | Initiate combat via `heroBlow()` |
+| `vGive` | give | Transfer object to NPC |
+| `vThrow` | throw | Throw at target |
+| `vInventory` | inventory, i | List carried items |
+| `vWalk` | walk, go | Move through exits |
+| `vLampOn` / `vLampOff` | turn on/off | Toggle FlgOn, update lighting |
+| `vEat` / `vDrink` | eat, drink | Consume food/water |
 
 ### Movement (`verbs_movement.go`)
 
-`DoWalk(dir)` is the core movement function:
+`doWalk(dir)` is the core movement function:
 
 1. Gets the exit for the direction from `G.Here.Exits`
 2. Evaluates exit type (unconditional, conditional, door, function-based)
@@ -159,14 +159,14 @@ Special movement: climbing, boarding/disembarking vehicles, launching the boat, 
 
 | Handler | Verb | Effect |
 |---------|------|--------|
-| `VScore` | score | Display current score and rank |
-| `VInventory` | inventory | List carried objects |
-| `VBrief` / `VVerbose` / `VSuperBrief` | brief/verbose/superbrief | Set description verbosity |
-| `VSave` / `VRestore` | save/restore | Serialize/deserialize game state |
-| `VRestart` | restart | Reset to initial state |
-| `VVersion` | version | Show game version |
-| `VQuit` | quit | End the game |
-| `VDiagnose` | diagnose | Show health status |
+| `vScore` | score | Display current score and rank |
+| `vInventory` | inventory | List carried objects |
+| `vBrief` / `vVerbose` / `vSuperBrief` | brief/verbose/superbrief | Set description verbosity |
+| `vSave` / `vRestore` | save/restore | Serialize/deserialize game state |
+| `vRestart` | restart | Reset to initial state |
+| `vVersion` | version | Show game version |
+| `vQuit` | quit | End the game |
+| `vDiagnose` | diagnose | Show health status |
 
 ## Combat System (`combat.go`)
 
@@ -186,112 +186,112 @@ type VillainEntry struct {
 }
 ```
 
-Three villains: **Troll** (best weapon: sword, +2), **Thief** (best weapon: knife, +1), **Cyclops** (no best weapon).
+Three villains: **troll** (best weapon: sword, +2), **thief** (best weapon: knife, +1), **cyclops** (no best weapon).
 
 ### Combat Flow
 
-**Each turn**, `IFight()` (a daemon) checks if any villain is in the room and fighting:
+**Each turn**, `iFight()` (a daemon) checks if any villain is in the room and fighting:
 
 ```
-IFight()
+iFight()
   ├─ For each registered villain in the room:
   │    ├─ Unconscious? → maybe wake up (probability increases each turn)
   │    ├─ Staggered? → recover
-  │    ├─ Fighting? → VillainBlow() — attack the player
+  │    ├─ Fighting? → villainBlow() — attack the player
   │    └─ Not in room? → call ActBusy handler (villain acts alone)
-  └─ DoFight() orchestrates multi-villain rounds
+  └─ doFight() orchestrates multi-villain rounds
 ```
 
-**Player attacks** are handled by `HeroBlow()`:
+**Player attacks** are handled by `heroBlow()`:
 
 ```
-HeroBlow()
+heroBlow()
   ├─ Check if player is staggered (skip turn)
   ├─ Calculate attack strength (base + score-derived bonus + wounds)
-  ├─ Roll on defense table (Def1/Def2A/Def2B/Def3A/Def3B/Def3C)
+  ├─ Roll on defense table (def1/def2A/def2B/def3A/def3B/def3C)
   ├─ Apply result (miss, stagger, light/heavy wound, unconscious, kill, disarm)
-  ├─ Print melee message from HeroMelee table
-  └─ VillainResult() — update villain state
+  ├─ Print melee message from heroMelee table
+  └─ villainResult() — update villain state
 ```
 
 ### Blow Results
 
 | Result | Effect on Defender |
 |--------|-------------------|
-| `BlowMissed` | No effect |
-| `BlowStag` | Skip next attack turn |
-| `BlowLightWnd` | Strength -1 |
-| `BlowHeavyWnd` | Strength -2 |
-| `BlowLoseWpn` | Weapon drops to floor |
-| `BlowUncon` | Negative strength (unconscious) |
-| `BlowKill` | Strength 0, removed from game |
-| `BlowHesitate` | Villain pauses (player unconscious variant) |
-| `BlowSitDuck` | Villain finishes unconscious player |
+| `blowMissed` | No effect |
+| `blowStag` | Skip next attack turn |
+| `blowLightWnd` | Strength -1 |
+| `blowHeavyWnd` | Strength -2 |
+| `blowLoseWpn` | Weapon drops to floor |
+| `blowUncon` | Negative strength (unconscious) |
+| `blowKill` | Strength 0, removed from game |
+| `blowHesitate` | Villain pauses (player unconscious variant) |
+| `blowSitDuck` | Villain finishes unconscious player |
 
 ### Melee Messages
 
-Each villain has a `MeleeTable` — 9 sets of alternative messages (one set per blow result). Messages are composed of `MeleePart` fragments that can include literal text, weapon name markers (`FWep`), or defender name markers (`FDef`).
+Each villain has a `MeleeTable` — 9 sets of alternative messages (one set per blow result). Messages are composed of `MeleePart` fragments that can include literal text, weapon name markers (`fWep`), or defender name markers (`fDef`).
 
 ### Player Strength
 
 Player strength is derived from score progress:
 
 ```
-FightStrength = StrengthMin + Score / (ScoreMax / (StrengthMax - StrengthMin))
+fightStrength = strengthMin + Score / (scoreMax / (strengthMax - strengthMin))
 ```
 
-Wounds reduce effective strength. The `ICure` interrupt gradually heals the player (one point per 30 turns).
+Wounds reduce effective strength. The `iCure` interrupt gradually heals the player (one point per 30 turns).
 
 ## Thief System (`thief.go`)
 
-The thief is the most complex NPC, running as a daemon (`IThief`) every turn:
+The thief is the most complex NPC, running as a daemon (`iThief`) every turn:
 
 ### Thief Daemon Behavior
 
 ```
-IThief()
+iThief()
   ├─ In treasure room (not player's room)?
   │    → Deposit stolen treasures, hide them with FlgInvis
   ├─ In player's room?
-  │    → ThiefVsAdventurer():
+  │    → thiefVsAdventurer():
   │       ├─ 30% chance to appear if hidden
   │       ├─ Retreats if losing combat
   │       └─ Steals from player (treasures, visible items)
   ├─ In another room?
-  │    → Rob room of treasures (75% chance per item)
+  │    → rob room of treasures (75% chance per item)
   │    → Steal junk from room (worthless items, 10% chance)
-  │    → In maze? → RobMaze (taunt the player)
+  │    → In maze? → robMaze (taunt the player)
   └─ Move to a random non-sacred, reachable room
-      → DropJunk() (drop worthless items, 30% chance each)
+      → dropJunk() (drop worthless items, 30% chance each)
 ```
 
 ### Key Functions
 
-- `Rob(what, where, prob)` — steal treasures from a container/room
-- `DepositBooty(room)` — move stolen treasures to a room (treasure room)
-- `ThiefInTreasure()` — hide all room treasures when player enters treasure room
-- `HackTreasures()` — make thief invisible, reveal all treasure room items
-- `Infested(room)` — check if room has visible actors (used by sword glow)
+- `rob(what, where, prob)` — steal treasures from a container/room
+- `depositBooty(room)` — move stolen treasures to a room (treasure room)
+- `thiefInTreasure()` — hide all room treasures when player enters treasure room
+- `hackTreasures()` — make thief invisible, reveal all treasure room items
+- `infested(room)` — check if room has visible actors (used by sword glow)
 
 ## River and Dam System (`river.go`)
 
 ### Boat Mechanics
 
-Three boat states: `InflatableBoat` (deflated), `InflatedBoat` (usable), `PuncturedBoat` (damaged).
+Three boat states: `inflatableBoat` (deflated), `inflatedBoat` (usable), `puncturedBoat` (damaged).
 
 - Inflate with pump, deflate manually
 - Sharp objects puncture the boat when boarding
 - Boat acts as a vehicle (`FlgVeh`) — player `MoveTo(boat)`, boat is in the room
-- `RBoatFcn` handles boat-specific verbs (launch, deflate, navigate)
+- `rBoatFcn` handles boat-specific verbs (launch, deflate, navigate)
 
 ### River Navigation
 
-The river flows through 5 rooms (River1–River5). When launched:
+The river flows through 5 rooms (river1–river5). When launched:
 
-1. `IRiver` daemon activates with a speed based on the current room
+1. `iRiver` daemon activates with a speed based on the current room
 2. Each tick, the boat moves downstream to the next river room
 3. Speed increases as the boat approaches the falls
-4. Reaching River5 with no exit → death (waterfall)
+4. Reaching river5 with no exit → death (waterfall)
 
 ### Dam and Reservoir
 
@@ -301,34 +301,34 @@ The Flood Control Dam #3 has a control panel with colored buttons and a bolt:
 - **Brown button** → disables bolt turning
 - **Red button** → toggles room lights
 - **Blue button** → triggers maintenance room leak
-- **Bolt** (turned with wrench) → opens/closes sluice gates
+- **bolt** (turned with wrench) → opens/closes sluice gates
 
 Gate state drives two interrupts:
-- `IRempty` — drains the reservoir over 8 turns, enabling crossing
-- `IRfill` — refills the reservoir over 8 turns, flooding it again
+- `iRempty` — drains the reservoir over 8 turns, enabling crossing
+- `iRfill` — refills the reservoir over 8 turns, flooding it again
 
-The `LoudRoom` becomes dangerous when gates are open (water roaring), and the `echo` command quiets it permanently.
+The `loudRoom` becomes dangerous when gates are open (water roaring), and the `echo` command quiets it permanently.
 
 ## Death and Resurrection (`actions.go`)
 
-`JigsUp(desc, isPlyr)` handles player death:
+`jigsUp(desc, isPlyr)` handles player death:
 
 1. Print death message, deduct 10 points
 2. First death with South Temple visited → sent to Entrance to Hades as a ghost
-   - Player becomes "dead" — most actions are blocked by `DeadFunction`
+   - Player becomes "dead" — most actions are blocked by `deadFunction`
    - Praying at South Temple resurrects the player
-3. First death without temple → respawn in Forest1 with a second chance
+3. First death without temple → respawn in forest1 with a second chance
 4. Second death → permanent game over
-5. `RandomizeObjects()` scatters carried items across above-ground rooms
-6. `KillInterrupts()` disables most active clock events
+5. `randomizeObjects()` scatters carried items across above-ground rooms
+6. `killInterrupts()` disables most active clock events
 
 ## Scoring (`actions.go`)
 
 - **Max score**: 350 points
-- **Trophy case**: `OtvalFrob()` sums `TValue` of all objects in the trophy case
+- **Trophy case**: `otvalFrob()` sums `TValue` of all objects in the trophy case
 - **Score = BaseScore + trophy case value**
-- `ScoreUpd(delta)` adjusts `BaseScore` and recalculates total
-- Ranks: Beginner → Amateur → Novice → Junior → Adventurer → Master → Wizard → Master Adventurer
+- `scoreUpd(delta)` adjusts `BaseScore` and recalculates total
+- Ranks: Beginner → Amateur → Novice → Junior → adventurer → Master → Wizard → Master adventurer
 
 ## Save/Restore (`save.go`)
 
@@ -360,32 +360,32 @@ All three functions return `error` (`nil` on success), propagating the underlyin
 | Puzzle | Mechanism |
 |--------|-----------|
 | Trap door | Move rug → reveal trap door → open it → cellar access |
-| Troll bridge | Defeat troll in combat or throw him food |
-| Cyclops | Feed hot peppers → give water → falls asleep → say "odysseus" → opens wall |
-| Egg | Thief opens it if stolen; player attempts damage it |
+| troll bridge | Defeat troll in combat or throw him food |
+| cyclops | Feed hot peppers → give water → falls asleep → say "odysseus" → opens wall |
+| egg | thief opens it if stolen; player attempts damage it |
 | Loud room | Say "echo" to quiet the deafening sound |
-| Dam/Reservoir | Open sluice gates → drain reservoir → cross → explore |
+| dam/reservoir | Open sluice gates → drain reservoir → cross → explore |
 | Entrance to Hades | Ring bell → light candles → read book (exorcism ceremony) |
 | Mirror rooms | Rub mirror → teleport between Mirror Room 1 and 2 |
-| Rainbow | Wave sceptre at Aragain Falls → solidify rainbow → cross |
-| Coal mine | Put coal in machine → turn switch with screwdriver → diamond |
-| Dome/Torch room | Tie rope to railing → climb down |
-| Thief's treasure room | Kill thief → all hidden treasures revealed |
+| rainbow | Wave sceptre at Aragain Falls → solidify rainbow → cross |
+| coal mine | Put coal in machine → turn switch with screwdriver → diamond |
+| Dome/torch room | Tie rope to railing → climb down |
+| thief's treasure room | Kill thief → all hidden treasures revealed |
 
 ## Clock Events
 
 | Key | Type | Purpose |
 |-----|------|---------|
-| `IFight` | Daemon | Runs villain combat each turn |
-| `ISword` | Interrupt | Sword glow detection (monsters nearby) |
-| `IThief` | Daemon | Thief movement, stealing, treasure management |
-| `ILantern` | Interrupt | Lantern fuel countdown and warnings |
-| `ICandles` | Interrupt | Candle burn-down countdown |
-| `ICure` | Interrupt | Gradual wound healing (30-turn intervals) |
-| `ICyclops` | Interrupt | Cyclops anger escalation |
-| `IForestRandom` | Interrupt | Random songbird chirp in forest |
-| `IMaintRoom` | Interrupt | Maintenance room flooding |
-| `IMatch` | Interrupt | Match burns out (2 turns) |
-| `IRempty` / `IRfill` | Interrupt | Reservoir drain/fill |
-| `IRiver` | Interrupt | River current moves boat downstream |
-| `IXb` / `IXbh` / `IXc` | Interrupt | Hades exorcism ceremony timing |
+| `iFight` | Daemon | Runs villain combat each turn |
+| `iSword` | Interrupt | sword glow detection (monsters nearby) |
+| `iThief` | Daemon | thief movement, stealing, treasure management |
+| `iLantern` | Interrupt | Lantern fuel countdown and warnings |
+| `iCandles` | Interrupt | Candle burn-down countdown |
+| `iCure` | Interrupt | Gradual wound healing (30-turn intervals) |
+| `iCyclops` | Interrupt | cyclops anger escalation |
+| `iForestRandom` | Interrupt | Random songbird chirp in forest |
+| `iMaintRoom` | Interrupt | Maintenance room flooding |
+| `iMatch` | Interrupt | match burns out (2 turns) |
+| `iRempty` / `iRfill` | Interrupt | reservoir drain/fill |
+| `iRiver` | Interrupt | river current moves boat downstream |
+| `iXb` / `iXbh` / `iXc` | Interrupt | Hades exorcism ceremony timing |

@@ -4,23 +4,23 @@ import . "github.com/ajdnik/gozork/engine"
 
 var (
 	// RndSelect tables
-	Dummy = RndSelect{
+	dummy = RndSelect{
 		Unselected: []string{
-			"It is already closed.",
-			"It is already open.",
-			"It's already done.",
+			"it is already closed.",
+			"it is already open.",
+			"it's already done.",
 		},
 	}
-	SwimYuks = RndSelect{
+	swimYuks = RndSelect{
 		Unselected: []string{
 			"I don't really feel like swimming.",
 			"Swimming isn't usually allowed in dungeons.",
 			"You'd need a submarine to go further.",
 		},
 	}
-	BatDrops = []*Object{&Mine1, &Mine2, &Mine3, &Mine4, &LadderTop, &LadderBottom, &SqueekyRoom, &MineEntrance}
+	batDrops = []*Object{&mine1, &mine2, &mine3, &mine4, &ladderTop, &ladderBottom, &squeekyRoom, &mineEntrance}
 
-	Cyclomad = []string{
+	cyclomad = []string{
 		"The cyclops seems somewhat agitated.",
 		"The cyclops appears to be getting more agitated.",
 		"The cyclops is moving about the room, looking for something.",
@@ -29,15 +29,15 @@ var (
 		"You have two choices: 1. Leave  2. Become dinner.",
 	}
 
-	LoudRuns = []*Object{&DampCave, &RoundRoom, &DeepCanyon}
+	loudRuns = []*Object{&dampCave, &roundRoom, &deepCanyon}
 
-	BDigs = []string{
+	bDigs = []string{
 		"You seem to be digging a hole here.",
 		"The hole is getting deeper, but that's about it.",
 		"You are surrounded by a wall of sand on all sides.",
 	}
 
-	Drownings = []string{
+	drownings = []string{
 		"up to your ankles.",
 		"up to your shin.",
 		"up to your knees.",
@@ -49,52 +49,52 @@ var (
 		"high in your lungs.",
 	}
 
-	RobberCDesc = "There is a suspicious-looking individual, holding a bag, leaning against one wall. He is armed with a vicious-looking stiletto."
-	RobberUDesc = "There is a suspicious-looking individual lying unconscious on the ground."
+	robberCDesc = "There is a suspicious-looking individual, holding a bag, leaning against one wall. He is armed with a vicious-looking stiletto."
+	robberUDesc = "There is a suspicious-looking individual lying unconscious on the ground."
 
-	// River tables
+	// river tables
 	// ZIL: <LTABLE (PURE) RIVER-1 4 RIVER-2 4 RIVER-3 3 RIVER-4 2 RIVER-5 1>
-	RiverSpeedMap = map[*Object]int{
-		&River1: 4,
-		&River2: 4,
-		&River3: 3,
-		&River4: 2,
-		&River5: 1,
+	riverSpeedMap = map[*Object]int{
+		&river1: 4,
+		&river2: 4,
+		&river3: 3,
+		&river4: 2,
+		&river5: 1,
 	}
-	// RiverNext maps each river room to the next one downstream.
-	RiverNext = map[*Object]*Object{
-		&River1: &River2,
-		&River2: &River3,
-		&River3: &River4,
-		&River4: &River5,
+	// riverNext maps each river room to the next one downstream.
+	riverNext = map[*Object]*Object{
+		&river1: &river2,
+		&river2: &river3,
+		&river3: &river4,
+		&river4: &river5,
 	}
-	// RiverLaunch maps a room to the river room you enter when launching from it.
-	RiverLaunch = map[*Object]*Object{
-		&DamBase:          &River1,
-		&WhiteCliffsNorth: &River3,
-		&WhiteCliffsSouth: &River4,
-		&Shore:            &River5,
-		&SandyBeach:       &River4,
-		&ReservoirSouth:   &Reservoir,
-		&ReservoirNorth:   &Reservoir,
-		&StreamView:       &InStream,
+	// riverLaunch maps a room to the river room you enter when launching from it.
+	riverLaunch = map[*Object]*Object{
+		&damBase:          &river1,
+		&whiteCliffsNorth: &river3,
+		&whiteCliffsSouth: &river4,
+		&shore:            &river5,
+		&sandyBeach:       &river4,
+		&reservoirSouth:   &reservoir,
+		&reservoirNorth:   &reservoir,
+		&streamView:       &inStream,
 	}
 
-	// Lamp/Candle countdown tables
-	LampTable = []interface{}{
+	// lamp/Candle countdown tables
+	lampTable = []interface{}{
 		100, "The lamp appears a bit dimmer.",
 		70, "The lamp is definitely dimmer now.",
 		15, "The lamp is nearly out.",
 		0,
 	}
-	CandleTable = []interface{}{
+	candleTable = []interface{}{
 		20, "The candles grow shorter.",
 		10, "The candles are becoming quite short.",
 		5, "The candles won't last long now.",
 		0,
 	}
 
-	ScoreMax = 350
+	scoreMax = 350
 )
 
 var (
@@ -102,849 +102,849 @@ var (
 	// TABLES
 	// ================================================================
 
-	// InHouseAround maps each interior room to the next in a circular walk.
-	InHouseAround = map[*Object]*Object{
-		&LivingRoom: &Kitchen,
-		&Kitchen:    &Attic,
-		&Attic:      &Kitchen,
+	// inHouseAround maps each interior room to the next in a circular walk.
+	inHouseAround = map[*Object]*Object{
+		&livingRoom: &kitchen,
+		&kitchen:    &attic,
+		&attic:      &kitchen,
 	}
-	// HouseAround maps each exterior room to the next in a circular walk.
-	HouseAround = map[*Object]*Object{
-		&WestOfHouse:  &NorthOfHouse,
-		&NorthOfHouse: &EastOfHouse,
-		&EastOfHouse:  &SouthOfHouse,
-		&SouthOfHouse: &WestOfHouse,
+	// houseAround maps each exterior room to the next in a circular walk.
+	houseAround = map[*Object]*Object{
+		&westOfHouse:  &northOfHouse,
+		&northOfHouse: &eastOfHouse,
+		&eastOfHouse:  &southOfHouse,
+		&southOfHouse: &westOfHouse,
 	}
-	// ForestAround maps each forest room to the next in a circular walk.
-	ForestAround = map[*Object]*Object{
-		&Forest1:  &Forest2,
-		&Forest2:  &Forest3,
-		&Forest3:  &Path,
-		&Path:     &Clearing,
-		&Clearing: &Forest1,
+	// forestAround maps each forest room to the next in a circular walk.
+	forestAround = map[*Object]*Object{
+		&forest1:  &forest2,
+		&forest2:  &forest3,
+		&forest3:  &path,
+		&path:     &clearing,
+		&clearing: &forest1,
 	}
-	AboveGround = []*Object{
-		&WestOfHouse,
-		&NorthOfHouse,
-		&EastOfHouse,
-		&SouthOfHouse,
-		&Forest1,
-		&Forest2,
-		&Forest3,
-		&Path,
-		&Clearing,
-		&GratingClearing,
-		&CanyonView,
+	aboveGround = []*Object{
+		&westOfHouse,
+		&northOfHouse,
+		&eastOfHouse,
+		&southOfHouse,
+		&forest1,
+		&forest2,
+		&forest3,
+		&path,
+		&clearing,
+		&gratingClearing,
+		&canyonView,
 	}
 
 	// ================================================================
 	// MASTER OBJECT LIST
 	// ================================================================
 
-	Objects = []*Object{
+	objects = []*Object{
 		// Core
-		&Rooms, &GlobalObjects, &LocalGlobals,
-		&NotHereObject, &PseudoObject,
-		&Hands, &Me, &Adventurer, &It,
-		&Stairs, &Intnum, &Blessings, &Sailor, &Ground, &Grue, &Lungs, &PathObj, &Zorkmid,
+		&rooms, &globalObjects, &localGlobals,
+		&notHereObject, &pseudoObject,
+		&hands, &me, &adventurer, &it,
+		&stairs, &intnum, &blessings, &sailor, &ground, &grue, &lungs, &pathObj, &zorkmid,
 		// Global objects
-		&Board, &Teeth, &Wall, &GraniteWall, &Songbird,
-		&WhiteHouse, &Forest, &Tree, &GlobalWater,
-		&KitchenWindow, &Chimney, &Slide, &Bodies, &Crack, &Grate,
-		&Ladder, &ClimbableCliff, &WhiteCliff, &Rainbow, &River,
-		&BoardedWindow,
+		&board, &teeth, &wall, &graniteWall, &songbird,
+		&whiteHouse, &forest, &tree, &globalWater,
+		&kitchenWindow, &chimney, &slide, &bodies, &crack, &grate,
+		&ladder, &climbableCliff, &whiteCliff, &rainbow, &river,
+		&boardedWindow,
 		// Unplaced objects
-		&InflatedBoat, &PuncturedBoat, &BrokenLamp, &Gunk, &HotBell,
-		&BrokenEgg, &Bauble, &Diamond,
-		// Forest and outside rooms
-		&WestOfHouse, &StoneBarrow, &NorthOfHouse, &SouthOfHouse, &EastOfHouse,
-		&Forest1, &Forest2, &Mountains, &Forest3, &Path,
-		&UpATree, &GratingClearing, &Clearing,
+		&inflatedBoat, &puncturedBoat, &brokenLamp, &gunk, &hotBell,
+		&brokenEgg, &bauble, &diamond,
+		// forest and outside rooms
+		&westOfHouse, &stoneBarrow, &northOfHouse, &southOfHouse, &eastOfHouse,
+		&forest1, &forest2, &mountains, &forest3, &path,
+		&upATree, &gratingClearing, &clearing,
 		// House rooms
-		&Kitchen, &Attic, &LivingRoom,
-		// Cellar and vicinity
-		&Cellar, &TrollRoom, &EastOfChasm, &Gallery, &Studio,
+		&kitchen, &attic, &livingRoom,
+		// cellar and vicinity
+		&cellar, &trollRoom, &eastOfChasm, &gallery, &studio,
 		// Maze
-		&Maze1, &Maze2, &Maze3, &Maze4, &DeadEnd1,
-		&Maze5, &DeadEnd2, &Maze6, &Maze7, &Maze8, &DeadEnd3,
-		&Maze9, &Maze10, &Maze11, &GratingRoom,
-		&Maze12, &DeadEnd4, &Maze13, &Maze14, &Maze15,
-		// Cyclops and hideaway
-		&CyclopsRoom, &StrangePassage, &TreasureRoom,
-		// Reservoir area
-		&ReservoirSouth, &Reservoir, &ReservoirNorth, &StreamView, &InStream,
+		&maze1, &maze2, &maze3, &maze4, &deadEnd1,
+		&maze5, &deadEnd2, &maze6, &maze7, &maze8, &deadEnd3,
+		&maze9, &maze10, &maze11, &gratingRoom,
+		&maze12, &deadEnd4, &maze13, &maze14, &maze15,
+		// cyclops and hideaway
+		&cyclopsRoom, &strangePassage, &treasureRoom,
+		// reservoir area
+		&reservoirSouth, &reservoir, &reservoirNorth, &streamView, &inStream,
 		// Mirror rooms and vicinity
-		&MirrorRoom1, &MirrorRoom2, &SmallCave, &TinyCave,
-		&ColdPassage, &NarrowPassage, &WindingPassage, &TwistingPassage, &AtlantisRoom,
+		&mirrorRoom1, &mirrorRoom2, &smallCave, &tinyCave,
+		&coldPassage, &narrowPassage, &windingPassage, &twistingPassage, &atlantisRoom,
 		// Round room and vicinity
-		&EWPassage, &RoundRoom, &DeepCanyon, &DampCave, &LoudRoom, &NSPassage, &ChasmRoom,
+		&eWPassage, &roundRoom, &deepCanyon, &dampCave, &loudRoom, &nSPassage, &chasmRoom,
 		// Hades
-		&EnteranceToHades, &LandOfLivingDead,
+		&enteranceToHades, &landOfLivingDead,
 		// Dome, temple, egypt
-		&EngravingsCave, &EgyptRoom, &DomeRoom, &TorchRoom, &NorthTemple, &SouthTemple,
+		&engravingsCave, &egyptRoom, &domeRoom, &torchRoom, &northTemple, &southTemple,
 		// Flood control dam
-		&DamRoom, &DamLobby, &MaintenanceRoom,
-		// River area
-		&DamBase, &River1, &River2, &River3,
-		&WhiteCliffsNorth, &WhiteCliffsSouth,
-		&River4, &River5, &Shore, &SandyBeach, &SandyCave,
-		&AragainFalls, &OnRainbow, &EndOfRainbow,
-		&CanyonBottom, &CliffMiddle, &CanyonView,
-		// Coal mine area
-		&MineEntrance, &SqueekyRoom, &BatRoom, &ShaftRoom,
-		&SmellyRoom, &GasRoom, &LadderTop, &LadderBottom, &DeadEnd5,
-		&TimberRoom, &LowerShaft, &MachineRoom,
-		&Mine1, &Mine2, &Mine3, &Mine4, &SlideRoom,
+		&damRoom, &damLobby, &maintenanceRoom,
+		// river area
+		&damBase, &river1, &river2, &river3,
+		&whiteCliffsNorth, &whiteCliffsSouth,
+		&river4, &river5, &shore, &sandyBeach, &sandyCave,
+		&aragainFalls, &onRainbow, &endOfRainbow,
+		&canyonBottom, &cliffMiddle, &canyonView,
+		// coal mine area
+		&mineEntrance, &squeekyRoom, &batRoom, &shaftRoom,
+		&smellyRoom, &gasRoom, &ladderTop, &ladderBottom, &deadEnd5,
+		&timberRoom, &lowerShaft, &machineRoom,
+		&mine1, &mine2, &mine3, &mine4, &slideRoom,
 		// G.AllObjects in rooms
-		&MountainRange, &FrontDoor, &Mailbox, &BarrowDoor, &Barrow,
-		&TrophyCase, &Rug, &TrapDoor, &WoodenDoor, &Sword, &Lamp,
-		&KitchenTable, &AtticTable, &Rope,
-		&Ghosts, &Skull,
-		&RaisedBasket, &LoweredBasket,
-		&Bat, &Jade, &Bell, &Prayer, &Altar, &Candles,
-		&Troll, &Bolt, &Bubble, &Dam, &ControlPanel,
-		&Match, &Guide, &InflatableBoat,
-		&ToolChest, &YellowButton, &BrownButton, &RedButton, &BlueButton,
-		&Screwdriver, &Wrench, &Tube, &Leak,
-		&Machine, &MachineSwitch,
-		&Cyclops, &Chalice, &Painting, &OwnersManual,
-		&Leaves, &Nest, &Sand, &Scarab, &Shovel,
-		&Coffin, &Thief, &Trunk, &Pump, &Trident,
-		&Mirror1, &Mirror2, &Railing, &Pedestal, &Engravings,
-		&Bar, &PotOfGold, &Buoy, &Bracelet, &Coal, &Timbers,
-		&Bones, &BurnedOutLantern, &BagOfCoins, &RustyKnife, &Keys,
+		&mountainRange, &frontDoor, &mailbox, &barrowDoor, &barrow,
+		&trophyCase, &rug, &trapDoor, &woodenDoor, &sword, &lamp,
+		&kitchenTable, &atticTable, &rope,
+		&ghosts, &skull,
+		&raisedBasket, &loweredBasket,
+		&bat, &jade, &bell, &prayer, &altar, &candles,
+		&troll, &bolt, &bubble, &dam, &controlPanel,
+		&match, &guide, &inflatableBoat,
+		&toolChest, &yellowButton, &brownButton, &redButton, &blueButton,
+		&screwdriver, &wrench, &tube, &leak,
+		&machine, &machineSwitch,
+		&cyclops, &chalice, &painting, &ownersManual,
+		&leaves, &nest, &sand, &scarab, &shovel,
+		&coffin, &thief, &trunk, &pump, &trident,
+		&mirror1, &mirror2, &railing, &pedestal, &engravings,
+		&bar, &potOfGold, &buoy, &bracelet, &coal, &timbers,
+		&bones, &burnedOutLantern, &bagOfCoins, &rustyKnife, &keys,
 		// G.AllObjects in objects
-		&Map, &Advertisement, &Bottle, &SandwichBag, &Knife,
-		&Water, &Lunch, &Garlic, &Book, &Sceptre,
-		&Egg, &Canary, &Putty, &Axe,
-		&LargeBag, &Stiletto, &Torch, &BoatLabel, &Emerald,
-		&BrokenCanary,
+		&mapObj, &advertisement, &bottle, &sandwichBag, &knife,
+		&water, &lunch, &garlic, &book, &sceptre,
+		&egg, &canary, &putty, &axe,
+		&largeBag, &stiletto, &torch, &boatLabel, &emerald,
+		&brokenCanary,
 	}
 )
 
-// InitRoomExits sets all room directional properties.
+// initRoomExits sets all room directional properties.
 // This is done in a function to avoid circular reference issues
 // between rooms that reference each other.
-func InitRoomExits() {
+func initRoomExits() {
 	// West of House
-	WestOfHouse.SetExit(North, DirProps{UExit: true, RExit: &NorthOfHouse})
-	WestOfHouse.SetExit(South, DirProps{UExit: true, RExit: &SouthOfHouse})
-	WestOfHouse.SetExit(NorthEast, DirProps{UExit: true, RExit: &NorthOfHouse})
-	WestOfHouse.SetExit(SouthEast, DirProps{UExit: true, RExit: &SouthOfHouse})
-	WestOfHouse.SetExit(West, DirProps{UExit: true, RExit: &Forest1})
-	WestOfHouse.SetExit(East, DirProps{NExit: "The door is boarded and you can't remove the boards."})
-	WestOfHouse.SetExit(SouthWest, DirProps{CExit: func() bool { return GD().WonGame }, RExit: &StoneBarrow})
-	WestOfHouse.SetExit(In, DirProps{CExit: func() bool { return GD().WonGame }, RExit: &StoneBarrow})
+	westOfHouse.SetExit(North, DirProps{UExit: true, RExit: &northOfHouse})
+	westOfHouse.SetExit(South, DirProps{UExit: true, RExit: &southOfHouse})
+	westOfHouse.SetExit(NorthEast, DirProps{UExit: true, RExit: &northOfHouse})
+	westOfHouse.SetExit(SouthEast, DirProps{UExit: true, RExit: &southOfHouse})
+	westOfHouse.SetExit(West, DirProps{UExit: true, RExit: &forest1})
+	westOfHouse.SetExit(East, DirProps{NExit: "The door is boarded and you can't remove the boards."})
+	westOfHouse.SetExit(SouthWest, DirProps{CExit: func() bool { return gD().WonGame }, RExit: &stoneBarrow})
+	westOfHouse.SetExit(In, DirProps{CExit: func() bool { return gD().WonGame }, RExit: &stoneBarrow})
 
-	// Stone Barrow
-	StoneBarrow.SetExit(NorthEast, DirProps{UExit: true, RExit: &WestOfHouse})
+	// Stone barrow
+	stoneBarrow.SetExit(NorthEast, DirProps{UExit: true, RExit: &westOfHouse})
 
 	// North of House
-	NorthOfHouse.SetExit(SouthWest, DirProps{UExit: true, RExit: &WestOfHouse})
-	NorthOfHouse.SetExit(SouthEast, DirProps{UExit: true, RExit: &EastOfHouse})
-	NorthOfHouse.SetExit(West, DirProps{UExit: true, RExit: &WestOfHouse})
-	NorthOfHouse.SetExit(East, DirProps{UExit: true, RExit: &EastOfHouse})
-	NorthOfHouse.SetExit(North, DirProps{UExit: true, RExit: &Path})
-	NorthOfHouse.SetExit(South, DirProps{NExit: "The windows are all boarded."})
+	northOfHouse.SetExit(SouthWest, DirProps{UExit: true, RExit: &westOfHouse})
+	northOfHouse.SetExit(SouthEast, DirProps{UExit: true, RExit: &eastOfHouse})
+	northOfHouse.SetExit(West, DirProps{UExit: true, RExit: &westOfHouse})
+	northOfHouse.SetExit(East, DirProps{UExit: true, RExit: &eastOfHouse})
+	northOfHouse.SetExit(North, DirProps{UExit: true, RExit: &path})
+	northOfHouse.SetExit(South, DirProps{NExit: "The windows are all boarded."})
 
 	// South of House
-	SouthOfHouse.SetExit(West, DirProps{UExit: true, RExit: &WestOfHouse})
-	SouthOfHouse.SetExit(East, DirProps{UExit: true, RExit: &EastOfHouse})
-	SouthOfHouse.SetExit(NorthEast, DirProps{UExit: true, RExit: &EastOfHouse})
-	SouthOfHouse.SetExit(NorthWest, DirProps{UExit: true, RExit: &WestOfHouse})
-	SouthOfHouse.SetExit(South, DirProps{UExit: true, RExit: &Forest3})
-	SouthOfHouse.SetExit(North, DirProps{NExit: "The windows are all boarded."})
+	southOfHouse.SetExit(West, DirProps{UExit: true, RExit: &westOfHouse})
+	southOfHouse.SetExit(East, DirProps{UExit: true, RExit: &eastOfHouse})
+	southOfHouse.SetExit(NorthEast, DirProps{UExit: true, RExit: &eastOfHouse})
+	southOfHouse.SetExit(NorthWest, DirProps{UExit: true, RExit: &westOfHouse})
+	southOfHouse.SetExit(South, DirProps{UExit: true, RExit: &forest3})
+	southOfHouse.SetExit(North, DirProps{NExit: "The windows are all boarded."})
 
 	// East of House
-	EastOfHouse.SetExit(North, DirProps{UExit: true, RExit: &NorthOfHouse})
-	EastOfHouse.SetExit(South, DirProps{UExit: true, RExit: &SouthOfHouse})
-	EastOfHouse.SetExit(SouthWest, DirProps{UExit: true, RExit: &SouthOfHouse})
-	EastOfHouse.SetExit(NorthWest, DirProps{UExit: true, RExit: &NorthOfHouse})
-	EastOfHouse.SetExit(East, DirProps{UExit: true, RExit: &Clearing})
-	EastOfHouse.SetExit(West, DirProps{DExit: &KitchenWindow, RExit: &Kitchen})
-	EastOfHouse.SetExit(In, DirProps{DExit: &KitchenWindow, RExit: &Kitchen})
+	eastOfHouse.SetExit(North, DirProps{UExit: true, RExit: &northOfHouse})
+	eastOfHouse.SetExit(South, DirProps{UExit: true, RExit: &southOfHouse})
+	eastOfHouse.SetExit(SouthWest, DirProps{UExit: true, RExit: &southOfHouse})
+	eastOfHouse.SetExit(NorthWest, DirProps{UExit: true, RExit: &northOfHouse})
+	eastOfHouse.SetExit(East, DirProps{UExit: true, RExit: &clearing})
+	eastOfHouse.SetExit(West, DirProps{DExit: &kitchenWindow, RExit: &kitchen})
+	eastOfHouse.SetExit(In, DirProps{DExit: &kitchenWindow, RExit: &kitchen})
 
-	// Forest 1
-	Forest1.SetExit(Up, DirProps{NExit: "There is no tree here suitable for climbing."})
-	Forest1.SetExit(North, DirProps{UExit: true, RExit: &GratingClearing})
-	Forest1.SetExit(East, DirProps{UExit: true, RExit: &Path})
-	Forest1.SetExit(South, DirProps{UExit: true, RExit: &Forest3})
-	Forest1.SetExit(West, DirProps{NExit: "You would need a machete to go further west."})
+	// forest 1
+	forest1.SetExit(Up, DirProps{NExit: "There is no tree here suitable for climbing."})
+	forest1.SetExit(North, DirProps{UExit: true, RExit: &gratingClearing})
+	forest1.SetExit(East, DirProps{UExit: true, RExit: &path})
+	forest1.SetExit(South, DirProps{UExit: true, RExit: &forest3})
+	forest1.SetExit(West, DirProps{NExit: "You would need a machete to go further west."})
 
-	// Forest 2
-	Forest2.SetExit(Up, DirProps{NExit: "There is no tree here suitable for climbing."})
-	Forest2.SetExit(North, DirProps{NExit: "The forest becomes impenetrable to the north."})
-	Forest2.SetExit(East, DirProps{UExit: true, RExit: &Mountains})
-	Forest2.SetExit(South, DirProps{UExit: true, RExit: &Clearing})
-	Forest2.SetExit(West, DirProps{UExit: true, RExit: &Path})
+	// forest 2
+	forest2.SetExit(Up, DirProps{NExit: "There is no tree here suitable for climbing."})
+	forest2.SetExit(North, DirProps{NExit: "The forest becomes impenetrable to the north."})
+	forest2.SetExit(East, DirProps{UExit: true, RExit: &mountains})
+	forest2.SetExit(South, DirProps{UExit: true, RExit: &clearing})
+	forest2.SetExit(West, DirProps{UExit: true, RExit: &path})
 
-	// Mountains
-	Mountains.SetExit(Up, DirProps{NExit: "The mountains are impassable."})
-	Mountains.SetExit(North, DirProps{UExit: true, RExit: &Forest2})
-	Mountains.SetExit(East, DirProps{NExit: "The mountains are impassable."})
-	Mountains.SetExit(South, DirProps{UExit: true, RExit: &Forest2})
-	Mountains.SetExit(West, DirProps{UExit: true, RExit: &Forest2})
+	// mountains
+	mountains.SetExit(Up, DirProps{NExit: "The mountains are impassable."})
+	mountains.SetExit(North, DirProps{UExit: true, RExit: &forest2})
+	mountains.SetExit(East, DirProps{NExit: "The mountains are impassable."})
+	mountains.SetExit(South, DirProps{UExit: true, RExit: &forest2})
+	mountains.SetExit(West, DirProps{UExit: true, RExit: &forest2})
 
-	// Forest 3
-	Forest3.SetExit(Up, DirProps{NExit: "There is no tree here suitable for climbing."})
-	Forest3.SetExit(North, DirProps{UExit: true, RExit: &Clearing})
-	Forest3.SetExit(East, DirProps{NExit: "The rank undergrowth prevents eastward movement."})
-	Forest3.SetExit(South, DirProps{NExit: "Storm-tossed trees block your way."})
-	Forest3.SetExit(West, DirProps{UExit: true, RExit: &Forest1})
-	Forest3.SetExit(NorthWest, DirProps{UExit: true, RExit: &SouthOfHouse})
+	// forest 3
+	forest3.SetExit(Up, DirProps{NExit: "There is no tree here suitable for climbing."})
+	forest3.SetExit(North, DirProps{UExit: true, RExit: &clearing})
+	forest3.SetExit(East, DirProps{NExit: "The rank undergrowth prevents eastward movement."})
+	forest3.SetExit(South, DirProps{NExit: "Storm-tossed trees block your way."})
+	forest3.SetExit(West, DirProps{UExit: true, RExit: &forest1})
+	forest3.SetExit(NorthWest, DirProps{UExit: true, RExit: &southOfHouse})
 
-	// Path
-	Path.SetExit(Up, DirProps{UExit: true, RExit: &UpATree})
-	Path.SetExit(North, DirProps{UExit: true, RExit: &GratingClearing})
-	Path.SetExit(East, DirProps{UExit: true, RExit: &Forest2})
-	Path.SetExit(South, DirProps{UExit: true, RExit: &NorthOfHouse})
-	Path.SetExit(West, DirProps{UExit: true, RExit: &Forest1})
+	// path
+	path.SetExit(Up, DirProps{UExit: true, RExit: &upATree})
+	path.SetExit(North, DirProps{UExit: true, RExit: &gratingClearing})
+	path.SetExit(East, DirProps{UExit: true, RExit: &forest2})
+	path.SetExit(South, DirProps{UExit: true, RExit: &northOfHouse})
+	path.SetExit(West, DirProps{UExit: true, RExit: &forest1})
 
-	// Up a Tree
-	UpATree.SetExit(Down, DirProps{UExit: true, RExit: &Path})
-	UpATree.SetExit(Up, DirProps{NExit: "You cannot climb any higher."})
+	// Up a tree
+	upATree.SetExit(Down, DirProps{UExit: true, RExit: &path})
+	upATree.SetExit(Up, DirProps{NExit: "You cannot climb any higher."})
 
-	// Grating Clearing
-	GratingClearing.SetExit(North, DirProps{NExit: "The forest becomes impenetrable to the north."})
-	GratingClearing.SetExit(East, DirProps{UExit: true, RExit: &Forest2})
-	GratingClearing.SetExit(West, DirProps{UExit: true, RExit: &Forest1})
-	GratingClearing.SetExit(South, DirProps{UExit: true, RExit: &Path})
-	GratingClearing.SetExit(Down, DirProps{FExit: GratingExitFcn})
+	// Grating clearing
+	gratingClearing.SetExit(North, DirProps{NExit: "The forest becomes impenetrable to the north."})
+	gratingClearing.SetExit(East, DirProps{UExit: true, RExit: &forest2})
+	gratingClearing.SetExit(West, DirProps{UExit: true, RExit: &forest1})
+	gratingClearing.SetExit(South, DirProps{UExit: true, RExit: &path})
+	gratingClearing.SetExit(Down, DirProps{FExit: gratingExitFcn})
 
-	// Clearing
-	Clearing.SetExit(Up, DirProps{NExit: "There is no tree here suitable for climbing."})
-	Clearing.SetExit(East, DirProps{UExit: true, RExit: &CanyonView})
-	Clearing.SetExit(North, DirProps{UExit: true, RExit: &Forest2})
-	Clearing.SetExit(South, DirProps{UExit: true, RExit: &Forest3})
-	Clearing.SetExit(West, DirProps{UExit: true, RExit: &EastOfHouse})
+	// clearing
+	clearing.SetExit(Up, DirProps{NExit: "There is no tree here suitable for climbing."})
+	clearing.SetExit(East, DirProps{UExit: true, RExit: &canyonView})
+	clearing.SetExit(North, DirProps{UExit: true, RExit: &forest2})
+	clearing.SetExit(South, DirProps{UExit: true, RExit: &forest3})
+	clearing.SetExit(West, DirProps{UExit: true, RExit: &eastOfHouse})
 
-	// Kitchen
-	Kitchen.SetExit(East, DirProps{DExit: &KitchenWindow, RExit: &EastOfHouse})
-	Kitchen.SetExit(West, DirProps{UExit: true, RExit: &LivingRoom})
-	Kitchen.SetExit(Out, DirProps{DExit: &KitchenWindow, RExit: &EastOfHouse})
-	Kitchen.SetExit(Up, DirProps{UExit: true, RExit: &Attic})
-	Kitchen.SetExit(Down, DirProps{CExit: func() bool { return false }, RExit: &Studio, CExitStr: "Only Santa Claus climbs down chimneys."})
+	// kitchen
+	kitchen.SetExit(East, DirProps{DExit: &kitchenWindow, RExit: &eastOfHouse})
+	kitchen.SetExit(West, DirProps{UExit: true, RExit: &livingRoom})
+	kitchen.SetExit(Out, DirProps{DExit: &kitchenWindow, RExit: &eastOfHouse})
+	kitchen.SetExit(Up, DirProps{UExit: true, RExit: &attic})
+	kitchen.SetExit(Down, DirProps{CExit: func() bool { return false }, RExit: &studio, CExitStr: "Only Santa Claus climbs down chimneys."})
 
-	// Attic
-	Attic.SetExit(Down, DirProps{UExit: true, RExit: &Kitchen})
+	// attic
+	attic.SetExit(Down, DirProps{UExit: true, RExit: &kitchen})
 
 	// Living Room
-	LivingRoom.SetExit(East, DirProps{UExit: true, RExit: &Kitchen})
-	LivingRoom.SetExit(West, DirProps{CExit: func() bool { return GD().MagicFlag }, RExit: &StrangePassage, CExitStr: "The door is nailed shut."})
-	LivingRoom.SetExit(Down, DirProps{FExit: TrapDoorExitFcn})
+	livingRoom.SetExit(East, DirProps{UExit: true, RExit: &kitchen})
+	livingRoom.SetExit(West, DirProps{CExit: func() bool { return gD().MagicFlag }, RExit: &strangePassage, CExitStr: "The door is nailed shut."})
+	livingRoom.SetExit(Down, DirProps{FExit: trapDoorExitFcn})
 
-	// Cellar
-	Cellar.SetExit(North, DirProps{UExit: true, RExit: &TrollRoom})
-	Cellar.SetExit(South, DirProps{UExit: true, RExit: &EastOfChasm})
-	Cellar.SetExit(Up, DirProps{DExit: &TrapDoor, RExit: &LivingRoom})
-	Cellar.SetExit(West, DirProps{NExit: "You try to ascend the ramp, but it is impossible, and you slide back down."})
+	// cellar
+	cellar.SetExit(North, DirProps{UExit: true, RExit: &trollRoom})
+	cellar.SetExit(South, DirProps{UExit: true, RExit: &eastOfChasm})
+	cellar.SetExit(Up, DirProps{DExit: &trapDoor, RExit: &livingRoom})
+	cellar.SetExit(West, DirProps{NExit: "You try to ascend the ramp, but it is impossible, and you slide back down."})
 
-	// Troll Room
-	TrollRoom.SetExit(South, DirProps{UExit: true, RExit: &Cellar})
-	TrollRoom.SetExit(East, DirProps{CExit: func() bool { return GD().TrollFlag }, RExit: &EWPassage, CExitStr: "The troll fends you off with a menacing gesture."})
-	TrollRoom.SetExit(West, DirProps{CExit: func() bool { return GD().TrollFlag }, RExit: &Maze1, CExitStr: "The troll fends you off with a menacing gesture."})
+	// troll Room
+	trollRoom.SetExit(South, DirProps{UExit: true, RExit: &cellar})
+	trollRoom.SetExit(East, DirProps{CExit: func() bool { return gD().TrollFlag }, RExit: &eWPassage, CExitStr: "The troll fends you off with a menacing gesture."})
+	trollRoom.SetExit(West, DirProps{CExit: func() bool { return gD().TrollFlag }, RExit: &maze1, CExitStr: "The troll fends you off with a menacing gesture."})
 
 	// East of Chasm
-	EastOfChasm.SetExit(North, DirProps{UExit: true, RExit: &Cellar})
-	EastOfChasm.SetExit(East, DirProps{UExit: true, RExit: &Gallery})
-	EastOfChasm.SetExit(Down, DirProps{NExit: "The chasm probably leads straight to the infernal regions."})
+	eastOfChasm.SetExit(North, DirProps{UExit: true, RExit: &cellar})
+	eastOfChasm.SetExit(East, DirProps{UExit: true, RExit: &gallery})
+	eastOfChasm.SetExit(Down, DirProps{NExit: "The chasm probably leads straight to the infernal regions."})
 
-	// Gallery
-	Gallery.SetExit(West, DirProps{UExit: true, RExit: &EastOfChasm})
-	Gallery.SetExit(North, DirProps{UExit: true, RExit: &Studio})
+	// gallery
+	gallery.SetExit(West, DirProps{UExit: true, RExit: &eastOfChasm})
+	gallery.SetExit(North, DirProps{UExit: true, RExit: &studio})
 
-	// Studio
-	Studio.SetExit(South, DirProps{UExit: true, RExit: &Gallery})
-	Studio.SetExit(Up, DirProps{FExit: UpChimneyFcn})
+	// studio
+	studio.SetExit(South, DirProps{UExit: true, RExit: &gallery})
+	studio.SetExit(Up, DirProps{FExit: upChimneyFcn})
 
 	// Maze 1
-	Maze1.SetExit(East, DirProps{UExit: true, RExit: &TrollRoom})
-	Maze1.SetExit(North, DirProps{UExit: true, RExit: &Maze1})
-	Maze1.SetExit(South, DirProps{UExit: true, RExit: &Maze2})
-	Maze1.SetExit(West, DirProps{UExit: true, RExit: &Maze4})
+	maze1.SetExit(East, DirProps{UExit: true, RExit: &trollRoom})
+	maze1.SetExit(North, DirProps{UExit: true, RExit: &maze1})
+	maze1.SetExit(South, DirProps{UExit: true, RExit: &maze2})
+	maze1.SetExit(West, DirProps{UExit: true, RExit: &maze4})
 
 	// Maze 2
-	Maze2.SetExit(South, DirProps{UExit: true, RExit: &Maze1})
-	Maze2.SetExit(Down, DirProps{FExit: MazeDiodesFcn})
-	Maze2.SetExit(East, DirProps{UExit: true, RExit: &Maze3})
+	maze2.SetExit(South, DirProps{UExit: true, RExit: &maze1})
+	maze2.SetExit(Down, DirProps{FExit: mazeDiodesFcn})
+	maze2.SetExit(East, DirProps{UExit: true, RExit: &maze3})
 
 	// Maze 3
-	Maze3.SetExit(West, DirProps{UExit: true, RExit: &Maze2})
-	Maze3.SetExit(North, DirProps{UExit: true, RExit: &Maze4})
-	Maze3.SetExit(Up, DirProps{UExit: true, RExit: &Maze5})
+	maze3.SetExit(West, DirProps{UExit: true, RExit: &maze2})
+	maze3.SetExit(North, DirProps{UExit: true, RExit: &maze4})
+	maze3.SetExit(Up, DirProps{UExit: true, RExit: &maze5})
 
 	// Maze 4
-	Maze4.SetExit(West, DirProps{UExit: true, RExit: &Maze3})
-	Maze4.SetExit(North, DirProps{UExit: true, RExit: &Maze1})
-	Maze4.SetExit(East, DirProps{UExit: true, RExit: &DeadEnd1})
+	maze4.SetExit(West, DirProps{UExit: true, RExit: &maze3})
+	maze4.SetExit(North, DirProps{UExit: true, RExit: &maze1})
+	maze4.SetExit(East, DirProps{UExit: true, RExit: &deadEnd1})
 
 	// Dead End 1
-	DeadEnd1.SetExit(South, DirProps{UExit: true, RExit: &Maze4})
+	deadEnd1.SetExit(South, DirProps{UExit: true, RExit: &maze4})
 
 	// Maze 5
-	Maze5.SetExit(East, DirProps{UExit: true, RExit: &DeadEnd2})
-	Maze5.SetExit(North, DirProps{UExit: true, RExit: &Maze3})
-	Maze5.SetExit(SouthWest, DirProps{UExit: true, RExit: &Maze6})
+	maze5.SetExit(East, DirProps{UExit: true, RExit: &deadEnd2})
+	maze5.SetExit(North, DirProps{UExit: true, RExit: &maze3})
+	maze5.SetExit(SouthWest, DirProps{UExit: true, RExit: &maze6})
 
 	// Dead End 2
-	DeadEnd2.SetExit(West, DirProps{UExit: true, RExit: &Maze5})
+	deadEnd2.SetExit(West, DirProps{UExit: true, RExit: &maze5})
 
 	// Maze 6
-	Maze6.SetExit(Down, DirProps{UExit: true, RExit: &Maze5})
-	Maze6.SetExit(East, DirProps{UExit: true, RExit: &Maze7})
-	Maze6.SetExit(West, DirProps{UExit: true, RExit: &Maze6})
-	Maze6.SetExit(Up, DirProps{UExit: true, RExit: &Maze9})
+	maze6.SetExit(Down, DirProps{UExit: true, RExit: &maze5})
+	maze6.SetExit(East, DirProps{UExit: true, RExit: &maze7})
+	maze6.SetExit(West, DirProps{UExit: true, RExit: &maze6})
+	maze6.SetExit(Up, DirProps{UExit: true, RExit: &maze9})
 
 	// Maze 7
-	Maze7.SetExit(Up, DirProps{UExit: true, RExit: &Maze14})
-	Maze7.SetExit(West, DirProps{UExit: true, RExit: &Maze6})
-	Maze7.SetExit(Down, DirProps{FExit: MazeDiodesFcn})
-	Maze7.SetExit(East, DirProps{UExit: true, RExit: &Maze8})
-	Maze7.SetExit(South, DirProps{UExit: true, RExit: &Maze15})
+	maze7.SetExit(Up, DirProps{UExit: true, RExit: &maze14})
+	maze7.SetExit(West, DirProps{UExit: true, RExit: &maze6})
+	maze7.SetExit(Down, DirProps{FExit: mazeDiodesFcn})
+	maze7.SetExit(East, DirProps{UExit: true, RExit: &maze8})
+	maze7.SetExit(South, DirProps{UExit: true, RExit: &maze15})
 
 	// Maze 8
-	Maze8.SetExit(NorthEast, DirProps{UExit: true, RExit: &Maze7})
-	Maze8.SetExit(West, DirProps{UExit: true, RExit: &Maze8})
-	Maze8.SetExit(SouthEast, DirProps{UExit: true, RExit: &DeadEnd3})
+	maze8.SetExit(NorthEast, DirProps{UExit: true, RExit: &maze7})
+	maze8.SetExit(West, DirProps{UExit: true, RExit: &maze8})
+	maze8.SetExit(SouthEast, DirProps{UExit: true, RExit: &deadEnd3})
 
 	// Dead End 3
-	DeadEnd3.SetExit(North, DirProps{UExit: true, RExit: &Maze8})
+	deadEnd3.SetExit(North, DirProps{UExit: true, RExit: &maze8})
 
 	// Maze 9
-	Maze9.SetExit(North, DirProps{UExit: true, RExit: &Maze6})
-	Maze9.SetExit(Down, DirProps{FExit: MazeDiodesFcn})
-	Maze9.SetExit(East, DirProps{UExit: true, RExit: &Maze10})
-	Maze9.SetExit(South, DirProps{UExit: true, RExit: &Maze13})
-	Maze9.SetExit(West, DirProps{UExit: true, RExit: &Maze12})
-	Maze9.SetExit(NorthWest, DirProps{UExit: true, RExit: &Maze9})
+	maze9.SetExit(North, DirProps{UExit: true, RExit: &maze6})
+	maze9.SetExit(Down, DirProps{FExit: mazeDiodesFcn})
+	maze9.SetExit(East, DirProps{UExit: true, RExit: &maze10})
+	maze9.SetExit(South, DirProps{UExit: true, RExit: &maze13})
+	maze9.SetExit(West, DirProps{UExit: true, RExit: &maze12})
+	maze9.SetExit(NorthWest, DirProps{UExit: true, RExit: &maze9})
 
 	// Maze 10
-	Maze10.SetExit(East, DirProps{UExit: true, RExit: &Maze9})
-	Maze10.SetExit(West, DirProps{UExit: true, RExit: &Maze13})
-	Maze10.SetExit(Up, DirProps{UExit: true, RExit: &Maze11})
+	maze10.SetExit(East, DirProps{UExit: true, RExit: &maze9})
+	maze10.SetExit(West, DirProps{UExit: true, RExit: &maze13})
+	maze10.SetExit(Up, DirProps{UExit: true, RExit: &maze11})
 
 	// Maze 11
-	Maze11.SetExit(NorthEast, DirProps{UExit: true, RExit: &GratingRoom})
-	Maze11.SetExit(Down, DirProps{UExit: true, RExit: &Maze10})
-	Maze11.SetExit(NorthWest, DirProps{UExit: true, RExit: &Maze13})
-	Maze11.SetExit(SouthWest, DirProps{UExit: true, RExit: &Maze12})
+	maze11.SetExit(NorthEast, DirProps{UExit: true, RExit: &gratingRoom})
+	maze11.SetExit(Down, DirProps{UExit: true, RExit: &maze10})
+	maze11.SetExit(NorthWest, DirProps{UExit: true, RExit: &maze13})
+	maze11.SetExit(SouthWest, DirProps{UExit: true, RExit: &maze12})
 
 	// Grating Room
-	GratingRoom.SetExit(SouthWest, DirProps{UExit: true, RExit: &Maze11})
-	GratingRoom.SetExit(Up, DirProps{DExit: &Grate, RExit: &GratingClearing, DExitStr: "The grating is closed."})
+	gratingRoom.SetExit(SouthWest, DirProps{UExit: true, RExit: &maze11})
+	gratingRoom.SetExit(Up, DirProps{DExit: &grate, RExit: &gratingClearing, DExitStr: "The grating is closed."})
 
 	// Maze 12
-	Maze12.SetExit(Down, DirProps{FExit: MazeDiodesFcn})
-	Maze12.SetExit(SouthWest, DirProps{UExit: true, RExit: &Maze11})
-	Maze12.SetExit(East, DirProps{UExit: true, RExit: &Maze13})
-	Maze12.SetExit(Up, DirProps{UExit: true, RExit: &Maze9})
-	Maze12.SetExit(North, DirProps{UExit: true, RExit: &DeadEnd4})
+	maze12.SetExit(Down, DirProps{FExit: mazeDiodesFcn})
+	maze12.SetExit(SouthWest, DirProps{UExit: true, RExit: &maze11})
+	maze12.SetExit(East, DirProps{UExit: true, RExit: &maze13})
+	maze12.SetExit(Up, DirProps{UExit: true, RExit: &maze9})
+	maze12.SetExit(North, DirProps{UExit: true, RExit: &deadEnd4})
 
 	// Dead End 4
-	DeadEnd4.SetExit(South, DirProps{UExit: true, RExit: &Maze12})
+	deadEnd4.SetExit(South, DirProps{UExit: true, RExit: &maze12})
 
 	// Maze 13
-	Maze13.SetExit(East, DirProps{UExit: true, RExit: &Maze9})
-	Maze13.SetExit(Down, DirProps{UExit: true, RExit: &Maze12})
-	Maze13.SetExit(South, DirProps{UExit: true, RExit: &Maze10})
-	Maze13.SetExit(West, DirProps{UExit: true, RExit: &Maze11})
+	maze13.SetExit(East, DirProps{UExit: true, RExit: &maze9})
+	maze13.SetExit(Down, DirProps{UExit: true, RExit: &maze12})
+	maze13.SetExit(South, DirProps{UExit: true, RExit: &maze10})
+	maze13.SetExit(West, DirProps{UExit: true, RExit: &maze11})
 
 	// Maze 14
-	Maze14.SetExit(West, DirProps{UExit: true, RExit: &Maze15})
-	Maze14.SetExit(NorthWest, DirProps{UExit: true, RExit: &Maze14})
-	Maze14.SetExit(NorthEast, DirProps{UExit: true, RExit: &Maze7})
-	Maze14.SetExit(South, DirProps{UExit: true, RExit: &Maze7})
+	maze14.SetExit(West, DirProps{UExit: true, RExit: &maze15})
+	maze14.SetExit(NorthWest, DirProps{UExit: true, RExit: &maze14})
+	maze14.SetExit(NorthEast, DirProps{UExit: true, RExit: &maze7})
+	maze14.SetExit(South, DirProps{UExit: true, RExit: &maze7})
 
 	// Maze 15
-	Maze15.SetExit(West, DirProps{UExit: true, RExit: &Maze14})
-	Maze15.SetExit(South, DirProps{UExit: true, RExit: &Maze7})
-	Maze15.SetExit(SouthEast, DirProps{UExit: true, RExit: &CyclopsRoom})
+	maze15.SetExit(West, DirProps{UExit: true, RExit: &maze14})
+	maze15.SetExit(South, DirProps{UExit: true, RExit: &maze7})
+	maze15.SetExit(SouthEast, DirProps{UExit: true, RExit: &cyclopsRoom})
 
-	// Cyclops Room
-	CyclopsRoom.SetExit(NorthWest, DirProps{UExit: true, RExit: &Maze15})
-	CyclopsRoom.SetExit(East, DirProps{CExit: func() bool { return GD().MagicFlag }, RExit: &StrangePassage, CExitStr: "The east wall is solid rock."})
-	CyclopsRoom.SetExit(Up, DirProps{CExit: func() bool { return GD().CyclopsFlag }, RExit: &TreasureRoom, CExitStr: "The cyclops doesn't look like he'll let you past."})
+	// cyclops Room
+	cyclopsRoom.SetExit(NorthWest, DirProps{UExit: true, RExit: &maze15})
+	cyclopsRoom.SetExit(East, DirProps{CExit: func() bool { return gD().MagicFlag }, RExit: &strangePassage, CExitStr: "The east wall is solid rock."})
+	cyclopsRoom.SetExit(Up, DirProps{CExit: func() bool { return gD().CyclopsFlag }, RExit: &treasureRoom, CExitStr: "The cyclops doesn't look like he'll let you past."})
 
 	// Strange Passage
-	StrangePassage.SetExit(West, DirProps{UExit: true, RExit: &CyclopsRoom})
-	StrangePassage.SetExit(In, DirProps{UExit: true, RExit: &CyclopsRoom})
-	StrangePassage.SetExit(East, DirProps{UExit: true, RExit: &LivingRoom})
+	strangePassage.SetExit(West, DirProps{UExit: true, RExit: &cyclopsRoom})
+	strangePassage.SetExit(In, DirProps{UExit: true, RExit: &cyclopsRoom})
+	strangePassage.SetExit(East, DirProps{UExit: true, RExit: &livingRoom})
 
 	// Treasure Room
-	TreasureRoom.SetExit(Down, DirProps{UExit: true, RExit: &CyclopsRoom})
+	treasureRoom.SetExit(Down, DirProps{UExit: true, RExit: &cyclopsRoom})
 
-	// Reservoir South
-	ReservoirSouth.SetExit(SouthEast, DirProps{UExit: true, RExit: &DeepCanyon})
-	ReservoirSouth.SetExit(SouthWest, DirProps{UExit: true, RExit: &ChasmRoom})
-	ReservoirSouth.SetExit(East, DirProps{UExit: true, RExit: &DamRoom})
-	ReservoirSouth.SetExit(West, DirProps{UExit: true, RExit: &StreamView})
-	ReservoirSouth.SetExit(North, DirProps{CExit: func() bool { return GD().LowTide }, RExit: &Reservoir, CExitStr: "You would drown."})
+	// reservoir South
+	reservoirSouth.SetExit(SouthEast, DirProps{UExit: true, RExit: &deepCanyon})
+	reservoirSouth.SetExit(SouthWest, DirProps{UExit: true, RExit: &chasmRoom})
+	reservoirSouth.SetExit(East, DirProps{UExit: true, RExit: &damRoom})
+	reservoirSouth.SetExit(West, DirProps{UExit: true, RExit: &streamView})
+	reservoirSouth.SetExit(North, DirProps{CExit: func() bool { return gD().LowTide }, RExit: &reservoir, CExitStr: "You would drown."})
 
-	// Reservoir
-	Reservoir.SetExit(North, DirProps{UExit: true, RExit: &ReservoirNorth})
-	Reservoir.SetExit(South, DirProps{UExit: true, RExit: &ReservoirSouth})
-	Reservoir.SetExit(Up, DirProps{UExit: true, RExit: &InStream})
-	Reservoir.SetExit(West, DirProps{UExit: true, RExit: &InStream})
-	Reservoir.SetExit(Down, DirProps{NExit: "The dam blocks your way."})
+	// reservoir
+	reservoir.SetExit(North, DirProps{UExit: true, RExit: &reservoirNorth})
+	reservoir.SetExit(South, DirProps{UExit: true, RExit: &reservoirSouth})
+	reservoir.SetExit(Up, DirProps{UExit: true, RExit: &inStream})
+	reservoir.SetExit(West, DirProps{UExit: true, RExit: &inStream})
+	reservoir.SetExit(Down, DirProps{NExit: "The dam blocks your way."})
 
-	// Reservoir North
-	ReservoirNorth.SetExit(North, DirProps{UExit: true, RExit: &AtlantisRoom})
-	ReservoirNorth.SetExit(South, DirProps{CExit: func() bool { return GD().LowTide }, RExit: &Reservoir, CExitStr: "You would drown."})
+	// reservoir North
+	reservoirNorth.SetExit(North, DirProps{UExit: true, RExit: &atlantisRoom})
+	reservoirNorth.SetExit(South, DirProps{CExit: func() bool { return gD().LowTide }, RExit: &reservoir, CExitStr: "You would drown."})
 
 	// Stream View
-	StreamView.SetExit(East, DirProps{UExit: true, RExit: &ReservoirSouth})
-	StreamView.SetExit(West, DirProps{NExit: "The stream emerges from a spot too small for you to enter."})
+	streamView.SetExit(East, DirProps{UExit: true, RExit: &reservoirSouth})
+	streamView.SetExit(West, DirProps{NExit: "The stream emerges from a spot too small for you to enter."})
 
 	// In Stream
-	InStream.SetExit(Up, DirProps{NExit: "The channel is too narrow."})
-	InStream.SetExit(West, DirProps{NExit: "The channel is too narrow."})
-	InStream.SetExit(Land, DirProps{UExit: true, RExit: &StreamView})
-	InStream.SetExit(Down, DirProps{UExit: true, RExit: &Reservoir})
-	InStream.SetExit(East, DirProps{UExit: true, RExit: &Reservoir})
+	inStream.SetExit(Up, DirProps{NExit: "The channel is too narrow."})
+	inStream.SetExit(West, DirProps{NExit: "The channel is too narrow."})
+	inStream.SetExit(Land, DirProps{UExit: true, RExit: &streamView})
+	inStream.SetExit(Down, DirProps{UExit: true, RExit: &reservoir})
+	inStream.SetExit(East, DirProps{UExit: true, RExit: &reservoir})
 
 	// Mirror Room 1
-	MirrorRoom1.SetExit(North, DirProps{UExit: true, RExit: &ColdPassage})
-	MirrorRoom1.SetExit(West, DirProps{UExit: true, RExit: &TwistingPassage})
-	MirrorRoom1.SetExit(East, DirProps{UExit: true, RExit: &SmallCave})
+	mirrorRoom1.SetExit(North, DirProps{UExit: true, RExit: &coldPassage})
+	mirrorRoom1.SetExit(West, DirProps{UExit: true, RExit: &twistingPassage})
+	mirrorRoom1.SetExit(East, DirProps{UExit: true, RExit: &smallCave})
 
 	// Mirror Room 2
-	MirrorRoom2.SetExit(West, DirProps{UExit: true, RExit: &WindingPassage})
-	MirrorRoom2.SetExit(North, DirProps{UExit: true, RExit: &NarrowPassage})
-	MirrorRoom2.SetExit(East, DirProps{UExit: true, RExit: &TinyCave})
+	mirrorRoom2.SetExit(West, DirProps{UExit: true, RExit: &windingPassage})
+	mirrorRoom2.SetExit(North, DirProps{UExit: true, RExit: &narrowPassage})
+	mirrorRoom2.SetExit(East, DirProps{UExit: true, RExit: &tinyCave})
 
 	// Small Cave
-	SmallCave.SetExit(North, DirProps{UExit: true, RExit: &MirrorRoom1})
-	SmallCave.SetExit(Down, DirProps{UExit: true, RExit: &AtlantisRoom})
-	SmallCave.SetExit(South, DirProps{UExit: true, RExit: &AtlantisRoom})
-	SmallCave.SetExit(West, DirProps{UExit: true, RExit: &TwistingPassage})
+	smallCave.SetExit(North, DirProps{UExit: true, RExit: &mirrorRoom1})
+	smallCave.SetExit(Down, DirProps{UExit: true, RExit: &atlantisRoom})
+	smallCave.SetExit(South, DirProps{UExit: true, RExit: &atlantisRoom})
+	smallCave.SetExit(West, DirProps{UExit: true, RExit: &twistingPassage})
 
 	// Tiny Cave
-	TinyCave.SetExit(North, DirProps{UExit: true, RExit: &MirrorRoom2})
-	TinyCave.SetExit(West, DirProps{UExit: true, RExit: &WindingPassage})
-	TinyCave.SetExit(Down, DirProps{UExit: true, RExit: &EnteranceToHades})
+	tinyCave.SetExit(North, DirProps{UExit: true, RExit: &mirrorRoom2})
+	tinyCave.SetExit(West, DirProps{UExit: true, RExit: &windingPassage})
+	tinyCave.SetExit(Down, DirProps{UExit: true, RExit: &enteranceToHades})
 
 	// Cold Passage
-	ColdPassage.SetExit(South, DirProps{UExit: true, RExit: &MirrorRoom1})
-	ColdPassage.SetExit(West, DirProps{UExit: true, RExit: &SlideRoom})
+	coldPassage.SetExit(South, DirProps{UExit: true, RExit: &mirrorRoom1})
+	coldPassage.SetExit(West, DirProps{UExit: true, RExit: &slideRoom})
 
 	// Narrow Passage
-	NarrowPassage.SetExit(North, DirProps{UExit: true, RExit: &RoundRoom})
-	NarrowPassage.SetExit(South, DirProps{UExit: true, RExit: &MirrorRoom2})
+	narrowPassage.SetExit(North, DirProps{UExit: true, RExit: &roundRoom})
+	narrowPassage.SetExit(South, DirProps{UExit: true, RExit: &mirrorRoom2})
 
 	// Winding Passage
-	WindingPassage.SetExit(North, DirProps{UExit: true, RExit: &MirrorRoom2})
-	WindingPassage.SetExit(East, DirProps{UExit: true, RExit: &TinyCave})
+	windingPassage.SetExit(North, DirProps{UExit: true, RExit: &mirrorRoom2})
+	windingPassage.SetExit(East, DirProps{UExit: true, RExit: &tinyCave})
 
 	// Twisting Passage
-	TwistingPassage.SetExit(North, DirProps{UExit: true, RExit: &MirrorRoom1})
-	TwistingPassage.SetExit(East, DirProps{UExit: true, RExit: &SmallCave})
+	twistingPassage.SetExit(North, DirProps{UExit: true, RExit: &mirrorRoom1})
+	twistingPassage.SetExit(East, DirProps{UExit: true, RExit: &smallCave})
 
 	// Atlantis Room
-	AtlantisRoom.SetExit(Up, DirProps{UExit: true, RExit: &SmallCave})
-	AtlantisRoom.SetExit(South, DirProps{UExit: true, RExit: &ReservoirNorth})
+	atlantisRoom.SetExit(Up, DirProps{UExit: true, RExit: &smallCave})
+	atlantisRoom.SetExit(South, DirProps{UExit: true, RExit: &reservoirNorth})
 
 	// EW Passage
-	EWPassage.SetExit(East, DirProps{UExit: true, RExit: &RoundRoom})
-	EWPassage.SetExit(West, DirProps{UExit: true, RExit: &TrollRoom})
-	EWPassage.SetExit(Down, DirProps{UExit: true, RExit: &ChasmRoom})
-	EWPassage.SetExit(North, DirProps{UExit: true, RExit: &ChasmRoom})
+	eWPassage.SetExit(East, DirProps{UExit: true, RExit: &roundRoom})
+	eWPassage.SetExit(West, DirProps{UExit: true, RExit: &trollRoom})
+	eWPassage.SetExit(Down, DirProps{UExit: true, RExit: &chasmRoom})
+	eWPassage.SetExit(North, DirProps{UExit: true, RExit: &chasmRoom})
 
 	// Round Room
-	RoundRoom.SetExit(East, DirProps{UExit: true, RExit: &LoudRoom})
-	RoundRoom.SetExit(West, DirProps{UExit: true, RExit: &EWPassage})
-	RoundRoom.SetExit(North, DirProps{UExit: true, RExit: &NSPassage})
-	RoundRoom.SetExit(South, DirProps{UExit: true, RExit: &NarrowPassage})
-	RoundRoom.SetExit(SouthEast, DirProps{UExit: true, RExit: &EngravingsCave})
+	roundRoom.SetExit(East, DirProps{UExit: true, RExit: &loudRoom})
+	roundRoom.SetExit(West, DirProps{UExit: true, RExit: &eWPassage})
+	roundRoom.SetExit(North, DirProps{UExit: true, RExit: &nSPassage})
+	roundRoom.SetExit(South, DirProps{UExit: true, RExit: &narrowPassage})
+	roundRoom.SetExit(SouthEast, DirProps{UExit: true, RExit: &engravingsCave})
 
 	// Deep Canyon
-	DeepCanyon.SetExit(NorthWest, DirProps{UExit: true, RExit: &ReservoirSouth})
-	DeepCanyon.SetExit(East, DirProps{UExit: true, RExit: &DamRoom})
-	DeepCanyon.SetExit(SouthWest, DirProps{UExit: true, RExit: &NSPassage})
-	DeepCanyon.SetExit(Down, DirProps{UExit: true, RExit: &LoudRoom})
+	deepCanyon.SetExit(NorthWest, DirProps{UExit: true, RExit: &reservoirSouth})
+	deepCanyon.SetExit(East, DirProps{UExit: true, RExit: &damRoom})
+	deepCanyon.SetExit(SouthWest, DirProps{UExit: true, RExit: &nSPassage})
+	deepCanyon.SetExit(Down, DirProps{UExit: true, RExit: &loudRoom})
 
 	// Damp Cave
-	DampCave.SetExit(West, DirProps{UExit: true, RExit: &LoudRoom})
-	DampCave.SetExit(East, DirProps{UExit: true, RExit: &WhiteCliffsNorth})
-	DampCave.SetExit(South, DirProps{NExit: "It is too narrow for most insects."})
+	dampCave.SetExit(West, DirProps{UExit: true, RExit: &loudRoom})
+	dampCave.SetExit(East, DirProps{UExit: true, RExit: &whiteCliffsNorth})
+	dampCave.SetExit(South, DirProps{NExit: "it is too narrow for most insects."})
 
 	// Loud Room
-	LoudRoom.SetExit(East, DirProps{UExit: true, RExit: &DampCave})
-	LoudRoom.SetExit(West, DirProps{UExit: true, RExit: &RoundRoom})
-	LoudRoom.SetExit(Up, DirProps{UExit: true, RExit: &DeepCanyon})
+	loudRoom.SetExit(East, DirProps{UExit: true, RExit: &dampCave})
+	loudRoom.SetExit(West, DirProps{UExit: true, RExit: &roundRoom})
+	loudRoom.SetExit(Up, DirProps{UExit: true, RExit: &deepCanyon})
 
 	// NS Passage
-	NSPassage.SetExit(North, DirProps{UExit: true, RExit: &ChasmRoom})
-	NSPassage.SetExit(NorthEast, DirProps{UExit: true, RExit: &DeepCanyon})
-	NSPassage.SetExit(South, DirProps{UExit: true, RExit: &RoundRoom})
+	nSPassage.SetExit(North, DirProps{UExit: true, RExit: &chasmRoom})
+	nSPassage.SetExit(NorthEast, DirProps{UExit: true, RExit: &deepCanyon})
+	nSPassage.SetExit(South, DirProps{UExit: true, RExit: &roundRoom})
 
 	// Chasm Room
-	ChasmRoom.SetExit(NorthEast, DirProps{UExit: true, RExit: &ReservoirSouth})
-	ChasmRoom.SetExit(SouthWest, DirProps{UExit: true, RExit: &EWPassage})
-	ChasmRoom.SetExit(Up, DirProps{UExit: true, RExit: &EWPassage})
-	ChasmRoom.SetExit(South, DirProps{UExit: true, RExit: &NSPassage})
-	ChasmRoom.SetExit(Down, DirProps{NExit: "Are you out of your mind?"})
+	chasmRoom.SetExit(NorthEast, DirProps{UExit: true, RExit: &reservoirSouth})
+	chasmRoom.SetExit(SouthWest, DirProps{UExit: true, RExit: &eWPassage})
+	chasmRoom.SetExit(Up, DirProps{UExit: true, RExit: &eWPassage})
+	chasmRoom.SetExit(South, DirProps{UExit: true, RExit: &nSPassage})
+	chasmRoom.SetExit(Down, DirProps{NExit: "Are you out of your mind?"})
 
 	// Entrance to Hades
-	EnteranceToHades.SetExit(Up, DirProps{UExit: true, RExit: &TinyCave})
-	EnteranceToHades.SetExit(In, DirProps{CExit: func() bool { return GD().LLDFlag }, RExit: &LandOfLivingDead, CExitStr: "Some invisible force prevents you from passing through the gate."})
-	EnteranceToHades.SetExit(South, DirProps{CExit: func() bool { return GD().LLDFlag }, RExit: &LandOfLivingDead, CExitStr: "Some invisible force prevents you from passing through the gate."})
+	enteranceToHades.SetExit(Up, DirProps{UExit: true, RExit: &tinyCave})
+	enteranceToHades.SetExit(In, DirProps{CExit: func() bool { return gD().LLDFlag }, RExit: &landOfLivingDead, CExitStr: "Some invisible force prevents you from passing through the gate."})
+	enteranceToHades.SetExit(South, DirProps{CExit: func() bool { return gD().LLDFlag }, RExit: &landOfLivingDead, CExitStr: "Some invisible force prevents you from passing through the gate."})
 
 	// Land of Living Dead
-	LandOfLivingDead.SetExit(Out, DirProps{UExit: true, RExit: &EnteranceToHades})
-	LandOfLivingDead.SetExit(North, DirProps{UExit: true, RExit: &EnteranceToHades})
+	landOfLivingDead.SetExit(Out, DirProps{UExit: true, RExit: &enteranceToHades})
+	landOfLivingDead.SetExit(North, DirProps{UExit: true, RExit: &enteranceToHades})
 
-	// Engravings Cave
-	EngravingsCave.SetExit(NorthWest, DirProps{UExit: true, RExit: &RoundRoom})
-	EngravingsCave.SetExit(East, DirProps{UExit: true, RExit: &DomeRoom})
+	// engravings Cave
+	engravingsCave.SetExit(NorthWest, DirProps{UExit: true, RExit: &roundRoom})
+	engravingsCave.SetExit(East, DirProps{UExit: true, RExit: &domeRoom})
 
 	// Egypt Room
-	EgyptRoom.SetExit(West, DirProps{UExit: true, RExit: &NorthTemple})
-	EgyptRoom.SetExit(Up, DirProps{UExit: true, RExit: &NorthTemple})
+	egyptRoom.SetExit(West, DirProps{UExit: true, RExit: &northTemple})
+	egyptRoom.SetExit(Up, DirProps{UExit: true, RExit: &northTemple})
 
 	// Dome Room
-	DomeRoom.SetExit(West, DirProps{UExit: true, RExit: &EngravingsCave})
-	DomeRoom.SetExit(Down, DirProps{CExit: func() bool { return GD().DomeFlag }, RExit: &TorchRoom, CExitStr: "You cannot go down without fracturing many bones."})
+	domeRoom.SetExit(West, DirProps{UExit: true, RExit: &engravingsCave})
+	domeRoom.SetExit(Down, DirProps{CExit: func() bool { return gD().DomeFlag }, RExit: &torchRoom, CExitStr: "You cannot go down without fracturing many bones."})
 
-	// Torch Room
-	TorchRoom.SetExit(Up, DirProps{NExit: "You cannot reach the rope."})
-	TorchRoom.SetExit(South, DirProps{UExit: true, RExit: &NorthTemple})
-	TorchRoom.SetExit(Down, DirProps{UExit: true, RExit: &NorthTemple})
+	// torch Room
+	torchRoom.SetExit(Up, DirProps{NExit: "You cannot reach the rope."})
+	torchRoom.SetExit(South, DirProps{UExit: true, RExit: &northTemple})
+	torchRoom.SetExit(Down, DirProps{UExit: true, RExit: &northTemple})
 
 	// North Temple
-	NorthTemple.SetExit(Down, DirProps{UExit: true, RExit: &EgyptRoom})
-	NorthTemple.SetExit(East, DirProps{UExit: true, RExit: &EgyptRoom})
-	NorthTemple.SetExit(North, DirProps{UExit: true, RExit: &TorchRoom})
-	NorthTemple.SetExit(Out, DirProps{UExit: true, RExit: &TorchRoom})
-	NorthTemple.SetExit(Up, DirProps{UExit: true, RExit: &TorchRoom})
-	NorthTemple.SetExit(South, DirProps{UExit: true, RExit: &SouthTemple})
+	northTemple.SetExit(Down, DirProps{UExit: true, RExit: &egyptRoom})
+	northTemple.SetExit(East, DirProps{UExit: true, RExit: &egyptRoom})
+	northTemple.SetExit(North, DirProps{UExit: true, RExit: &torchRoom})
+	northTemple.SetExit(Out, DirProps{UExit: true, RExit: &torchRoom})
+	northTemple.SetExit(Up, DirProps{UExit: true, RExit: &torchRoom})
+	northTemple.SetExit(South, DirProps{UExit: true, RExit: &southTemple})
 
 	// South Temple
-	SouthTemple.SetExit(North, DirProps{UExit: true, RExit: &NorthTemple})
-	SouthTemple.SetExit(Down, DirProps{CExit: func() bool { return GD().CoffinCure }, RExit: &TinyCave, CExitStr: "You haven't a prayer of getting the coffin down there."})
+	southTemple.SetExit(North, DirProps{UExit: true, RExit: &northTemple})
+	southTemple.SetExit(Down, DirProps{CExit: func() bool { return gD().CoffinCure }, RExit: &tinyCave, CExitStr: "You haven't a prayer of getting the coffin down there."})
 
-	// Dam Room
-	DamRoom.SetExit(South, DirProps{UExit: true, RExit: &DeepCanyon})
-	DamRoom.SetExit(Down, DirProps{UExit: true, RExit: &DamBase})
-	DamRoom.SetExit(East, DirProps{UExit: true, RExit: &DamBase})
-	DamRoom.SetExit(North, DirProps{UExit: true, RExit: &DamLobby})
-	DamRoom.SetExit(West, DirProps{UExit: true, RExit: &ReservoirSouth})
+	// dam Room
+	damRoom.SetExit(South, DirProps{UExit: true, RExit: &deepCanyon})
+	damRoom.SetExit(Down, DirProps{UExit: true, RExit: &damBase})
+	damRoom.SetExit(East, DirProps{UExit: true, RExit: &damBase})
+	damRoom.SetExit(North, DirProps{UExit: true, RExit: &damLobby})
+	damRoom.SetExit(West, DirProps{UExit: true, RExit: &reservoirSouth})
 
-	// Dam Lobby
-	DamLobby.SetExit(South, DirProps{UExit: true, RExit: &DamRoom})
-	DamLobby.SetExit(North, DirProps{UExit: true, RExit: &MaintenanceRoom})
-	DamLobby.SetExit(East, DirProps{UExit: true, RExit: &MaintenanceRoom})
+	// dam Lobby
+	damLobby.SetExit(South, DirProps{UExit: true, RExit: &damRoom})
+	damLobby.SetExit(North, DirProps{UExit: true, RExit: &maintenanceRoom})
+	damLobby.SetExit(East, DirProps{UExit: true, RExit: &maintenanceRoom})
 
 	// Maintenance Room
-	MaintenanceRoom.SetExit(South, DirProps{UExit: true, RExit: &DamLobby})
-	MaintenanceRoom.SetExit(West, DirProps{UExit: true, RExit: &DamLobby})
+	maintenanceRoom.SetExit(South, DirProps{UExit: true, RExit: &damLobby})
+	maintenanceRoom.SetExit(West, DirProps{UExit: true, RExit: &damLobby})
 
-	// Dam Base
-	DamBase.SetExit(North, DirProps{UExit: true, RExit: &DamRoom})
-	DamBase.SetExit(Up, DirProps{UExit: true, RExit: &DamRoom})
+	// dam Base
+	damBase.SetExit(North, DirProps{UExit: true, RExit: &damRoom})
+	damBase.SetExit(Up, DirProps{UExit: true, RExit: &damRoom})
 
-	// River 1
-	River1.SetExit(Up, DirProps{NExit: "You cannot go upstream due to strong currents."})
-	River1.SetExit(West, DirProps{UExit: true, RExit: &DamBase})
-	River1.SetExit(Land, DirProps{UExit: true, RExit: &DamBase})
-	River1.SetExit(Down, DirProps{UExit: true, RExit: &River2})
-	River1.SetExit(East, DirProps{NExit: "The White Cliffs prevent your landing here."})
+	// river 1
+	river1.SetExit(Up, DirProps{NExit: "You cannot go upstream due to strong currents."})
+	river1.SetExit(West, DirProps{UExit: true, RExit: &damBase})
+	river1.SetExit(Land, DirProps{UExit: true, RExit: &damBase})
+	river1.SetExit(Down, DirProps{UExit: true, RExit: &river2})
+	river1.SetExit(East, DirProps{NExit: "The White Cliffs prevent your landing here."})
 
-	// River 2
-	River2.SetExit(Up, DirProps{NExit: "You cannot go upstream due to strong currents."})
-	River2.SetExit(Down, DirProps{UExit: true, RExit: &River3})
-	River2.SetExit(Land, DirProps{NExit: "There is no safe landing spot here."})
-	River2.SetExit(East, DirProps{NExit: "The White Cliffs prevent your landing here."})
-	River2.SetExit(West, DirProps{NExit: "Just in time you steer away from the rocks."})
+	// river 2
+	river2.SetExit(Up, DirProps{NExit: "You cannot go upstream due to strong currents."})
+	river2.SetExit(Down, DirProps{UExit: true, RExit: &river3})
+	river2.SetExit(Land, DirProps{NExit: "There is no safe landing spot here."})
+	river2.SetExit(East, DirProps{NExit: "The White Cliffs prevent your landing here."})
+	river2.SetExit(West, DirProps{NExit: "Just in time you steer away from the rocks."})
 
-	// River 3
-	River3.SetExit(Up, DirProps{NExit: "You cannot go upstream due to strong currents."})
-	River3.SetExit(Down, DirProps{UExit: true, RExit: &River4})
-	River3.SetExit(Land, DirProps{UExit: true, RExit: &WhiteCliffsNorth})
-	River3.SetExit(West, DirProps{UExit: true, RExit: &WhiteCliffsNorth})
+	// river 3
+	river3.SetExit(Up, DirProps{NExit: "You cannot go upstream due to strong currents."})
+	river3.SetExit(Down, DirProps{UExit: true, RExit: &river4})
+	river3.SetExit(Land, DirProps{UExit: true, RExit: &whiteCliffsNorth})
+	river3.SetExit(West, DirProps{UExit: true, RExit: &whiteCliffsNorth})
 
 	// White Cliffs North
-	WhiteCliffsNorth.SetExit(South, DirProps{CExit: func() bool { return GD().DeflateFlag }, RExit: &WhiteCliffsSouth, CExitStr: "The path is too narrow."})
-	WhiteCliffsNorth.SetExit(West, DirProps{CExit: func() bool { return GD().DeflateFlag }, RExit: &DampCave, CExitStr: "The path is too narrow."})
+	whiteCliffsNorth.SetExit(South, DirProps{CExit: func() bool { return gD().DeflateFlag }, RExit: &whiteCliffsSouth, CExitStr: "The path is too narrow."})
+	whiteCliffsNorth.SetExit(West, DirProps{CExit: func() bool { return gD().DeflateFlag }, RExit: &dampCave, CExitStr: "The path is too narrow."})
 
 	// White Cliffs South
-	WhiteCliffsSouth.SetExit(North, DirProps{CExit: func() bool { return GD().DeflateFlag }, RExit: &WhiteCliffsNorth, CExitStr: "The path is too narrow."})
+	whiteCliffsSouth.SetExit(North, DirProps{CExit: func() bool { return gD().DeflateFlag }, RExit: &whiteCliffsNorth, CExitStr: "The path is too narrow."})
 
-	// River 4
-	River4.SetExit(Up, DirProps{NExit: "You cannot go upstream due to strong currents."})
-	River4.SetExit(Down, DirProps{UExit: true, RExit: &River5})
-	River4.SetExit(Land, DirProps{NExit: "You can land either to the east or the west."})
-	River4.SetExit(West, DirProps{UExit: true, RExit: &WhiteCliffsSouth})
-	River4.SetExit(East, DirProps{UExit: true, RExit: &SandyBeach})
+	// river 4
+	river4.SetExit(Up, DirProps{NExit: "You cannot go upstream due to strong currents."})
+	river4.SetExit(Down, DirProps{UExit: true, RExit: &river5})
+	river4.SetExit(Land, DirProps{NExit: "You can land either to the east or the west."})
+	river4.SetExit(West, DirProps{UExit: true, RExit: &whiteCliffsSouth})
+	river4.SetExit(East, DirProps{UExit: true, RExit: &sandyBeach})
 
-	// River 5
-	River5.SetExit(Up, DirProps{NExit: "You cannot go upstream due to strong currents."})
-	River5.SetExit(East, DirProps{UExit: true, RExit: &Shore})
-	River5.SetExit(Land, DirProps{UExit: true, RExit: &Shore})
+	// river 5
+	river5.SetExit(Up, DirProps{NExit: "You cannot go upstream due to strong currents."})
+	river5.SetExit(East, DirProps{UExit: true, RExit: &shore})
+	river5.SetExit(Land, DirProps{UExit: true, RExit: &shore})
 
-	// Shore
-	Shore.SetExit(North, DirProps{UExit: true, RExit: &SandyBeach})
-	Shore.SetExit(South, DirProps{UExit: true, RExit: &AragainFalls})
+	// shore
+	shore.SetExit(North, DirProps{UExit: true, RExit: &sandyBeach})
+	shore.SetExit(South, DirProps{UExit: true, RExit: &aragainFalls})
 
 	// Sandy Beach
-	SandyBeach.SetExit(NorthEast, DirProps{UExit: true, RExit: &SandyCave})
-	SandyBeach.SetExit(South, DirProps{UExit: true, RExit: &Shore})
+	sandyBeach.SetExit(NorthEast, DirProps{UExit: true, RExit: &sandyCave})
+	sandyBeach.SetExit(South, DirProps{UExit: true, RExit: &shore})
 
 	// Sandy Cave
-	SandyCave.SetExit(SouthWest, DirProps{UExit: true, RExit: &SandyBeach})
+	sandyCave.SetExit(SouthWest, DirProps{UExit: true, RExit: &sandyBeach})
 
 	// Aragain Falls
-	AragainFalls.SetExit(West, DirProps{CExit: func() bool { return GD().RainbowFlag }, RExit: &OnRainbow})
-	AragainFalls.SetExit(Down, DirProps{NExit: "It's a long way..."})
-	AragainFalls.SetExit(North, DirProps{UExit: true, RExit: &Shore})
-	AragainFalls.SetExit(Up, DirProps{CExit: func() bool { return GD().RainbowFlag }, RExit: &OnRainbow})
+	aragainFalls.SetExit(West, DirProps{CExit: func() bool { return gD().RainbowFlag }, RExit: &onRainbow})
+	aragainFalls.SetExit(Down, DirProps{NExit: "it's a long way..."})
+	aragainFalls.SetExit(North, DirProps{UExit: true, RExit: &shore})
+	aragainFalls.SetExit(Up, DirProps{CExit: func() bool { return gD().RainbowFlag }, RExit: &onRainbow})
 
-	// On Rainbow
-	OnRainbow.SetExit(West, DirProps{UExit: true, RExit: &EndOfRainbow})
-	OnRainbow.SetExit(East, DirProps{UExit: true, RExit: &AragainFalls})
+	// On rainbow
+	onRainbow.SetExit(West, DirProps{UExit: true, RExit: &endOfRainbow})
+	onRainbow.SetExit(East, DirProps{UExit: true, RExit: &aragainFalls})
 
-	// End of Rainbow
-	EndOfRainbow.SetExit(Up, DirProps{CExit: func() bool { return GD().RainbowFlag }, RExit: &OnRainbow})
-	EndOfRainbow.SetExit(NorthEast, DirProps{CExit: func() bool { return GD().RainbowFlag }, RExit: &OnRainbow})
-	EndOfRainbow.SetExit(East, DirProps{CExit: func() bool { return GD().RainbowFlag }, RExit: &OnRainbow})
-	EndOfRainbow.SetExit(SouthWest, DirProps{UExit: true, RExit: &CanyonBottom})
+	// End of rainbow
+	endOfRainbow.SetExit(Up, DirProps{CExit: func() bool { return gD().RainbowFlag }, RExit: &onRainbow})
+	endOfRainbow.SetExit(NorthEast, DirProps{CExit: func() bool { return gD().RainbowFlag }, RExit: &onRainbow})
+	endOfRainbow.SetExit(East, DirProps{CExit: func() bool { return gD().RainbowFlag }, RExit: &onRainbow})
+	endOfRainbow.SetExit(SouthWest, DirProps{UExit: true, RExit: &canyonBottom})
 
 	// Canyon Bottom
-	CanyonBottom.SetExit(Up, DirProps{UExit: true, RExit: &CliffMiddle})
-	CanyonBottom.SetExit(North, DirProps{UExit: true, RExit: &EndOfRainbow})
+	canyonBottom.SetExit(Up, DirProps{UExit: true, RExit: &cliffMiddle})
+	canyonBottom.SetExit(North, DirProps{UExit: true, RExit: &endOfRainbow})
 
 	// Cliff Middle
-	CliffMiddle.SetExit(Up, DirProps{UExit: true, RExit: &CanyonView})
-	CliffMiddle.SetExit(Down, DirProps{UExit: true, RExit: &CanyonBottom})
+	cliffMiddle.SetExit(Up, DirProps{UExit: true, RExit: &canyonView})
+	cliffMiddle.SetExit(Down, DirProps{UExit: true, RExit: &canyonBottom})
 
 	// Canyon View
-	CanyonView.SetExit(East, DirProps{UExit: true, RExit: &CliffMiddle})
-	CanyonView.SetExit(Down, DirProps{UExit: true, RExit: &CliffMiddle})
-	CanyonView.SetExit(NorthWest, DirProps{UExit: true, RExit: &Clearing})
-	CanyonView.SetExit(West, DirProps{UExit: true, RExit: &Forest3})
-	CanyonView.SetExit(South, DirProps{NExit: "Storm-tossed trees block your way."})
+	canyonView.SetExit(East, DirProps{UExit: true, RExit: &cliffMiddle})
+	canyonView.SetExit(Down, DirProps{UExit: true, RExit: &cliffMiddle})
+	canyonView.SetExit(NorthWest, DirProps{UExit: true, RExit: &clearing})
+	canyonView.SetExit(West, DirProps{UExit: true, RExit: &forest3})
+	canyonView.SetExit(South, DirProps{NExit: "Storm-tossed trees block your way."})
 
 	// Mine Entrance
-	MineEntrance.SetExit(South, DirProps{UExit: true, RExit: &SlideRoom})
-	MineEntrance.SetExit(In, DirProps{UExit: true, RExit: &SqueekyRoom})
-	MineEntrance.SetExit(West, DirProps{UExit: true, RExit: &SqueekyRoom})
+	mineEntrance.SetExit(South, DirProps{UExit: true, RExit: &slideRoom})
+	mineEntrance.SetExit(In, DirProps{UExit: true, RExit: &squeekyRoom})
+	mineEntrance.SetExit(West, DirProps{UExit: true, RExit: &squeekyRoom})
 
 	// Squeaky Room
-	SqueekyRoom.SetExit(North, DirProps{UExit: true, RExit: &BatRoom})
-	SqueekyRoom.SetExit(East, DirProps{UExit: true, RExit: &MineEntrance})
+	squeekyRoom.SetExit(North, DirProps{UExit: true, RExit: &batRoom})
+	squeekyRoom.SetExit(East, DirProps{UExit: true, RExit: &mineEntrance})
 
-	// Bat Room
-	BatRoom.SetExit(South, DirProps{UExit: true, RExit: &SqueekyRoom})
-	BatRoom.SetExit(East, DirProps{UExit: true, RExit: &ShaftRoom})
+	// bat Room
+	batRoom.SetExit(South, DirProps{UExit: true, RExit: &squeekyRoom})
+	batRoom.SetExit(East, DirProps{UExit: true, RExit: &shaftRoom})
 
 	// Shaft Room
-	ShaftRoom.SetExit(Down, DirProps{NExit: "You wouldn't fit and would die if you could."})
-	ShaftRoom.SetExit(West, DirProps{UExit: true, RExit: &BatRoom})
-	ShaftRoom.SetExit(North, DirProps{UExit: true, RExit: &SmellyRoom})
+	shaftRoom.SetExit(Down, DirProps{NExit: "You wouldn't fit and would die if you could."})
+	shaftRoom.SetExit(West, DirProps{UExit: true, RExit: &batRoom})
+	shaftRoom.SetExit(North, DirProps{UExit: true, RExit: &smellyRoom})
 
 	// Smelly Room
-	SmellyRoom.SetExit(Down, DirProps{UExit: true, RExit: &GasRoom})
-	SmellyRoom.SetExit(South, DirProps{UExit: true, RExit: &ShaftRoom})
+	smellyRoom.SetExit(Down, DirProps{UExit: true, RExit: &gasRoom})
+	smellyRoom.SetExit(South, DirProps{UExit: true, RExit: &shaftRoom})
 
 	// Gas Room
-	GasRoom.SetExit(Up, DirProps{UExit: true, RExit: &SmellyRoom})
-	GasRoom.SetExit(East, DirProps{UExit: true, RExit: &Mine1})
+	gasRoom.SetExit(Up, DirProps{UExit: true, RExit: &smellyRoom})
+	gasRoom.SetExit(East, DirProps{UExit: true, RExit: &mine1})
 
-	// Ladder Top
-	LadderTop.SetExit(Down, DirProps{UExit: true, RExit: &LadderBottom})
-	LadderTop.SetExit(Up, DirProps{UExit: true, RExit: &Mine4})
+	// ladder Top
+	ladderTop.SetExit(Down, DirProps{UExit: true, RExit: &ladderBottom})
+	ladderTop.SetExit(Up, DirProps{UExit: true, RExit: &mine4})
 
-	// Ladder Bottom
-	LadderBottom.SetExit(South, DirProps{UExit: true, RExit: &DeadEnd5})
-	LadderBottom.SetExit(West, DirProps{UExit: true, RExit: &TimberRoom})
-	LadderBottom.SetExit(Up, DirProps{UExit: true, RExit: &LadderTop})
+	// ladder Bottom
+	ladderBottom.SetExit(South, DirProps{UExit: true, RExit: &deadEnd5})
+	ladderBottom.SetExit(West, DirProps{UExit: true, RExit: &timberRoom})
+	ladderBottom.SetExit(Up, DirProps{UExit: true, RExit: &ladderTop})
 
 	// Dead End 5
-	DeadEnd5.SetExit(North, DirProps{UExit: true, RExit: &LadderBottom})
+	deadEnd5.SetExit(North, DirProps{UExit: true, RExit: &ladderBottom})
 
 	// Timber Room
-	TimberRoom.SetExit(East, DirProps{UExit: true, RExit: &LadderBottom})
-	TimberRoom.SetExit(West, DirProps{CExit: func() bool { return GD().EmptyHanded }, RExit: &LowerShaft, CExitStr: "You cannot fit through this passage with that load."})
+	timberRoom.SetExit(East, DirProps{UExit: true, RExit: &ladderBottom})
+	timberRoom.SetExit(West, DirProps{CExit: func() bool { return gD().EmptyHanded }, RExit: &lowerShaft, CExitStr: "You cannot fit through this passage with that load."})
 
 	// Lower Shaft
-	LowerShaft.SetExit(South, DirProps{UExit: true, RExit: &MachineRoom})
-	LowerShaft.SetExit(Out, DirProps{CExit: func() bool { return GD().EmptyHanded }, RExit: &TimberRoom, CExitStr: "You cannot fit through this passage with that load."})
-	LowerShaft.SetExit(East, DirProps{CExit: func() bool { return GD().EmptyHanded }, RExit: &TimberRoom, CExitStr: "You cannot fit through this passage with that load."})
+	lowerShaft.SetExit(South, DirProps{UExit: true, RExit: &machineRoom})
+	lowerShaft.SetExit(Out, DirProps{CExit: func() bool { return gD().EmptyHanded }, RExit: &timberRoom, CExitStr: "You cannot fit through this passage with that load."})
+	lowerShaft.SetExit(East, DirProps{CExit: func() bool { return gD().EmptyHanded }, RExit: &timberRoom, CExitStr: "You cannot fit through this passage with that load."})
 
-	// Machine Room
-	MachineRoom.SetExit(North, DirProps{UExit: true, RExit: &LowerShaft})
+	// machine Room
+	machineRoom.SetExit(North, DirProps{UExit: true, RExit: &lowerShaft})
 
 	// Mine 1
-	Mine1.SetExit(North, DirProps{UExit: true, RExit: &GasRoom})
-	Mine1.SetExit(East, DirProps{UExit: true, RExit: &Mine1})
-	Mine1.SetExit(NorthEast, DirProps{UExit: true, RExit: &Mine2})
+	mine1.SetExit(North, DirProps{UExit: true, RExit: &gasRoom})
+	mine1.SetExit(East, DirProps{UExit: true, RExit: &mine1})
+	mine1.SetExit(NorthEast, DirProps{UExit: true, RExit: &mine2})
 
 	// Mine 2
-	Mine2.SetExit(North, DirProps{UExit: true, RExit: &Mine2})
-	Mine2.SetExit(South, DirProps{UExit: true, RExit: &Mine1})
-	Mine2.SetExit(SouthEast, DirProps{UExit: true, RExit: &Mine3})
+	mine2.SetExit(North, DirProps{UExit: true, RExit: &mine2})
+	mine2.SetExit(South, DirProps{UExit: true, RExit: &mine1})
+	mine2.SetExit(SouthEast, DirProps{UExit: true, RExit: &mine3})
 
 	// Mine 3
-	Mine3.SetExit(South, DirProps{UExit: true, RExit: &Mine3})
-	Mine3.SetExit(SouthWest, DirProps{UExit: true, RExit: &Mine4})
-	Mine3.SetExit(East, DirProps{UExit: true, RExit: &Mine2})
+	mine3.SetExit(South, DirProps{UExit: true, RExit: &mine3})
+	mine3.SetExit(SouthWest, DirProps{UExit: true, RExit: &mine4})
+	mine3.SetExit(East, DirProps{UExit: true, RExit: &mine2})
 
 	// Mine 4
-	Mine4.SetExit(North, DirProps{UExit: true, RExit: &Mine3})
-	Mine4.SetExit(West, DirProps{UExit: true, RExit: &Mine4})
-	Mine4.SetExit(Down, DirProps{UExit: true, RExit: &LadderTop})
+	mine4.SetExit(North, DirProps{UExit: true, RExit: &mine3})
+	mine4.SetExit(West, DirProps{UExit: true, RExit: &mine4})
+	mine4.SetExit(Down, DirProps{UExit: true, RExit: &ladderTop})
 
-	// Slide Room
-	SlideRoom.SetExit(East, DirProps{UExit: true, RExit: &ColdPassage})
-	SlideRoom.SetExit(North, DirProps{UExit: true, RExit: &MineEntrance})
-	SlideRoom.SetExit(Down, DirProps{UExit: true, RExit: &Cellar})
+	// slide Room
+	slideRoom.SetExit(East, DirProps{UExit: true, RExit: &coldPassage})
+	slideRoom.SetExit(North, DirProps{UExit: true, RExit: &mineEntrance})
+	slideRoom.SetExit(Down, DirProps{UExit: true, RExit: &cellar})
 }
 
-func FinalizeGameObjects() {
+func finalizeGameObjects() {
 	// Set up room exits
-	InitRoomExits()
+	initRoomExits()
 
-	// Add TrapDoor to Cellar's globals (done here to avoid potential init ordering issues)
-	Cellar.Global = append(Cellar.Global, &TrapDoor)
+	// Add trapDoor to cellar's globals (done here to avoid potential init ordering issues)
+	cellar.Global = append(cellar.Global, &trapDoor)
 
 	// Set action functions that would cause init cycles
-	WhiteHouse.Action = WhiteHouseFcn
-	Mailbox.Action = MailboxFcn
-	Forest.Action = ForestFcn
-	KitchenWindow.Action = KitchenWindowFcn
-	Chimney.Action = ChimneyFcn
-	Grate.Action = GrateFcn
-	ClimbableCliff.Action = CliffObjectFcn
-	Gunk.Action = GunkFcn
-	GratingClearing.Action = ClearingFcn
-	Clearing.Action = ForestRoomFcn
-	Kitchen.Action = KitchenFcn
-	LivingRoom.Action = LivingRoomFcn
-	StoneBarrow.Action = StoneBarrowFcn
-	Rainbow.Action = RainbowFcn
-	InflatedBoat.Action = RBoatFcn
-	HotBell.Action = HotBellFcn
-	TrollRoom.Action = TrollRoomFcn
-	LowerShaft.Action = NoObjsFcn
-	MachineRoom.Action = MachineRoomFcn
-	TrophyCase.Action = TrophyCaseFcn
-	Sword.Action = SwordFcn
-	Lamp.Action = LanternFcn
-	Bell.Action = BellFcn
-	Match.Action = MatchFcn
-	ToolChest.Action = ToolChestFcn
-	Machine.Action = MachineFcn
-	MachineSwitch.Action = MachineSwitchFcn
-	Sceptre.Action = SceptreFcn
-	Board.Action = BoardFcn
-	Teeth.Action = TeethFcn
-	GraniteWall.Action = GraniteWallFcn
-	Songbird.Action = SongbirdFcn
-	GlobalWater.Action = WaterFcn
-	Slide.Action = SlideFcn
-	Bodies.Action = BodyFcn
-	Crack.Action = CrackFcn
-	WhiteCliff.Action = WhiteCliffFcn
-	River.Action = RiverFcn
-	BoardedWindow.Action = BoardedWindowFcn
-	PuncturedBoat.Action = PuncturedBoatFcn
-	WestOfHouse.Action = WestHouseFcn
-	EastOfHouse.Action = EastHouseFcn
-	Forest1.Action = ForestRoomFcn
-	Forest2.Action = ForestRoomFcn
-	Forest3.Action = ForestRoomFcn
-	Path.Action = ForestRoomFcn
-	UpATree.Action = TreeRoomFcn
-	Cellar.Action = CellarFcn
-	GratingRoom.Action = Maze11Fcn
-	CyclopsRoom.Action = CyclopsRoomFcn
-	TreasureRoom.Action = TreasureRoomFcn
-	ReservoirSouth.Action = ReservoirSouthFcn
-	Reservoir.Action = ReservoirFcn
-	ReservoirNorth.Action = ReservoirNorthFcn
-	MirrorRoom1.Action = MirrorRoomFcn
-	MirrorRoom2.Action = MirrorRoomFcn
-	TinyCave.Action = Cave2RoomFcn
-	DeepCanyon.Action = DeepCanyonFcn
-	LoudRoom.Action = LoudRoomFcn
-	EnteranceToHades.Action = LLDRoomFcn
-	DomeRoom.Action = DomeRoomFcn
-	TorchRoom.Action = TorchRoomFcn
-	SouthTemple.Action = SouthTempleFcn
-	DamRoom.Action = DamRoomFcn
-	WhiteCliffsNorth.Action = WhiteCliffsFcn
-	WhiteCliffsSouth.Action = WhiteCliffsFcn
-	River4.Action = Rivr4RoomFcn
-	AragainFalls.Action = FallsRoomFcn
-	CanyonView.Action = CanyonViewFcn
-	BatRoom.Action = BatsRoomFcn
-	GasRoom.Action = BoomRoomFcn
-	TimberRoom.Action = NoObjsFcn
-	MountainRange.Action = MountainRangeFcn
-	FrontDoor.Action = FrontDoorFcn
-	BarrowDoor.Action = BarrowDoorFcn
-	Barrow.Action = BarrowFcn
-	Rug.Action = RugFcn
-	TrapDoor.Action = TrapDoorFcn
-	WoodenDoor.Action = FrontDoorFcn
-	Rope.Action = RopeFcn
-	Ghosts.Action = GhostsFcn
-	RaisedBasket.Action = BasketFcn
-	LoweredBasket.Action = BasketFcn
-	Bat.Action = BatFcn
-	Candles.Action = CandlesFcn
-	Troll.Action = TrollFcn
-	Bolt.Action = BoltFcn
-	Bubble.Action = BubbleFcn
-	Dam.Action = DamFunction
-	InflatableBoat.Action = InflatableBoatFcn
-	YellowButton.Action = ButtonFcn
-	BrownButton.Action = ButtonFcn
-	RedButton.Action = ButtonFcn
-	BlueButton.Action = ButtonFcn
-	Tube.Action = TubeFcn
-	Leak.Action = LeakFcn
-	Cyclops.Action = CyclopsFcn
-	Chalice.Action = ChaliceFcn
-	Painting.Action = PaintingFcn
-	Leaves.Action = LeafPileFcn
-	Sand.Action = SandFunction
-	Thief.Action = RobberFcn
-	Trunk.Action = TrunkFcn
-	Mirror1.Action = MirrorMirrorFcn
-	Mirror2.Action = MirrorMirrorFcn
-	Pedestal.Action = DumbContainerFcn
-	Buoy.Action = TreasureInsideFcn
-	Bones.Action = SkeletonFcn
-	BagOfCoins.Action = BagOfCoinsFcn
-	RustyKnife.Action = RustyKnifeFcn
-	Bottle.Action = BottleFcn
-	SandwichBag.Action = SandwichBagFcn
-	Knife.Action = KnifeFcn
-	Water.Action = WaterFcn
-	Garlic.Action = GarlicFcn
-	Book.Action = BlackBookFcn
-	Egg.Action = EggObjectFcn
-	Canary.Action = CanaryObjectFcn
-	Putty.Action = PuttyFcn
-	Axe.Action = AxeFcn
-	LargeBag.Action = LargeBagFcn
-	Stiletto.Action = StiletteFcn
-	Torch.Action = TorchFcn
-	BrokenCanary.Action = CanaryObjectFcn
+	whiteHouse.Action = whiteHouseFcn
+	mailbox.Action = mailboxFcn
+	forest.Action = forestFcn
+	kitchenWindow.Action = kitchenWindowFcn
+	chimney.Action = chimneyFcn
+	grate.Action = grateFcn
+	climbableCliff.Action = cliffObjectFcn
+	gunk.Action = gunkFcn
+	gratingClearing.Action = clearingFcn
+	clearing.Action = forestRoomFcn
+	kitchen.Action = kitchenFcn
+	livingRoom.Action = livingRoomFcn
+	stoneBarrow.Action = stoneBarrowFcn
+	rainbow.Action = rainbowFcn
+	inflatedBoat.Action = rBoatFcn
+	hotBell.Action = hotBellFcn
+	trollRoom.Action = trollRoomFcn
+	lowerShaft.Action = noObjsFcn
+	machineRoom.Action = machineRoomFcn
+	trophyCase.Action = trophyCaseFcn
+	sword.Action = swordFcn
+	lamp.Action = lanternFcn
+	bell.Action = bellFcn
+	match.Action = matchFcn
+	toolChest.Action = toolChestFcn
+	machine.Action = machineFcn
+	machineSwitch.Action = machineSwitchFcn
+	sceptre.Action = sceptreFcn
+	board.Action = boardFcn
+	teeth.Action = teethFcn
+	graniteWall.Action = graniteWallFcn
+	songbird.Action = songbirdFcn
+	globalWater.Action = waterFcn
+	slide.Action = slideFcn
+	bodies.Action = bodyFcn
+	crack.Action = crackFcn
+	whiteCliff.Action = whiteCliffFcn
+	river.Action = riverFcn
+	boardedWindow.Action = boardedWindowFcn
+	puncturedBoat.Action = puncturedBoatFcn
+	westOfHouse.Action = westHouseFcn
+	eastOfHouse.Action = eastHouseFcn
+	forest1.Action = forestRoomFcn
+	forest2.Action = forestRoomFcn
+	forest3.Action = forestRoomFcn
+	path.Action = forestRoomFcn
+	upATree.Action = treeRoomFcn
+	cellar.Action = cellarFcn
+	gratingRoom.Action = maze11Fcn
+	cyclopsRoom.Action = cyclopsRoomFcn
+	treasureRoom.Action = treasureRoomFcn
+	reservoirSouth.Action = reservoirSouthFcn
+	reservoir.Action = reservoirFcn
+	reservoirNorth.Action = reservoirNorthFcn
+	mirrorRoom1.Action = mirrorRoomFcn
+	mirrorRoom2.Action = mirrorRoomFcn
+	tinyCave.Action = cave2RoomFcn
+	deepCanyon.Action = deepCanyonFcn
+	loudRoom.Action = loudRoomFcn
+	enteranceToHades.Action = lLDRoomFcn
+	domeRoom.Action = domeRoomFcn
+	torchRoom.Action = torchRoomFcn
+	southTemple.Action = southTempleFcn
+	damRoom.Action = damRoomFcn
+	whiteCliffsNorth.Action = whiteCliffsFcn
+	whiteCliffsSouth.Action = whiteCliffsFcn
+	river4.Action = rivr4RoomFcn
+	aragainFalls.Action = fallsRoomFcn
+	canyonView.Action = canyonViewFcn
+	batRoom.Action = batsRoomFcn
+	gasRoom.Action = boomRoomFcn
+	timberRoom.Action = noObjsFcn
+	mountainRange.Action = mountainRangeFcn
+	frontDoor.Action = frontDoorFcn
+	barrowDoor.Action = barrowDoorFcn
+	barrow.Action = barrowFcn
+	rug.Action = rugFcn
+	trapDoor.Action = trapDoorFcn
+	woodenDoor.Action = frontDoorFcn
+	rope.Action = ropeFcn
+	ghosts.Action = ghostsFcn
+	raisedBasket.Action = basketFcn
+	loweredBasket.Action = basketFcn
+	bat.Action = batFcn
+	candles.Action = candlesFcn
+	troll.Action = trollFcn
+	bolt.Action = boltFcn
+	bubble.Action = bubbleFcn
+	dam.Action = damFunction
+	inflatableBoat.Action = inflatableBoatFcn
+	yellowButton.Action = buttonFcn
+	brownButton.Action = buttonFcn
+	redButton.Action = buttonFcn
+	blueButton.Action = buttonFcn
+	tube.Action = tubeFcn
+	leak.Action = leakFcn
+	cyclops.Action = cyclopsFcn
+	chalice.Action = chaliceFcn
+	painting.Action = paintingFcn
+	leaves.Action = leafPileFcn
+	sand.Action = sandFunction
+	thief.Action = robberFcn
+	trunk.Action = trunkFcn
+	mirror1.Action = mirrorMirrorFcn
+	mirror2.Action = mirrorMirrorFcn
+	pedestal.Action = dumbContainerFcn
+	buoy.Action = treasureInsideFcn
+	bones.Action = skeletonFcn
+	bagOfCoins.Action = bagOfCoinsFcn
+	rustyKnife.Action = rustyKnifeFcn
+	bottle.Action = bottleFcn
+	sandwichBag.Action = sandwichBagFcn
+	knife.Action = knifeFcn
+	water.Action = waterFcn
+	garlic.Action = garlicFcn
+	book.Action = blackBookFcn
+	egg.Action = eggObjectFcn
+	canary.Action = canaryObjectFcn
+	putty.Action = puttyFcn
+	axe.Action = axeFcn
+	largeBag.Action = largeBagFcn
+	stiletto.Action = stiletteFcn
+	torch.Action = torchFcn
+	brokenCanary.Action = canaryObjectFcn
 
 	// Set up globals.go object actions
-	LocalGlobals.Pseudo = []PseudoObj{{
+	localGlobals.Pseudo = []PseudoObj{{
 		Synonym: "foobar",
-		Action:  VWalk,
+		Action:  vWalk,
 	}}
-	NotHereObject.Action = NotHereObjectFcn
-	Me.Action = CretinFcn
-	Ground.Action = GroundFunction
+	notHereObject.Action = notHereObjectFcn
+	me.Action = cretinFcn
+	ground.Action = groundFunction
 
 	// Initialize villain table
-	GD().Villains = []*VillainEntry{
-		{Villain: &Troll, Best: &Sword, BestAdv: 1, Prob: 0, Msgs: &TrollMelee},
-		{Villain: &Thief, Best: &Knife, BestAdv: 1, Prob: 0, Msgs: &ThiefMelee},
-		{Villain: &Cyclops, Best: nil, BestAdv: 0, Prob: 0, Msgs: &CyclopsMelee},
+	gD().Villains = []*VillainEntry{
+		{Villain: &troll, Best: &sword, BestAdv: 1, Prob: 0, Msgs: &trollMelee},
+		{Villain: &thief, Best: &knife, BestAdv: 1, Prob: 0, Msgs: &thiefMelee},
+		{Villain: &cyclops, Best: nil, BestAdv: 0, Prob: 0, Msgs: &cyclopsMelee},
 	}
 }

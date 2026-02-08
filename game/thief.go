@@ -2,7 +2,7 @@ package game
 
 import . "github.com/ajdnik/gozork/engine"
 
-func Rob(what, where *Object, prob int) bool {
+func rob(what, where *Object, prob int) bool {
 	robbed := false
 	for _, x := range what.Children {
 		if x.Has(FlgInvis) || x.Has(FlgSacred) {
@@ -16,7 +16,7 @@ func Rob(what, where *Object, prob int) bool {
 		}
 		x.MoveTo(where)
 		x.Give(FlgTouch)
-		if where == &Thief {
+		if where == &thief {
 			x.Give(FlgInvis)
 		}
 		robbed = true
@@ -24,7 +24,7 @@ func Rob(what, where *Object, prob int) bool {
 	return robbed
 }
 
-func StolenLight() bool {
+func stolenLight() bool {
 	oLit := G.Lit
 	G.Lit = IsLit(G.Here, true)
 	if !G.Lit && oLit {
@@ -33,34 +33,34 @@ func StolenLight() bool {
 	return true
 }
 
-func RecoverStiletto() {
-	if Stiletto.IsIn(Thief.Location()) {
-		Stiletto.Give(FlgNoDesc)
-		Stiletto.MoveTo(&Thief)
+func recoverStiletto() {
+	if stiletto.IsIn(thief.Location()) {
+		stiletto.Give(FlgNoDesc)
+		stiletto.MoveTo(&thief)
 	}
 }
 
-func HackTreasures() {
-	RecoverStiletto()
-	Thief.Give(FlgInvis)
-	for _, x := range TreasureRoom.Children {
+func hackTreasures() {
+	recoverStiletto()
+	thief.Give(FlgInvis)
+	for _, x := range treasureRoom.Children {
 		x.Take(FlgInvis)
 	}
 }
 
-func DepositBooty(rm *Object) bool {
+func depositBooty(rm *Object) bool {
 	flg := false
 	var toMove []*Object
-	for _, x := range Thief.Children {
-		if x == &Stiletto || x == &LargeBag {
+	for _, x := range thief.Children {
+		if x == &stiletto || x == &largeBag {
 			continue
 		}
 		if x.GetTValue() > 0 {
 			toMove = append(toMove, x)
 			flg = true
-			if x == &Egg {
-				GD().EggSolve = true
-				Egg.Give(FlgOpen)
+			if x == &egg {
+				gD().EggSolve = true
+				egg.Give(FlgOpen)
 			}
 		}
 	}
@@ -70,12 +70,12 @@ func DepositBooty(rm *Object) bool {
 	return flg
 }
 
-func RobMaze(rm *Object) bool {
+func robMaze(rm *Object) bool {
 	for _, x := range rm.Children {
 		if x.Has(FlgTake) && !x.Has(FlgInvis) && Prob(40, false) {
 			Printf("You hear, off in the distance, someone saying \"My, I wonder what this fine %s is doing here.\"\n", x.Desc)
 			if Prob(60, true) {
-				x.MoveTo(&Thief)
+				x.MoveTo(&thief)
 				x.Give(FlgTouch)
 				x.Give(FlgInvis)
 			}
@@ -85,7 +85,7 @@ func RobMaze(rm *Object) bool {
 	return false
 }
 
-func MoveAll(from, to *Object) {
+func moveAll(from, to *Object) {
 	toMove := append([]*Object{}, from.Children...)
 	for _, x := range toMove {
 		x.Take(FlgInvis)
@@ -93,18 +93,18 @@ func MoveAll(from, to *Object) {
 	}
 }
 
-func ThiefInTreasure() {
+func thiefInTreasure() {
 	if len(G.Here.Children) > 1 {
 		Printf("The thief gestures mysteriously, and the treasures in the room suddenly vanish.\n\n")
 	}
 	for _, f := range G.Here.Children {
-		if f != &Chalice && f != &Thief {
+		if f != &chalice && f != &thief {
 			f.Give(FlgInvis)
 		}
 	}
 }
 
-func Infested(r *Object) bool {
+func infested(r *Object) bool {
 	for _, f := range r.Children {
 		if f.Has(FlgActor) && !f.Has(FlgInvis) {
 			return true
@@ -113,20 +113,20 @@ func Infested(r *Object) bool {
 	return false
 }
 
-func RobberFcn(arg ActArg) bool {
+func robberFcn(arg ActArg) bool {
 	if G.ActVerb.Norm == "tell" {
 		Printf("The thief is a strong, silent type.\n")
 		G.Params.Continue = NumUndef
 		return true
 	}
 	if arg == ActBusy {
-		if Stiletto.IsIn(&Thief) {
+		if stiletto.IsIn(&thief) {
 			return false
 		}
-		if Stiletto.IsIn(Thief.Location()) {
-			Stiletto.MoveTo(&Thief)
-			Stiletto.Give(FlgNoDesc)
-			if Thief.IsIn(G.Here) {
+		if stiletto.IsIn(thief.Location()) {
+			stiletto.MoveTo(&thief)
+			stiletto.Give(FlgNoDesc)
+			if thief.IsIn(G.Here) {
 				Printf("The robber, somewhat surprised at this turn of events, nimbly retrieves his stiletto.\n")
 			}
 			return true
@@ -134,13 +134,13 @@ func RobberFcn(arg ActArg) bool {
 		return false
 	}
 	if arg == ActDead {
-		Stiletto.MoveTo(G.Here)
-		Stiletto.Take(FlgNoDesc)
-		x := DepositBooty(G.Here)
-		if G.Here == &TreasureRoom {
+		stiletto.MoveTo(G.Here)
+		stiletto.Take(FlgNoDesc)
+		x := depositBooty(G.Here)
+		if G.Here == &treasureRoom {
 			flg := false
 			for _, obj := range G.Here.Children {
-				if obj == &Chalice || obj == &Thief || obj == &Adventurer {
+				if obj == &chalice || obj == &thief || obj == &adventurer {
 					continue
 				}
 				obj.Take(FlgInvis)
@@ -149,9 +149,9 @@ func RobberFcn(arg ActArg) bool {
 					Printf("As the thief dies, the power of his magic decreases, and his treasures reappear:\n")
 				}
 				Printf("  A %s", obj.Desc)
-				if obj.HasChildren() && CanSeeInside(obj) {
+				if obj.HasChildren() && canSeeInside(obj) {
 					Printf(", with ")
-					PrintContents(obj)
+					printContents(obj)
 				}
 				Printf("\n")
 			}
@@ -161,80 +161,80 @@ func RobberFcn(arg ActArg) bool {
 		} else if x {
 			Printf("His booty remains.\n")
 		}
-		QueueInt("IThief", false).Run = false
+		QueueInt("iThief", false).Run = false
 		return true
 	}
 	if arg == ActFirst {
-		if GD().ThiefHere && !Thief.Has(FlgInvis) && Prob(20, false) {
-			Thief.Give(FlgFight)
+		if gD().ThiefHere && !thief.Has(FlgInvis) && Prob(20, false) {
+			thief.Give(FlgFight)
 			G.Params.Continue = NumUndef
 			return true
 		}
 		return false
 	}
 	if arg == ActUnconscious {
-		QueueInt("IThief", false).Run = false
-		Thief.Take(FlgFight)
-		Stiletto.MoveTo(G.Here)
-		Stiletto.Take(FlgNoDesc)
-		Thief.LongDesc = RobberUDesc
+		QueueInt("iThief", false).Run = false
+		thief.Take(FlgFight)
+		stiletto.MoveTo(G.Here)
+		stiletto.Take(FlgNoDesc)
+		thief.LongDesc = robberUDesc
 		return true
 	}
 	if arg == ActConscious {
-		if Thief.Location() == G.Here {
-			Thief.Give(FlgFight)
+		if thief.Location() == G.Here {
+			thief.Give(FlgFight)
 			Printf("The robber revives, briefly feigning continued unconsciousness, and, when he sees his moment, scrambles away from you.\n")
 		}
-		Queue("IThief", -1).Run = true
-		Thief.LongDesc = RobberCDesc
-		RecoverStiletto()
+		Queue("iThief", -1).Run = true
+		thief.LongDesc = robberCDesc
+		recoverStiletto()
 		return true
 	}
 
 	// Default (no special mode)
-	if G.ActVerb.Norm == "hello" && Thief.LongDesc == RobberUDesc {
+	if G.ActVerb.Norm == "hello" && thief.LongDesc == robberUDesc {
 		Printf("The thief, being temporarily incapacitated, is unable to acknowledge your greeting with his usual graciousness.\n")
 		return true
 	}
-	if G.DirObj == &Knife && G.ActVerb.Norm == "throw" && !Thief.Has(FlgFight) {
+	if G.DirObj == &knife && G.ActVerb.Norm == "throw" && !thief.Has(FlgFight) {
 		G.DirObj.MoveTo(G.Here)
 		if Prob(10, false) {
 			Printf("You evidently frightened the robber, though you didn't hit him. He flees")
-			LargeBag.Remove()
+			largeBag.Remove()
 			hasStiletto := false
-			if Stiletto.IsIn(&Thief) {
-				Stiletto.Remove()
+			if stiletto.IsIn(&thief) {
+				stiletto.Remove()
 				hasStiletto = true
 			}
-			if Thief.HasChildren() {
-				MoveAll(&Thief, G.Here)
+			if thief.HasChildren() {
+				moveAll(&thief, G.Here)
 				Printf(", but the contents of his bag fall on the floor.")
 			} else {
 				Printf(".")
 			}
-			LargeBag.MoveTo(&Thief)
+			largeBag.MoveTo(&thief)
 			if hasStiletto {
-				Stiletto.MoveTo(&Thief)
+				stiletto.MoveTo(&thief)
 			}
 			Printf("\n")
-			Thief.Give(FlgInvis)
+			thief.Give(FlgInvis)
 		} else {
 			Printf("You missed. The thief makes no attempt to take the knife, though it would be a fine addition to the collection in his bag. He does seem angered by your attempt.\n")
-			Thief.Give(FlgFight)
+			thief.Give(FlgFight)
 		}
 		return true
 	}
-	if (G.ActVerb.Norm == "throw" || G.ActVerb.Norm == "give") && G.DirObj != nil && G.DirObj != &Thief && G.IndirObj == &Thief {
-		if Thief.GetStrength() < 0 {
-			Thief.SetStrength(-Thief.GetStrength())
-			Queue("IThief", -1).Run = true
-			RecoverStiletto()
-			Thief.LongDesc = RobberCDesc
+	if (G.ActVerb.Norm == "throw" || G.ActVerb.Norm == "give") && G.DirObj != nil && G.DirObj != &thief && G.IndirObj == &thief {
+		if thief.GetStrength() < 0 {
+			thief.SetStrength(-thief.GetStrength())
+			Queue("iThief", -1).Run = true
+			recoverStiletto()
+			thief.LongDesc = robberCDesc
 			Printf("Your proposed victim suddenly recovers consciousness.\n")
 		}
-		G.DirObj.MoveTo(&Thief)
+		G.DirObj.MoveTo(&thief)
 		if G.DirObj.GetTValue() > 0 {
-			GD().ThiefEngrossed = true
+			gD().ThiefEngrossed = true
 			Printf("The thief is taken aback by your unexpected generosity, but accepts the %s and stops to admire its beauty.\n", G.DirObj.Desc)
 		} else {
 			Printf("The thief places the %s in his bag and thanks you politely.\n", G.DirObj.Desc)
@@ -256,17 +256,17 @@ func RobberFcn(arg ActArg) bool {
 	return false
 }
 
-func LargeBagFcn(arg ActArg) bool {
+func largeBagFcn(arg ActArg) bool {
 	if G.ActVerb.Norm == "take" {
-		if Thief.LongDesc == RobberUDesc {
+		if thief.LongDesc == robberUDesc {
 			Printf("Sadly for you, the robber collapsed on top of the bag. Trying to take it would wake him.\n")
 		} else {
 			Printf("The bag will be taken over his dead body.\n")
 		}
 		return true
 	}
-	if G.ActVerb.Norm == "put" && G.IndirObj == &LargeBag {
-		Printf("It would be a good trick.\n")
+	if G.ActVerb.Norm == "put" && G.IndirObj == &largeBag {
+		Printf("it would be a good trick.\n")
 		return true
 	}
 	if G.ActVerb.Norm == "open" || G.ActVerb.Norm == "close" {
@@ -280,62 +280,62 @@ func LargeBagFcn(arg ActArg) bool {
 	return false
 }
 
-func StiletteFcn(arg ActArg) bool {
-	return WeaponFunction(&Stiletto, &Thief)
+func stiletteFcn(arg ActArg) bool {
+	return weaponFunction(&stiletto, &thief)
 }
 
-func TreasureInsideFcn(arg ActArg) bool {
+func treasureInsideFcn(arg ActArg) bool {
 	return false
 }
 
-func IThief() bool {
-	rm := Thief.Location()
-	hereQ := !Thief.Has(FlgInvis)
+func iThief() bool {
+	rm := thief.Location()
+	hereQ := !thief.Has(FlgInvis)
 	if hereQ {
-		rm = Thief.Location()
+		rm = thief.Location()
 	}
 	flg := false
 	once := false
 	for {
-		if rm == &TreasureRoom && rm != G.Here {
+		if rm == &treasureRoom && rm != G.Here {
 			if hereQ {
-				HackTreasures()
+				hackTreasures()
 				hereQ = false
 			}
-			DepositBooty(&TreasureRoom)
-		} else if rm == G.Here && !G.Here.Has(FlgOn) && !Troll.IsIn(G.Here) {
-			if ThiefVsAdventurer(hereQ) {
+			depositBooty(&treasureRoom)
+		} else if rm == G.Here && !G.Here.Has(FlgOn) && !troll.IsIn(G.Here) {
+			if thiefVsAdventurer(hereQ) {
 				return true
 			}
-			if Thief.Has(FlgInvis) {
+			if thief.Has(FlgInvis) {
 				hereQ = false
 			}
 		} else {
-			if Thief.IsIn(rm) && !Thief.Has(FlgInvis) {
+			if thief.IsIn(rm) && !thief.Has(FlgInvis) {
 				// Leave if victim left
-				Thief.Give(FlgInvis)
+				thief.Give(FlgInvis)
 				hereQ = false
 			}
 			if rm != nil && rm.Has(FlgTouch) {
-				Rob(rm, &Thief, 75)
+				rob(rm, &thief, 75)
 				if rm.Has(FlgMaze) && G.Here.Has(FlgMaze) {
-					flg = RobMaze(rm)
+					flg = robMaze(rm)
 				} else {
-					flg = StealJunk(rm)
+					flg = stealJunk(rm)
 				}
 			}
 		}
 		if !once && !hereQ {
 			once = true
 			// Move to next room
-			RecoverStiletto()
+			recoverStiletto()
 			found := false
-			for _, r := range Rooms.Children {
+			for _, r := range rooms.Children {
 				if !r.Has(FlgSacred) && r.Has(FlgRLand) {
-					Thief.MoveTo(r)
-					Thief.Take(FlgFight)
-					Thief.Give(FlgInvis)
-					GD().ThiefHere = false
+					thief.MoveTo(r)
+					thief.Take(FlgFight)
+					thief.Give(FlgInvis)
+					gD().ThiefHere = false
 					rm = r
 					found = true
 					break
@@ -348,44 +348,44 @@ func IThief() bool {
 		}
 		break
 	}
-	if rm != &TreasureRoom {
-		DropJunk(rm)
+	if rm != &treasureRoom {
+		dropJunk(rm)
 	}
 	return flg
 }
 
-func ThiefVsAdventurer(hereQ bool) bool {
-	if !GD().Dead && G.Here == &TreasureRoom {
+func thiefVsAdventurer(hereQ bool) bool {
+	if !gD().Dead && G.Here == &treasureRoom {
 		return false
 	}
-	if !GD().ThiefHere {
-		if !GD().Dead && !hereQ && Prob(30, false) {
-			if Stiletto.IsIn(&Thief) {
-				Thief.Take(FlgInvis)
+	if !gD().ThiefHere {
+		if !gD().Dead && !hereQ && Prob(30, false) {
+			if stiletto.IsIn(&thief) {
+				thief.Take(FlgInvis)
 				Printf("Someone carrying a large bag is casually leaning against one of the walls here. He does not speak, but it is clear from his aspect that the bag will be taken only over his dead body.\n")
-				GD().ThiefHere = true
+				gD().ThiefHere = true
 				return true
 			}
 		}
-		if hereQ && Thief.Has(FlgFight) && !Winning(&Thief) {
+		if hereQ && thief.Has(FlgFight) && !winning(&thief) {
 			Printf("Your opponent, determining discretion to be the better part of valor, decides to terminate this little contretemps. With a rueful nod of his head, he steps backward into the gloom and disappears.\n")
-			Thief.Give(FlgInvis)
-			Thief.Take(FlgFight)
-			RecoverStiletto()
+			thief.Give(FlgInvis)
+			thief.Take(FlgFight)
+			recoverStiletto()
 			return true
 		}
 	}
 	return false
 }
 
-// DropJunk - thief drops valueless items from his bag
-func DropJunk(rm *Object) bool {
+// dropJunk - thief drops valueless items from his bag
+func dropJunk(rm *Object) bool {
 	if rm == nil {
 		return false
 	}
 	flg := false
-	for _, x := range Thief.Children {
-		if x == &Stiletto || x == &LargeBag {
+	for _, x := range thief.Children {
+		if x == &stiletto || x == &largeBag {
 			continue
 		}
 		if x.GetTValue() == 0 && Prob(30, true) {
@@ -400,19 +400,19 @@ func DropJunk(rm *Object) bool {
 	return flg
 }
 
-// StealJunk - thief steals worthless items from a room
-func StealJunk(rm *Object) bool {
+// stealJunk - thief steals worthless items from a room
+func stealJunk(rm *Object) bool {
 	if rm == nil {
 		return false
 	}
 	for _, x := range rm.Children {
 		if x.GetTValue() == 0 && x.Has(FlgTake) && !x.Has(FlgSacred) && !x.Has(FlgInvis) {
-			if x == &Stiletto || Prob(10, true) {
-				x.MoveTo(&Thief)
+			if x == &stiletto || Prob(10, true) {
+				x.MoveTo(&thief)
 				x.Give(FlgTouch)
 				x.Give(FlgInvis)
-				if x == &Rope {
-					GD().DomeFlag = false
+				if x == &rope {
+					gD().DomeFlag = false
 				}
 				if rm == G.Here {
 					Printf("You suddenly notice that the %s vanished.\n", x.Desc)

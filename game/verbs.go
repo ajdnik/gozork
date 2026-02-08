@@ -4,10 +4,10 @@ import . "github.com/ajdnik/gozork/engine"
 
 var (
 	// HelloSailor counts occurrences of 'hello, sailor'
-	// IsSprayed is a flag indicating if the player is wearing Grue repellent
-	Version = [24]byte{0, 0, 0, 0, 119, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 56, 56, 48, 52, 50, 57}
+	// IsSprayed is a flag indicating if the player is wearing grue repellent
+	version = [24]byte{0, 0, 0, 0, 119, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 56, 56, 48, 52, 50, 57}
 	// DescObj stores the last object which was described
-	Indents = [6]string{
+	indents = [6]string{
 		"",
 		"  ",
 		"    ",
@@ -15,7 +15,7 @@ var (
 		"        ",
 		"          ",
 	}
-	Yuks = RndSelect{
+	yuks = RndSelect{
 		Unselected: []string{
 			"A valiant attempt.",
 			"You can't be serious.",
@@ -23,7 +23,7 @@ var (
 			"What a concept!",
 		},
 	}
-	Hellos = RndSelect{
+	hellos = RndSelect{
 		Unselected: []string{
 			"Hello.",
 			"Good day.",
@@ -31,14 +31,14 @@ var (
 			"Goodbye.",
 		},
 	}
-	JumpLoss = RndSelect{
+	jumpLoss = RndSelect{
 		Unselected: []string{
 			"You should have looked before you leaped.",
 			"In the movies, your life would be passing before your eyes.",
 			"Geronimo...",
 		},
 	}
-	Wheeee = RndSelect{
+	wheeee = RndSelect{
 		Unselected: []string{
 			"Very good. Now you can go to the second grade.",
 			"Are you enjoying yourself?",
@@ -46,7 +46,7 @@ var (
 			"Do you expect me to applaud?",
 		},
 	}
-	Hohum = RndSelect{
+	hohum = RndSelect{
 		Unselected: []string{
 			" doesn't seem to work.",
 			" isn't notably helpful.",
@@ -55,7 +55,7 @@ var (
 	}
 )
 
-func VAlarm(arg ActArg) bool {
+func vAlarm(arg ActArg) bool {
 	if !G.DirObj.Has(FlgPerson) {
 		Printf("The %s isn't sleeping.\n", G.DirObj.Desc)
 		return true
@@ -65,22 +65,22 @@ func VAlarm(arg ActArg) bool {
 		return true
 	}
 	Printf("The %s is rudely awakened.\n", G.DirObj.Desc)
-	return Awaken(G.DirObj)
+	return awaken(G.DirObj)
 }
 
-func VAnswer(arg ActArg) bool {
+func vAnswer(arg ActArg) bool {
 	Printf("Nobody seems to be awaiting your answer.\n")
 	G.Params.Continue = NumUndef
 	G.Params.InQuotes = false
 	return true
 }
 
-func VAttack(arg ActArg) bool {
+func vAttack(arg ActArg) bool {
 	if !G.DirObj.Has(FlgPerson) {
 		Printf("I've known strange people, but fighting a %s?\n", G.DirObj.Desc)
 		return true
 	}
-	if G.IndirObj == nil || G.IndirObj == &Hands {
+	if G.IndirObj == nil || G.IndirObj == &hands {
 		Printf("Trying to attack a %s with your bare hands is suicidal.\n", G.DirObj.Desc)
 		return true
 	}
@@ -92,38 +92,38 @@ func VAttack(arg ActArg) bool {
 		Printf("Trying to attack the %s with a %s is suicidal.\n", G.DirObj.Desc, G.IndirObj.Desc)
 		return true
 	}
-	return HeroBlow()
+	return heroBlow()
 }
 
-func VBack(arg ActArg) bool {
+func vBack(arg ActArg) bool {
 	Printf("Sorry, my memory is poor. Please give a direction.\n")
 	return true
 }
 
-func VBlast(arg ActArg) bool {
+func vBlast(arg ActArg) bool {
 	Printf("You can't blast anything by using words.\n")
 	return true
 }
 
-func VBreathe(arg ActArg) bool {
-	ret := Perform(ActionVerb{Norm: "inflate", Orig: "inflate"}, G.DirObj, &Lungs)
+func vBreathe(arg ActArg) bool {
+	ret := Perform(ActionVerb{Norm: "inflate", Orig: "inflate"}, G.DirObj, &lungs)
 	if ret == PerfFatal {
 		return RFatal()
 	}
 	return ret == PerfHndld
 }
 
-func VBrush(arg ActArg) bool {
+func vBrush(arg ActArg) bool {
 	Printf("If you wish, but heaven only knows why.\n")
 	return true
 }
 
-func TellNoPrsi() bool {
+func tellNoPrsi() bool {
 	Printf("You didn't say with what!\n")
 	return true
 }
 
-func PreBurn(arg ActArg) bool {
+func preBurn(arg ActArg) bool {
 	if G.IndirObj == nil {
 		Printf("You didn't say with what!\n")
 		return true
@@ -135,32 +135,32 @@ func PreBurn(arg ActArg) bool {
 	return true
 }
 
-func VBurn(arg ActArg) bool {
+func vBurn(arg ActArg) bool {
 	if !G.DirObj.Has(FlgBurn) {
 		Printf("You can't burn a %s.\n", G.DirObj.Desc)
 		return true
 	}
 	if !G.DirObj.IsIn(G.Winner) && !G.Winner.IsIn(G.DirObj) {
-		RemoveCarefully(G.DirObj)
+		removeCarefully(G.DirObj)
 		Printf("The %s catches fire and is consumed.\n", G.DirObj.Desc)
 		return true
 	}
-	RemoveCarefully(G.DirObj)
+	removeCarefully(G.DirObj)
 	Printf("The %s catches fire. Unfortunately, you were ", G.DirObj.Desc)
 	if G.Winner.IsIn(G.DirObj) {
 		Printf("in")
 	} else {
 		Printf("holding")
 	}
-	return JigsUp(" it at the time.", false)
+	return jigsUp(" it at the time.", false)
 }
 
-func VChomp(arg ActArg) bool {
+func vChomp(arg ActArg) bool {
 	Printf("Preposterous!\n")
 	return true
 }
 
-func VClose(arg ActArg) bool {
+func vClose(arg ActArg) bool {
 	if !G.DirObj.Has(FlgCont) && !G.DirObj.Has(FlgDoor) {
 		Printf("You must tell me how to do that to a %s.\n", G.DirObj.Desc)
 		return true
@@ -172,12 +172,12 @@ func VClose(arg ActArg) bool {
 			if G.Lit {
 				G.Lit = IsLit(G.Here, true)
 				if !G.Lit {
-					Printf("It is now pitch black.\n")
+					Printf("it is now pitch black.\n")
 				}
 			}
 			return true
 		}
-		Printf("It is already closed.\n")
+		Printf("it is already closed.\n")
 		return true
 	}
 	if G.DirObj.Has(FlgDoor) {
@@ -186,14 +186,14 @@ func VClose(arg ActArg) bool {
 			Printf("The %s is now closed.\n", G.DirObj.Desc)
 			return true
 		}
-		Printf("It is already closed.\n")
+		Printf("it is already closed.\n")
 		return true
 	}
 	Printf("You cannot close that.\n")
 	return true
 }
 
-func VCommand(arg ActArg) bool {
+func vCommand(arg ActArg) bool {
 	if G.DirObj.Has(FlgPerson) {
 		Printf("The %s pays no attention.\n", G.DirObj.Desc)
 		return true
@@ -202,8 +202,8 @@ func VCommand(arg ActArg) bool {
 	return true
 }
 
-func VCount(arg ActArg) bool {
-	if G.DirObj == &Blessings {
+func vCount(arg ActArg) bool {
+	if G.DirObj == &blessings {
 		Printf("Well, for one, you are playing Zork...\n")
 		return true
 	}
@@ -211,7 +211,7 @@ func VCount(arg ActArg) bool {
 	return true
 }
 
-func VCurses(arg ActArg) bool {
+func vCurses(arg ActArg) bool {
 	if G.DirObj == nil {
 		Printf("Such language in a high-class establishment like this!\n")
 		return true
@@ -224,7 +224,7 @@ func VCurses(arg ActArg) bool {
 	return true
 }
 
-func VCut(arg ActArg) bool {
+func vCut(arg ActArg) bool {
 	if G.DirObj.Has(FlgPerson) {
 		ret := Perform(ActionVerb{Norm: "attack", Orig: "attack"}, G.DirObj, G.IndirObj)
 		if ret == PerfFatal {
@@ -237,7 +237,7 @@ func VCut(arg ActArg) bool {
 			Printf("Not a bright idea, especially since you're in it.\n")
 			return true
 		}
-		RemoveCarefully(G.DirObj)
+		removeCarefully(G.DirObj)
 		Printf("Your skillful %ssmanship slices the %s into innumerable slivers which blow away.\n", G.IndirObj.Desc, G.DirObj.Desc)
 		return true
 	}
@@ -249,16 +249,16 @@ func VCut(arg ActArg) bool {
 	return true
 }
 
-func VDeflate(arg ActArg) bool {
+func vDeflate(arg ActArg) bool {
 	Printf("Come on, now!\n")
 	return true
 }
 
-func VDig(arg ActArg) bool {
+func vDig(arg ActArg) bool {
 	if G.IndirObj == nil {
-		G.IndirObj = &Hands
+		G.IndirObj = &hands
 	}
-	if G.IndirObj == &Shovel {
+	if G.IndirObj == &shovel {
 		Printf("There's no reason to be digging here.\n")
 		return true
 	}
@@ -270,21 +270,21 @@ func VDig(arg ActArg) bool {
 	return true
 }
 
-func VDisenchant(arg ActArg) bool {
+func vDisenchant(arg ActArg) bool {
 	Printf("Nothing happens.\n")
 	return true
 }
 
-func VDrink(arg ActArg) bool {
-	return VEat(ActUnk)
+func vDrink(arg ActArg) bool {
+	return vEat(ActUnk)
 }
 
-func VDrinkFrom(act ActArg) bool {
+func vDrinkFrom(act ActArg) bool {
 	Printf("How peculiar!\n")
 	return true
 }
 
-func PreDrop(arg ActArg) bool {
+func preDrop(arg ActArg) bool {
 	if G.DirObj == G.Winner.Location() {
 		Perform(ActionVerb{Norm: "disembark", Orig: "disembark"}, G.DirObj, nil)
 		return true
@@ -292,15 +292,15 @@ func PreDrop(arg ActArg) bool {
 	return false
 }
 
-func VDrop(arg ActArg) bool {
-	if IDrop() {
+func vDrop(arg ActArg) bool {
+	if iDrop() {
 		Printf("Dropped.\n")
 		return true
 	}
 	return false
 }
 
-func VEat(arg ActArg) bool {
+func vEat(arg ActArg) bool {
 	isEat := G.DirObj.Has(FlgFood)
 	if isEat {
 		if !G.DirObj.IsIn(G.Winner) && !G.DirObj.Location().IsIn(G.Winner) {
@@ -311,15 +311,15 @@ func VEat(arg ActArg) bool {
 			Printf("How can you drink that?\n")
 			return true
 		}
-		Printf("Thank you very much. It really hit the spot.\n")
-		RemoveCarefully(G.DirObj)
+		Printf("Thank you very much. it really hit the spot.\n")
+		removeCarefully(G.DirObj)
 		return true
 	}
 	isDrink := G.DirObj.Has(FlgDrink)
 	if isDrink {
 		nobj := G.DirObj.Location()
-		if G.DirObj.IsIn(&GlobalObjects) || IsInGlobal(&GlobalWater, G.Here) || G.DirObj == &PseudoObject {
-			return HitSpot()
+		if G.DirObj.IsIn(&globalObjects) || IsInGlobal(&globalWater, G.Here) || G.DirObj == &pseudoObject {
+			return hitSpot()
 		}
 		if nobj == nil || !IsAccessible(nobj) {
 			Printf("There isn't any water here.\n")
@@ -333,7 +333,7 @@ func VEat(arg ActArg) bool {
 			Printf("You'll have to open the %s first.\n", nobj.Desc)
 			return true
 		}
-		return HitSpot()
+		return hitSpot()
 	}
 	if !isEat && !isDrink {
 		Printf("I don't think that the %s would agree with you.\n", G.DirObj.Desc)
@@ -342,15 +342,15 @@ func VEat(arg ActArg) bool {
 	return false
 }
 
-func HitSpot() bool {
-	if G.DirObj == &Water && !IsInGlobal(&GlobalWater, G.Here) {
-		RemoveCarefully(G.DirObj)
+func hitSpot() bool {
+	if G.DirObj == &water && !IsInGlobal(&globalWater, G.Here) {
+		removeCarefully(G.DirObj)
 	}
 	Printf("Thank you very much. I was rather thirsty (from all this talking, probably).\n")
 	return true
 }
 
-func VEcho(arg ActArg) bool {
+func vEcho(arg ActArg) bool {
 	if len(G.LexRes) <= 0 {
 		Printf("echo echo ...\n")
 		return true
@@ -360,75 +360,75 @@ func VEcho(arg ActArg) bool {
 	return true
 }
 
-func VEnchant(arg ActArg) bool {
-	return VDisenchant(ActUnk)
+func vEnchant(arg ActArg) bool {
+	return vDisenchant(ActUnk)
 }
 
-func VExcorcise(arg ActArg) bool {
+func vExcorcise(arg ActArg) bool {
 	Printf("What a bizarre concept!\n")
 	return true
 }
 
-func PreFill(arg ActArg) bool {
+func preFill(arg ActArg) bool {
 	if G.IndirObj == nil {
-		if IsInGlobal(&GlobalWater, G.Here) {
-			Perform(ActionVerb{Norm: "fill", Orig: "fill"}, G.DirObj, &GlobalWater)
+		if IsInGlobal(&globalWater, G.Here) {
+			Perform(ActionVerb{Norm: "fill", Orig: "fill"}, G.DirObj, &globalWater)
 			return true
 		}
-		if Water.IsIn(G.Winner.Location()) {
-			Perform(ActionVerb{Norm: "fill", Orig: "fill"}, G.DirObj, &Water)
+		if water.IsIn(G.Winner.Location()) {
+			Perform(ActionVerb{Norm: "fill", Orig: "fill"}, G.DirObj, &water)
 			return true
 		}
 		Printf("There is nothing to fill it with.\n")
 		return true
 	}
-	if G.IndirObj == &Water {
+	if G.IndirObj == &water {
 		return false
 	}
-	if G.IndirObj != &GlobalWater {
+	if G.IndirObj != &globalWater {
 		Perform(ActionVerb{Norm: "put", Orig: "put"}, G.IndirObj, G.DirObj)
 		return true
 	}
 	return false
 }
 
-func VFill(arg ActArg) bool {
+func vFill(arg ActArg) bool {
 	if G.IndirObj != nil {
 		Printf("You may know how to do that, but I don't.\n")
 		return true
 	}
-	if IsInGlobal(&GlobalWater, G.Here) {
-		Perform(ActionVerb{Norm: "fill", Orig: "fill"}, G.DirObj, &GlobalWater)
+	if IsInGlobal(&globalWater, G.Here) {
+		Perform(ActionVerb{Norm: "fill", Orig: "fill"}, G.DirObj, &globalWater)
 		return true
 	}
-	if Water.IsIn(G.Winner.Location()) {
-		Perform(ActionVerb{Norm: "fill", Orig: "fill"}, G.DirObj, &Water)
+	if water.IsIn(G.Winner.Location()) {
+		Perform(ActionVerb{Norm: "fill", Orig: "fill"}, G.DirObj, &water)
 		return true
 	}
 	Printf("There is nothing to fill it with.\n")
 	return true
 }
 
-func VFirstLook(arg ActArg) bool {
-	if DescribeRoom(false) {
+func vFirstLook(arg ActArg) bool {
+	if describeRoom(false) {
 		if !G.SuperBrief {
-			return DescribeObjects(false)
+			return describeObjects(false)
 		}
 	}
 	return false
 }
 
-func VFind(arg ActArg) bool {
-	if G.DirObj == &Hands || G.DirObj == &Lungs {
+func vFind(arg ActArg) bool {
+	if G.DirObj == &hands || G.DirObj == &lungs {
 		Printf("Within six feet of your head, assuming you haven't left that somewhere.\n")
 		return true
 	}
-	if G.DirObj == &Me {
+	if G.DirObj == &me {
 		Printf("You're around here somewhere...\n")
 		return true
 	}
 	l := G.DirObj.Location()
-	if l == &GlobalObjects {
+	if l == &globalObjects {
 		Printf("You find it.\n")
 		return true
 	}
@@ -436,8 +436,8 @@ func VFind(arg ActArg) bool {
 		Printf("You have it.\n")
 		return true
 	}
-	if G.DirObj.IsIn(G.Here) || IsInGlobal(G.DirObj, G.Here) || G.DirObj == &PseudoObject {
-		Printf("It's right here.\n")
+	if G.DirObj.IsIn(G.Here) || IsInGlobal(G.DirObj, G.Here) || G.DirObj == &pseudoObject {
+		Printf("it's right here.\n")
 		return true
 	}
 	if l.Has(FlgPerson) {
@@ -445,23 +445,23 @@ func VFind(arg ActArg) bool {
 		return true
 	}
 	if l.Has(FlgSurf) {
-		Printf("It's on the %s.\n", l.Desc)
+		Printf("it's on the %s.\n", l.Desc)
 		return true
 	}
 	if l.Has(FlgCont) {
-		Printf("It's in the %s.\n", l.Desc)
+		Printf("it's in the %s.\n", l.Desc)
 		return true
 	}
 	Printf("Beats me.\n")
 	return true
 }
 
-func VFrobozz(arg ActArg) bool {
+func vFrobozz(arg ActArg) bool {
 	Printf("The FROBOZZ Corporation created, owns, and operates this dungeon.\n")
 	return true
 }
 
-func PreGive(arg ActArg) bool {
+func preGive(arg ActArg) bool {
 	if !IsHeld(G.DirObj) {
 		Printf("That's easy for you to say since you don't even have the %s.\n", G.DirObj.Desc)
 		return true
@@ -469,7 +469,7 @@ func PreGive(arg ActArg) bool {
 	return false
 }
 
-func VGive(arg ActArg) bool {
+func vGive(arg ActArg) bool {
 	if !G.DirObj.Has(FlgPerson) {
 		Printf("You can't give a %s to a %s!\n", G.DirObj.Desc, G.IndirObj.Desc)
 		return true
@@ -478,46 +478,46 @@ func VGive(arg ActArg) bool {
 	return true
 }
 
-func VHatch(arg ActArg) bool {
+func vHatch(arg ActArg) bool {
 	Printf("Bizarre!\n")
 	return true
 }
 
-func VHello(arg ActArg) bool {
+func vHello(arg ActArg) bool {
 	if G.DirObj == nil {
-		Printf("%s\n", PickOne(Hellos))
+		Printf("%s\n", PickOne(hellos))
 		return true
 	}
 	if G.DirObj.Has(FlgPerson) {
 		Printf("The %s bows his head to you in greeting.\n", G.DirObj.Desc)
 		return true
 	}
-	Printf("It's a well known fact that only schizophrenics say \"Hello\" to a %s.\n", G.DirObj.Desc)
+	Printf("it's a well known fact that only schizophrenics say \"Hello\" to a %s.\n", G.DirObj.Desc)
 	return true
 }
 
-func VIncant(arg ActArg) bool {
+func vIncant(arg ActArg) bool {
 	Printf("The incantation echoes back faintly, but nothing else happens.\n")
 	G.Params.InQuotes = false
 	G.Params.Continue = NumUndef
 	return true
 }
 
-func VInflate(arg ActArg) bool {
+func vInflate(arg ActArg) bool {
 	Printf("How can you inflate that?\n")
 	return true
 }
 
-func VKick(arg ActArg) bool {
-	return HackHack("Kicking the ")
+func vKick(arg ActArg) bool {
+	return hackHack("Kicking the ")
 }
 
-func VKiss(arg ActArg) bool {
+func vKiss(arg ActArg) bool {
 	Printf("I'd sooner kiss a pig.\n")
 	return true
 }
 
-func VKnock(arg ActArg) bool {
+func vKnock(arg ActArg) bool {
 	if G.DirObj.Has(FlgDoor) {
 		Printf("Nobody's home.\n")
 		return true
@@ -526,13 +526,13 @@ func VKnock(arg ActArg) bool {
 	return true
 }
 
-func VLampOff(arg ActArg) bool {
+func vLampOff(arg ActArg) bool {
 	if !G.DirObj.Has(FlgLight) {
 		Printf("You can't turn that off.\n")
 		return true
 	}
 	if !G.DirObj.Has(FlgOn) {
-		Printf("It is already off.\n")
+		Printf("it is already off.\n")
 		return true
 	}
 	G.DirObj.Take(FlgOn)
@@ -541,12 +541,12 @@ func VLampOff(arg ActArg) bool {
 	}
 	Printf("The %s is now off.\n", G.DirObj.Desc)
 	if !G.Lit {
-		Printf("It is now pitch black.\n")
+		Printf("it is now pitch black.\n")
 	}
 	return true
 }
 
-func VLampOn(arg ActArg) bool {
+func vLampOn(arg ActArg) bool {
 	if !G.DirObj.Has(FlgLight) {
 		if G.DirObj.Has(FlgBurn) {
 			Printf("If you wish to burn the %s, you should say so.\n", G.DirObj.Desc)
@@ -556,7 +556,7 @@ func VLampOn(arg ActArg) bool {
 		return true
 	}
 	if G.DirObj.Has(FlgOn) {
-		Printf("It is already on.\n")
+		Printf("it is already on.\n")
 		return true
 	}
 	G.DirObj.Give(FlgOn)
@@ -564,12 +564,12 @@ func VLampOn(arg ActArg) bool {
 	if !G.Lit {
 		G.Lit = IsLit(G.Here, true)
 		Printf("\n")
-		return VLook(ActUnk)
+		return vLook(ActUnk)
 	}
 	return true
 }
 
-func VLaunch(arg ActArg) bool {
+func vLaunch(arg ActArg) bool {
 	if G.DirObj.Has(FlgVeh) {
 		Printf("You can't launch that by saying \"launch\"!\n")
 		return true
@@ -578,38 +578,38 @@ func VLaunch(arg ActArg) bool {
 	return true
 }
 
-func VLeanOn(arg ActArg) bool {
+func vLeanOn(arg ActArg) bool {
 	Printf("Getting tired?\n")
 	return true
 }
 
-func VListen(arg ActArg) bool {
+func vListen(arg ActArg) bool {
 	Printf("The %s makes no sound.\n", G.DirObj.Desc)
 	return true
 }
 
-func VLock(arg ActArg) bool {
-	Printf("It doesn't seem to work.\n")
+func vLock(arg ActArg) bool {
+	Printf("it doesn't seem to work.\n")
 	return true
 }
 
-func VLower(arg ActArg) bool {
-	return HackHack("Playing in this way with the ")
+func vLower(arg ActArg) bool {
+	return hackHack("Playing in this way with the ")
 }
 
-func VLook(arg ActArg) bool {
-	if DescribeRoom(true) {
-		return DescribeObjects(true)
+func vLook(arg ActArg) bool {
+	if describeRoom(true) {
+		return describeObjects(true)
 	}
 	return false
 }
 
-func VLookBehind(arg ActArg) bool {
+func vLookBehind(arg ActArg) bool {
 	Printf("There is nothing behind the %s.\n", G.DirObj.Desc)
 	return true
 }
 
-func VLookInside(arg ActArg) bool {
+func vLookInside(arg ActArg) bool {
 	if G.DirObj.Has(FlgDoor) {
 		Printf("The %s", G.DirObj.Desc)
 		if G.DirObj.Has(FlgOpen) {
@@ -625,11 +625,11 @@ func VLookInside(arg ActArg) bool {
 			Printf("There is nothing special to be seen.\n")
 			return true
 		}
-		if !CanSeeInside(G.DirObj) {
+		if !canSeeInside(G.DirObj) {
 			Printf("The %s is closed.\n", G.DirObj.Desc)
 			return true
 		}
-		if G.DirObj.HasChildren() && PrintCont(G.DirObj, false, 0) {
+		if G.DirObj.HasChildren() && printCont(G.DirObj, false, 0) {
 			return true
 		}
 		Printf("The %s is empty.\n", G.DirObj.Desc)
@@ -639,7 +639,7 @@ func VLookInside(arg ActArg) bool {
 	return true
 }
 
-func VLookOn(arg ActArg) bool {
+func vLookOn(arg ActArg) bool {
 	if G.DirObj.Has(FlgSurf) {
 		Perform(ActionVerb{Norm: "look inside", Orig: "look inside"}, G.DirObj, nil)
 		return true
@@ -648,34 +648,34 @@ func VLookOn(arg ActArg) bool {
 	return true
 }
 
-func VLookUnder(arg ActArg) bool {
+func vLookUnder(arg ActArg) bool {
 	Printf("There is nothing but dust there.\n")
 	return true
 }
 
-func VExamine(arg ActArg) bool {
+func vExamine(arg ActArg) bool {
 	if len(G.DirObj.Text) > 0 {
 		Printf("%s\n", G.DirObj.Text)
 		return true
 	}
 	if G.DirObj.Has(FlgCont) || G.DirObj.Has(FlgDoor) {
-		return VLookInside(ActUnk)
+		return vLookInside(ActUnk)
 	}
 	Printf("There's nothing special about the %s.\n", G.DirObj.Desc)
 	return true
 }
 
-func VMake(arg ActArg) bool {
+func vMake(arg ActArg) bool {
 	Printf("You can't do that.\n")
 	return true
 }
 
-func VMelt(arg ActArg) bool {
-	Printf("It's not clear that a %s can be melted.\n", G.DirObj.Desc)
+func vMelt(arg ActArg) bool {
+	Printf("it's not clear that a %s can be melted.\n", G.DirObj.Desc)
 	return true
 }
 
-func PreMove(arg ActArg) bool {
+func preMove(arg ActArg) bool {
 	if IsHeld(G.DirObj) {
 		Printf("You aren't an accomplished enough juggler.\n")
 		return true
@@ -683,7 +683,7 @@ func PreMove(arg ActArg) bool {
 	return false
 }
 
-func VMove(arg ActArg) bool {
+func vMove(arg ActArg) bool {
 	if G.DirObj.Has(FlgTake) {
 		Printf("Moving the %s reveals nothing.\n", G.DirObj.Desc)
 		return true
@@ -692,12 +692,12 @@ func VMove(arg ActArg) bool {
 	return true
 }
 
-func VMumble(arg ActArg) bool {
+func vMumble(arg ActArg) bool {
 	Printf("You'll have to speak up if you expect me to hear you!\n")
 	return true
 }
 
-func PreMung(arg ActArg) bool {
+func preMung(arg ActArg) bool {
 	if G.IndirObj == nil || !G.IndirObj.Has(FlgWeapon) {
 		Printf("Trying to destroy the %s with ", G.DirObj.Desc)
 		if G.IndirObj == nil {
@@ -711,7 +711,7 @@ func PreMung(arg ActArg) bool {
 	return false
 }
 
-func VMung(arg ActArg) bool {
+func vMung(arg ActArg) bool {
 	if !G.DirObj.Has(FlgPerson) {
 		Printf("Nice try.\n")
 		return true
@@ -720,34 +720,34 @@ func VMung(arg ActArg) bool {
 	return true
 }
 
-func MungRoom(rm *Object, str string) {
+func mungRoom(rm *Object, str string) {
 	rm.Give(FlgKludge)
 	rm.LongDesc = str
 }
 
-func VOdysseus(arg ActArg) bool {
-	if G.Here != &CyclopsRoom || !Cyclops.IsIn(G.Here) || GD().CyclopsFlag {
+func vOdysseus(arg ActArg) bool {
+	if G.Here != &cyclopsRoom || !cyclops.IsIn(G.Here) || gD().CyclopsFlag {
 		Printf("Wasn't he a sailor?\n")
 		return true
 	}
-	QueueInt("ICyclops", false).Run = false
-	GD().CyclopsFlag = true
+	QueueInt("iCyclops", false).Run = false
+	gD().CyclopsFlag = true
 	Printf("The cyclops, hearing the name of his father's deadly nemesis, flees the room by knocking down the wall on the east of the room.\n")
-	GD().MagicFlag = true
-	Cyclops.Take(FlgFight)
-	return RemoveCarefully(&Cyclops)
+	gD().MagicFlag = true
+	cyclops.Take(FlgFight)
+	return removeCarefully(&cyclops)
 }
 
-func VOil(arg ActArg) bool {
+func vOil(arg ActArg) bool {
 	Printf("You probably put spinach in your gas tank, too.\n")
 	return true
 }
 
-func VOpen(arg ActArg) bool {
+func vOpen(arg ActArg) bool {
 	if !G.DirObj.Has(FlgCont) || G.DirObj.GetCapacity() == 0 {
 		if G.DirObj.Has(FlgDoor) {
 			if G.DirObj.Has(FlgOpen) {
-				Printf("It is already open.\n")
+				Printf("it is already open.\n")
 				return true
 			}
 			Printf("The %s opens.\n", G.DirObj.Desc)
@@ -758,7 +758,7 @@ func VOpen(arg ActArg) bool {
 		return true
 	}
 	if G.DirObj.Has(FlgOpen) {
-		Printf("It is already open.\n")
+		Printf("it is already open.\n")
 		return true
 	}
 	G.DirObj.Give(FlgOpen)
@@ -773,14 +773,14 @@ func VOpen(arg ActArg) bool {
 		return true
 	}
 	Printf("Opening the %s reveals ", G.DirObj.Desc)
-	PrintContents(G.DirObj)
+	printContents(G.DirObj)
 	Printf(".\n")
 	return true
 }
 
-func VOverboard(arg ActArg) bool {
+func vOverboard(arg ActArg) bool {
 	locn := G.Winner.Location()
-	if G.IndirObj == &Teeth {
+	if G.IndirObj == &teeth {
 		if locn.Has(FlgVeh) {
 			Printf("Ahoy -- %s overboard!\n", G.IndirObj.Desc)
 			return true
@@ -796,28 +796,28 @@ func VOverboard(arg ActArg) bool {
 	return true
 }
 
-func VPick(arg ActArg) bool {
+func vPick(arg ActArg) bool {
 	Printf("You can't pick that.\n")
 	return true
 }
 
-func VPlay(arg ActArg) bool {
+func vPlay(arg ActArg) bool {
 	if !G.DirObj.Has(FlgPerson) {
 		Printf("That's silly!\n")
 		return true
 	}
 	Printf("You become so engrossed in the role of the %s that you kill yourself, just as he might have done!\n", G.DirObj.Desc)
-	return JigsUp("", false)
+	return jigsUp("", false)
 }
 
-func VPlug(arg ActArg) bool {
+func vPlug(arg ActArg) bool {
 	Printf("This has no effect.\n")
 	return true
 }
 
-func VPourOn(arg ActArg) bool {
-	if G.DirObj == &Water {
-		RemoveCarefully(G.DirObj)
+func vPourOn(arg ActArg) bool {
+	if G.DirObj == &water {
+		removeCarefully(G.DirObj)
 		if IsFlaming(G.IndirObj) {
 			Printf("The %s is extinguished.\n", G.IndirObj.Desc)
 			G.IndirObj.Take(FlgOn)
@@ -827,54 +827,54 @@ func VPourOn(arg ActArg) bool {
 		Printf("The water spills over the %s, to the floor, and evaporates.\n", G.IndirObj.Desc)
 		return true
 	}
-	if G.DirObj == &Putty {
-		return Perform(ActionVerb{Norm: "put", Orig: "put"}, &Putty, G.IndirObj) == PerfHndld
+	if G.DirObj == &putty {
+		return Perform(ActionVerb{Norm: "put", Orig: "put"}, &putty, G.IndirObj) == PerfHndld
 	}
 	Printf("You can't pour that.\n")
 	return true
 }
 
-func VPray(arg ActArg) bool {
-	if G.Here != &SouthTemple {
+func vPray(arg ActArg) bool {
+	if G.Here != &southTemple {
 		Printf("If you pray enough, your prayers may be answered.\n")
 		return true
 	}
-	return Goto(&Forest1, true)
+	return gotoRoom(&forest1, true)
 }
 
-func VPump(arg ActArg) bool {
-	if G.IndirObj != nil && G.IndirObj != &Pump {
-		Printf("Pump it up with a %s?\n", G.IndirObj.Desc)
+func vPump(arg ActArg) bool {
+	if G.IndirObj != nil && G.IndirObj != &pump {
+		Printf("pump it up with a %s?\n", G.IndirObj.Desc)
 		return true
 	}
-	if Pump.IsIn(G.Winner) {
-		return Perform(ActionVerb{Norm: "inflate", Orig: "inflate"}, G.DirObj, &Pump) == PerfHndld
+	if pump.IsIn(G.Winner) {
+		return Perform(ActionVerb{Norm: "inflate", Orig: "inflate"}, G.DirObj, &pump) == PerfHndld
 	}
-	Printf("It's really not clear how.\n")
+	Printf("it's really not clear how.\n")
 	return true
 }
 
-func VPush(arg ActArg) bool {
-	return HackHack("Pushing the ")
+func vPush(arg ActArg) bool {
+	return hackHack("Pushing the ")
 }
 
-func VPushTo(arg ActArg) bool {
+func vPushTo(arg ActArg) bool {
 	Printf("You can't push things to that.\n")
 	return true
 }
 
-func PrePut(arg ActArg) bool {
-	return PreGive(arg)
+func prePut(arg ActArg) bool {
+	return preGive(arg)
 }
 
-func VPut(arg ActArg) bool {
+func vPut(arg ActArg) bool {
 	if !G.IndirObj.Has(FlgOpen) && !IsOpenable(G.IndirObj) && !G.IndirObj.Has(FlgVeh) {
 		Printf("You can't do that.\n")
 		return true
 	}
 	if !G.IndirObj.Has(FlgOpen) {
 		Printf("The %s isn't open.\n", G.IndirObj.Desc)
-		ThisIsIt(G.IndirObj)
+		thisIsIt(G.IndirObj)
 		return true
 	}
 	if G.IndirObj == G.DirObj {
@@ -885,53 +885,53 @@ func VPut(arg ActArg) bool {
 		Printf("The %s is already in the %s.\n", G.DirObj.Desc, G.IndirObj.Desc)
 		return true
 	}
-	if Weight(G.IndirObj)+Weight(G.DirObj)-G.IndirObj.GetSize() > G.IndirObj.GetCapacity() {
+	if weight(G.IndirObj)+weight(G.DirObj)-G.IndirObj.GetSize() > G.IndirObj.GetCapacity() {
 		Printf("There's no room.\n")
 		return true
 	}
-	if !IsHeld(G.DirObj) && !ITake(true) {
+	if !IsHeld(G.DirObj) && !iTake(true) {
 		return true
 	}
 	G.DirObj.MoveTo(G.IndirObj)
 	G.DirObj.Give(FlgTouch)
-	ScoreObj(G.DirObj)
+	scoreObj(G.DirObj)
 	Printf("Done.\n")
 	return true
 }
 
-func VPutBehind(arg ActArg) bool {
+func vPutBehind(arg ActArg) bool {
 	Printf("That hiding place is too obvious.\n")
 	return true
 }
 
-func VPutOn(arg ActArg) bool {
-	if G.IndirObj == nil || G.IndirObj == &Ground {
-		return VDrop(ActUnk)
+func vPutOn(arg ActArg) bool {
+	if G.IndirObj == nil || G.IndirObj == &ground {
+		return vDrop(ActUnk)
 	}
 	if G.IndirObj.Has(FlgSurf) {
-		return VPut(ActUnk)
+		return vPut(ActUnk)
 	}
 	Printf("There's no good surface on the %s.\n", G.IndirObj.Desc)
 	return true
 }
 
-func VPutUnder(arg ActArg) bool {
+func vPutUnder(arg ActArg) bool {
 	Printf("You can't do that.\n")
 	return true
 }
 
-func VRaise(arg ActArg) bool {
-	return VLower(arg)
+func vRaise(arg ActArg) bool {
+	return vLower(arg)
 }
 
-func VRape(arg ActArg) bool {
+func vRape(arg ActArg) bool {
 	Printf("What a (ahem!) strange idea.\n")
 	return true
 }
 
-func PreRead(arg ActArg) bool {
+func preRead(arg ActArg) bool {
 	if !G.Lit {
-		Printf("It is impossible to read in the dark.\n")
+		Printf("it is impossible to read in the dark.\n")
 		return true
 	}
 	if G.IndirObj != nil && !G.IndirObj.Has(FlgTrans) {
@@ -941,7 +941,7 @@ func PreRead(arg ActArg) bool {
 	return false
 }
 
-func VRead(arg ActArg) bool {
+func vRead(arg ActArg) bool {
 	if !G.DirObj.Has(FlgRead) {
 		Printf("How does one read a %s?\n", G.DirObj.Desc)
 		return true
@@ -950,38 +950,38 @@ func VRead(arg ActArg) bool {
 	return true
 }
 
-func VReadPage(arg ActArg) bool {
-	return VRead(ActUnk)
+func vReadPage(arg ActArg) bool {
+	return vRead(ActUnk)
 }
 
-func VRepent(arg ActArg) bool {
-	Printf("It could very well be too late!\n")
+func vRepent(arg ActArg) bool {
+	Printf("it could very well be too late!\n")
 	return true
 }
 
-func VReply(arg ActArg) bool {
-	Printf("It is hardly likely that the %s is interested.\n", G.DirObj.Desc)
+func vReply(arg ActArg) bool {
+	Printf("it is hardly likely that the %s is interested.\n", G.DirObj.Desc)
 	G.Params.Continue = NumUndef
 	G.Params.InQuotes = false
 	return true
 }
 
-func VRing(arg ActArg) bool {
+func vRing(arg ActArg) bool {
 	Printf("How, exactly, can you ring that?\n")
 	return true
 }
 
-func VRub(arg ActArg) bool {
-	return HackHack("Fiddling with the ")
+func vRub(arg ActArg) bool {
+	return hackHack("Fiddling with the ")
 }
 
-func VSay(arg ActArg) bool {
+func vSay(arg ActArg) bool {
 	if G.Params.Continue == NumUndef {
 		Printf("Say what?\n")
 		return true
 	}
 	G.Params.InQuotes = false
-	v := FindIn(G.Here, FlgPerson)
+	v := findIn(G.Here, FlgPerson)
 	if v != nil {
 		Printf("You must address the %s directly.\n", v.Desc)
 		G.Params.Continue = NumUndef
@@ -995,24 +995,24 @@ func VSay(arg ActArg) bool {
 	return false
 }
 
-func FindIn(where *Object, what Flags) *Object {
+func findIn(where *Object, what Flags) *Object {
 	if !where.HasChildren() {
 		return nil
 	}
 	for w := 0; w < len(where.Children); w++ {
-		if where.Children[w].Has(what) && where.Children[w] != &Adventurer {
+		if where.Children[w].Has(what) && where.Children[w] != &adventurer {
 			return where.Children[w]
 		}
 	}
 	return nil
 }
 
-func VSearch(arg ActArg) bool {
+func vSearch(arg ActArg) bool {
 	Printf("You find nothing unusual.\n")
 	return true
 }
 
-func VSend(arg ActArg) bool {
+func vSend(arg ActArg) bool {
 	if G.DirObj.Has(FlgPerson) {
 		Printf("Why would you send for the %s?\n", G.DirObj.Desc)
 		return true
@@ -1021,17 +1021,17 @@ func VSend(arg ActArg) bool {
 	return true
 }
 
-func PreSGive(arg ActArg) bool {
+func preSGive(arg ActArg) bool {
 	Perform(ActionVerb{Norm: "give", Orig: "give"}, G.IndirObj, G.DirObj)
 	return true
 }
 
-func VSGive(arg ActArg) bool {
+func vSGive(arg ActArg) bool {
 	Printf("Foo!\n")
 	return true
 }
 
-func VShake(arg ActArg) bool {
+func vShake(arg ActArg) bool {
 	if G.DirObj.Has(FlgPerson) {
 		Printf("This seems to have no effect.\n")
 		return true
@@ -1049,7 +1049,7 @@ func VShake(arg ActArg) bool {
 			Printf("Shaken.\n")
 			return true
 		}
-		ShakeLoop()
+		shakeLoop()
 		Printf("The contents of the %s spill ", G.DirObj.Desc)
 		if !G.Here.Has(FlgLand) {
 			Printf("out and disappears")
@@ -1060,48 +1060,48 @@ func VShake(arg ActArg) bool {
 		return true
 	}
 	if G.DirObj.HasChildren() {
-		Printf("It sounds like there is something inside the %s.\n", G.DirObj.Desc)
+		Printf("it sounds like there is something inside the %s.\n", G.DirObj.Desc)
 		return true
 	}
 	Printf("The %s sounds empty.\n", G.DirObj.Desc)
 	return true
 }
 
-func ShakeLoop() {
+func shakeLoop() {
 	if !G.DirObj.HasChildren() {
 		return
 	}
 	x := G.DirObj.Children[0]
 	x.Give(FlgTouch)
 	mv := G.Here
-	if G.Here == &UpATree {
-		mv = &Path
+	if G.Here == &upATree {
+		mv = &path
 	} else if !G.Here.Has(FlgLand) {
-		mv = &PseudoObject
+		mv = &pseudoObject
 	}
 	x.MoveTo(mv)
 }
 
-func VSkip(arg ActArg) bool {
-	Printf("%s\n", PickOne(Wheeee))
+func vSkip(arg ActArg) bool {
+	Printf("%s\n", PickOne(wheeee))
 	return true
 }
 
-func VSmell(arg ActArg) bool {
-	Printf("It smells like a %s.\n", G.DirObj.Desc)
+func vSmell(arg ActArg) bool {
+	Printf("it smells like a %s.\n", G.DirObj.Desc)
 	return true
 }
 
-func VSpin(arg ActArg) bool {
+func vSpin(arg ActArg) bool {
 	Printf("You can't spin that!\n")
 	return true
 }
 
-func VSpray(arg ActArg) bool {
-	return VSqueeze(arg)
+func vSpray(arg ActArg) bool {
+	return vSqueeze(arg)
 }
 
-func VSqueeze(arg ActArg) bool {
+func vSqueeze(arg ActArg) bool {
 	if !G.DirObj.Has(FlgPerson) {
 		Printf("How singularly useless.\n")
 		return true
@@ -1110,12 +1110,12 @@ func VSqueeze(arg ActArg) bool {
 	return true
 }
 
-func VSSpray(arg ActArg) bool {
+func vSSpray(arg ActArg) bool {
 	return Perform(ActionVerb{Norm: "spray", Orig: "spray"}, G.IndirObj, G.DirObj) == PerfHndld
 }
 
-func VStab(arg ActArg) bool {
-	w := FindWeapon(G.Winner)
+func vStab(arg ActArg) bool {
+	w := findWeapon(G.Winner)
 	if w == nil {
 		Printf("No doubt you propose to stab the %s with your pinky?\n", G.DirObj.Desc)
 		return true
@@ -1124,7 +1124,7 @@ func VStab(arg ActArg) bool {
 	return true
 }
 
-func VStrike(arg ActArg) bool {
+func vStrike(arg ActArg) bool {
 	if G.DirObj.Has(FlgPerson) {
 		Printf("Since you aren't versed in hand-to-hand combat, you'd better attack the %s with a weapon.\n", G.DirObj.Desc)
 		return true
@@ -1133,7 +1133,7 @@ func VStrike(arg ActArg) bool {
 	return true
 }
 
-func VSwing(arg ActArg) bool {
+func vSwing(arg ActArg) bool {
 	if G.IndirObj == nil {
 		Printf("Whoosh!\n")
 		return true
@@ -1144,7 +1144,7 @@ func VSwing(arg ActArg) bool {
 	return false
 }
 
-func PreTake(arg ActArg) bool {
+func preTake(arg ActArg) bool {
 	if G.DirObj == G.Winner {
 		if G.DirObj.Has(FlgWear) {
 			Printf("You are already wearing it.\n")
@@ -1159,7 +1159,7 @@ func PreTake(arg ActArg) bool {
 		return true
 	}
 	if G.IndirObj != nil {
-		if G.IndirObj == &Ground {
+		if G.IndirObj == &ground {
 			G.IndirObj = nil
 			return false
 		}
@@ -1177,8 +1177,8 @@ func PreTake(arg ActArg) bool {
 	return false
 }
 
-func VTake(arg ActArg) bool {
-	if ITake(true) {
+func vTake(arg ActArg) bool {
+	if iTake(true) {
 		if G.DirObj.Has(FlgWear) {
 			Printf("You are now wearing the %s.\n", G.DirObj.Desc)
 			return true
@@ -1189,7 +1189,7 @@ func VTake(arg ActArg) bool {
 	return false
 }
 
-func VTell(arg ActArg) bool {
+func vTell(arg ActArg) bool {
 	if !G.DirObj.Has(FlgPerson) {
 		Printf("You can't talk to the %s!\n", G.DirObj.Desc)
 		G.Params.InQuotes = false
@@ -1205,15 +1205,15 @@ func VTell(arg ActArg) bool {
 	return true
 }
 
-func VThrow(arg ActArg) bool {
-	if !IDrop() {
+func vThrow(arg ActArg) bool {
+	if !iDrop() {
 		Printf("Huh?\n")
 		return true
 	}
-	if G.IndirObj == &Me {
+	if G.IndirObj == &me {
 		Printf("A terrific throw! The ")
 		G.Winner = G.Player
-		return JigsUp(" hits you squarely in the head. Normally, this wouldn't do much damage, but by incredible mischance, you fall over backwards trying to duck, and break your neck, justice being swift and merciful in the Great Underground Empire.", false)
+		return jigsUp(" hits you squarely in the head. Normally, this wouldn't do much damage, but by incredible mischance, you fall over backwards trying to duck, and break your neck, justice being swift and merciful in the Great Underground Empire.", false)
 	}
 	if G.IndirObj != nil && G.IndirObj.Has(FlgPerson) {
 		Printf("The %s ducks as the %s flies by and crashes to the ground.\n", G.IndirObj.Desc, G.DirObj.Desc)
@@ -1223,12 +1223,12 @@ func VThrow(arg ActArg) bool {
 	return true
 }
 
-func VThrowOff(arg ActArg) bool {
+func vThrowOff(arg ActArg) bool {
 	Printf("You can't throw anything off of that!\n")
 	return true
 }
 
-func VTie(arg ActArg) bool {
+func vTie(arg ActArg) bool {
 	if G.IndirObj == G.Winner {
 		Printf("You can't tie anything to yourself.\n")
 		return true
@@ -1237,24 +1237,24 @@ func VTie(arg ActArg) bool {
 	return true
 }
 
-func VTieUp(arg ActArg) bool {
+func vTieUp(arg ActArg) bool {
 	Printf("You could certainly never tie it with that!\n")
 	return true
 }
 
-func VTreasure(arg ActArg) bool {
-	if G.Here == &NorthTemple {
-		return Goto(&TreasureRoom, true)
+func vTreasure(arg ActArg) bool {
+	if G.Here == &northTemple {
+		return gotoRoom(&treasureRoom, true)
 	}
-	if G.Here == &TreasureRoom {
-		return Goto(&NorthTemple, true)
+	if G.Here == &treasureRoom {
+		return gotoRoom(&northTemple, true)
 	}
 	Printf("Nothing happens.\n")
 	return true
 }
 
-func PreTurn(arg ActArg) bool {
-	if (G.IndirObj == nil || G.IndirObj == &Rooms) && G.DirObj != &Book {
+func preTurn(arg ActArg) bool {
+	if (G.IndirObj == nil || G.IndirObj == &rooms) && G.DirObj != &book {
 		Printf("Your bare hands don't appear to be enough.\n")
 		return true
 	}
@@ -1265,25 +1265,25 @@ func PreTurn(arg ActArg) bool {
 	return false
 }
 
-func VTurn(arg ActArg) bool {
+func vTurn(arg ActArg) bool {
 	Printf("This has no effect.\n")
 	return true
 }
 
-func VUnlock(arg ActArg) bool {
-	return VLock(arg)
+func vUnlock(arg ActArg) bool {
+	return vLock(arg)
 }
 
-func VUntie(arg ActArg) bool {
+func vUntie(arg ActArg) bool {
 	Printf("This cannot be tied, so it cannot be untied!\n")
 	return true
 }
 
-func VWave(arg ActArg) bool {
-	return HackHack("Waving the ")
+func vWave(arg ActArg) bool {
+	return hackHack("Waving the ")
 }
 
-func VWear(arg ActArg) bool {
+func vWear(arg ActArg) bool {
 	if !G.DirObj.Has(FlgWear) {
 		Printf("You can't wear the %s.\n", G.DirObj.Desc)
 		return true
@@ -1292,17 +1292,17 @@ func VWear(arg ActArg) bool {
 	return true
 }
 
-func VWind(arg ActArg) bool {
+func vWind(arg ActArg) bool {
 	Printf("You cannot wind up a %s.\n", G.DirObj.Desc)
 	return true
 }
 
-func VYell(arg ActArg) bool {
+func vYell(arg ActArg) bool {
 	Printf("Aaaarrrrgggghhhh!\n")
 	return true
 }
 
-func RemoveCarefully(obj *Object) bool {
+func removeCarefully(obj *Object) bool {
 	if obj == G.Params.ItObj {
 		G.Params.ItObj = nil
 	}
@@ -1315,7 +1315,7 @@ func RemoveCarefully(obj *Object) bool {
 	return true
 }
 
-func PrintContents(obj *Object) bool {
+func printContents(obj *Object) bool {
 	if !obj.HasChildren() {
 		return false
 	}
@@ -1337,21 +1337,21 @@ func PrintContents(obj *Object) bool {
 		}
 	}
 	if itObj != nil && !twoIs {
-		ThisIsIt(itObj)
+		thisIsIt(itObj)
 	}
 	return true
 }
 
-func HackHack(str string) bool {
-	if G.DirObj.IsIn(&GlobalObjects) && (G.ActVerb.Norm == "wave" || G.ActVerb.Norm == "raise" || G.ActVerb.Norm == "lower") {
+func hackHack(str string) bool {
+	if G.DirObj.IsIn(&globalObjects) && (G.ActVerb.Norm == "wave" || G.ActVerb.Norm == "raise" || G.ActVerb.Norm == "lower") {
 		Printf("The %s isn't here!\n", G.DirObj.Desc)
 		return true
 	}
-	Printf("%s%s%s\n", str, G.DirObj.Desc, PickOne(Hohum))
+	Printf("%s%s%s\n", str, G.DirObj.Desc, PickOne(hohum))
 	return true
 }
 
-func IDrop() bool {
+func iDrop() bool {
 	if !G.DirObj.IsIn(G.Winner) && !G.DirObj.Location().IsIn(G.Winner) {
 		Printf("You're not carrying the %s.\n", G.DirObj.Desc)
 		return false
@@ -1364,14 +1364,14 @@ func IDrop() bool {
 	return true
 }
 
-func DescribeRoom(isLook bool) bool {
+func describeRoom(isLook bool) bool {
 	v := G.Verbose
 	if isLook {
 		v = isLook
 	}
 	if !G.Lit {
-		Printf("It is pitch black.")
-		if !GD().IsSprayed {
+		Printf("it is pitch black.")
+		if !gD().IsSprayed {
 			Printf(" You are likely to be eaten by a grue.")
 		}
 		Printf("\n")
@@ -1384,7 +1384,7 @@ func DescribeRoom(isLook bool) bool {
 	if G.Here.Has(FlgMaze) {
 		G.Here.Take(FlgTouch)
 	}
-	if G.Here.IsIn(&Rooms) {
+	if G.Here.IsIn(&rooms) {
 		Printf("%s", G.Here.Desc)
 		if av := G.Winner.Location(); av.Has(FlgVeh) {
 			Printf(", in the %s", av.Desc)
@@ -1409,7 +1409,7 @@ func DescribeRoom(isLook bool) bool {
 	return true
 }
 
-func DescribeObjects(v bool) bool {
+func describeObjects(v bool) bool {
 	if !G.Lit {
 		Printf("Only bats can see in the dark. And you're not one.\n")
 		return true
@@ -1420,10 +1420,10 @@ func DescribeObjects(v bool) bool {
 	if !v {
 		v = G.Verbose
 	}
-	return PrintCont(G.Here, v, -1)
+	return printCont(G.Here, v, -1)
 }
 
-func PrintCont(obj *Object, v bool, lvl int) bool {
+func printCont(obj *Object, v bool, lvl int) bool {
 	if !obj.HasChildren() {
 		return true
 	}
@@ -1448,8 +1448,8 @@ func PrintCont(obj *Object, v bool, lvl int) bool {
 					Printf("%s\n", child.FirstDesc)
 					shit = false
 				}
-				if CanSeeInside(child) && child.Location().DescFcn == nil && child.HasChildren() {
-					if PrintCont(child, v, 0) {
+				if canSeeInside(child) && child.Location().DescFcn == nil && child.HasChildren() {
+					if printCont(child, v, 0) {
 						isFirst = false
 					}
 				}
@@ -1457,7 +1457,7 @@ func PrintCont(obj *Object, v bool, lvl int) bool {
 		}
 	}
 	for _, child := range obj.Children {
-		if child == av || child == &Adventurer {
+		if child == av || child == &adventurer {
 			continue
 		}
 		if child.Has(FlgInvis) || (!isInv && !child.Has(FlgTouch) && len(child.FirstDesc) > 0) {
@@ -1465,7 +1465,7 @@ func PrintCont(obj *Object, v bool, lvl int) bool {
 		}
 		if !child.Has(FlgNoDesc) {
 			if isFirst {
-				if Firster(obj, lvl) && lvl < 0 {
+				if firster(obj, lvl) && lvl < 0 {
 					lvl = 0
 				}
 				lvl++
@@ -1474,16 +1474,16 @@ func PrintCont(obj *Object, v bool, lvl int) bool {
 			if lvl < 0 {
 				lvl = 0
 			}
-			DescribeObject(child, v, lvl)
-		} else if child.HasChildren() && CanSeeInside(child) {
+			describeObject(child, v, lvl)
+		} else if child.HasChildren() && canSeeInside(child) {
 			lvl++
-			PrintCont(child, v, lvl)
+			printCont(child, v, lvl)
 			lvl--
 		}
 	}
 	if isPv && av != nil && av.HasChildren() {
 		lvl++
-		PrintCont(av, v, lvl)
+		printCont(av, v, lvl)
 	}
 	if isFirst && shit {
 		return false
@@ -1491,8 +1491,8 @@ func PrintCont(obj *Object, v bool, lvl int) bool {
 	return true
 }
 
-func Firster(obj *Object, lvl int) bool {
-	if obj == &TrophyCase {
+func firster(obj *Object, lvl int) bool {
+	if obj == &trophyCase {
 		Printf("Your collection of treasures consists of:\n")
 		return true
 	}
@@ -1500,11 +1500,11 @@ func Firster(obj *Object, lvl int) bool {
 		Printf("You are carrying:\n")
 		return true
 	}
-	if obj.IsIn(&Rooms) {
+	if obj.IsIn(&rooms) {
 		return false
 	}
 	if lvl > 0 {
-		Printf("%s", Indents[lvl])
+		Printf("%s", indents[lvl])
 	}
 	if obj.Has(FlgSurf) {
 		Printf("Sitting on the %s is: \n", obj.Desc)
@@ -1518,8 +1518,8 @@ func Firster(obj *Object, lvl int) bool {
 	return true
 }
 
-func DescribeObject(obj *Object, v bool, lvl int) bool {
-	GD().DescObj = obj
+func describeObject(obj *Object, v bool, lvl int) bool {
+	gD().DescObj = obj
 	if lvl == 0 && obj.DescFcn != nil && obj.DescFcn(ActObjDesc) {
 		return true
 	}
@@ -1536,7 +1536,7 @@ func DescribeObject(obj *Object, v bool, lvl int) bool {
 		}
 		Printf(".")
 	} else {
-		Printf("%sA %s", Indents[lvl], obj.Desc)
+		Printf("%sA %s", indents[lvl], obj.Desc)
 		if obj.Has(FlgOn) {
 			Printf(" (providing light)")
 		} else if obj.Has(FlgWear) && obj.IsIn(G.Winner) {
@@ -1547,13 +1547,13 @@ func DescribeObject(obj *Object, v bool, lvl int) bool {
 		Printf(" (outside the %s)", av.Desc)
 	}
 	Printf("\n")
-	if CanSeeInside(obj) && obj.HasChildren() {
-		return PrintCont(obj, v, lvl)
+	if canSeeInside(obj) && obj.HasChildren() {
+		return printCont(obj, v, lvl)
 	}
 	return true
 }
 
-func CanSeeInside(obj *Object) bool {
+func canSeeInside(obj *Object) bool {
 	if obj.Has(FlgInvis) {
 		return false
 	}
@@ -1563,31 +1563,31 @@ func CanSeeInside(obj *Object) bool {
 	return false
 }
 
-func ThisIsIt(obj *Object) {
+func thisIsIt(obj *Object) {
 	G.Params.ItObj = obj
 }
 
-func ScoreUpd(num int) bool {
+func scoreUpd(num int) bool {
 	G.BaseScore += num
 	G.Score += num
-	if G.Score == 350 && !GD().WonGame {
-		GD().WonGame = true
-		Map.Take(FlgInvis)
-		WestOfHouse.Take(FlgTouch)
+	if G.Score == 350 && !gD().WonGame {
+		gD().WonGame = true
+		mapObj.Take(FlgInvis)
+		westOfHouse.Take(FlgTouch)
 		Printf("An almost inaudible voice whispers in your ear, \"Look to your treasures for the final secret.\"\n")
 	}
 	return true
 }
 
-func ScoreObj(obj *Object) {
+func scoreObj(obj *Object) {
 	if obj.GetValue() <= 0 {
 		return
 	}
-	ScoreUpd(obj.GetValue())
+	scoreUpd(obj.GetValue())
 	obj.SetValue(0)
 }
 
-func CCount(obj *Object) int {
+func cCount(obj *Object) int {
 	cnt := 0
 	for _, child := range obj.Children {
 		if !child.Has(FlgWear) {
@@ -1597,20 +1597,20 @@ func CCount(obj *Object) int {
 	return cnt
 }
 
-func Weight(obj *Object) int {
+func weight(obj *Object) int {
 	wt := 0
 	for _, child := range obj.Children {
 		if obj == G.Player && child.Has(FlgWear) {
 			wt++
 		} else {
-			wt += Weight(child)
+			wt += weight(child)
 		}
 	}
 	return wt + obj.GetSize()
 }
 
-func ITake(vb bool) bool {
-	if GD().Dead {
+func iTake(vb bool) bool {
+	if gD().Dead {
 		if vb {
 			Printf("Your hand passes through its object.\n")
 		}
@@ -1621,7 +1621,7 @@ func ITake(vb bool) bool {
 	}
 	if !G.DirObj.Has(FlgTake) {
 		if vb {
-			Printf("%s\n", PickOne(Yuks))
+			Printf("%s\n", PickOne(yuks))
 		}
 		return false
 	}
@@ -1631,10 +1631,10 @@ func ITake(vb bool) bool {
 	if loc != nil && loc.Has(FlgCont) && !loc.Has(FlgOpen) {
 		return false
 	}
-	if !G.DirObj.Location().IsIn(G.Winner) && Weight(G.DirObj)+Weight(G.Winner) > GD().LoadAllowed {
+	if !G.DirObj.Location().IsIn(G.Winner) && weight(G.DirObj)+weight(G.Winner) > gD().LoadAllowed {
 		if vb {
 			Printf("Your load is too heavy")
-			if GD().LoadAllowed < GD().LoadMax {
+			if gD().LoadAllowed < gD().LoadMax {
 				Printf(", especially in light of your condition.")
 			} else {
 				Printf(".")
@@ -1644,14 +1644,14 @@ func ITake(vb bool) bool {
 		G.PerformFatal = true
 		return false
 	}
-	cnt := CCount(G.Winner)
-	if G.ActVerb.Norm == "tell" && cnt > GD().FumbleNumber && Prob(cnt*GD().FumbleProb, false) {
+	cnt := cCount(G.Winner)
+	if G.ActVerb.Norm == "tell" && cnt > gD().FumbleNumber && Prob(cnt*gD().FumbleProb, false) {
 		Printf("You're holding too many things already!\n")
 		return false
 	}
 	G.DirObj.MoveTo(G.Winner)
 	G.DirObj.Take(FlgNoDesc)
 	G.DirObj.Give(FlgTouch)
-	ScoreObj(G.DirObj)
+	scoreObj(G.DirObj)
 	return true
 }

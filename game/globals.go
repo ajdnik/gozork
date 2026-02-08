@@ -3,139 +3,139 @@ package game
 import . "github.com/ajdnik/gozork/engine"
 
 var (
-	GlobalObjects = Object{
+	globalObjects = Object{
 		Flags: FlgKludge | FlgInvis | FlgTouch | FlgSurf | FlgTryTake | FlgOpen | FlgSearch | FlgTrans | FlgOn | FlgLand | FlgFight | FlgStagg | FlgWear,
 	}
-	LocalGlobals = Object{
-		In:        &GlobalObjects,
+	localGlobals = Object{
+		In:        &globalObjects,
 		Synonyms:  []string{"zzmgck"},
-		Global:    []*Object{&GlobalObjects},
-		DescFcn:   PathObject,
+		Global:    []*Object{&globalObjects},
+		DescFcn:   pathObject,
 		FirstDesc: "F",
 		LongDesc:  "F",
 		/* Pseudo: []PseudoObj{PseudoObj{
 			Synonym: "foobar",
-			Action:  VWalk,
+			Action:  vWalk,
 		}}, */
 	}
-	Rooms         = Object{}
-	NotHereObject = Object{
+	rooms         = Object{}
+	notHereObject = Object{
 		Desc: "souch thing",
-		// Action: NotHereObjectFcn,
+		// Action: notHereObjectFcn,
 	}
-	PseudoObject = Object{
-		In:     &LocalGlobals,
+	pseudoObject = Object{
+		In:     &localGlobals,
 		Desc:   "pseudo",
-		Action: CretinFcn,
+		Action: cretinFcn,
 	}
-	It = Object{
-		In:       &GlobalObjects,
+	it = Object{
+		In:       &globalObjects,
 		Synonyms: []string{"it", "them", "her", "him"},
 		Desc:     "random object",
 		Flags:    FlgNoDesc | FlgTouch,
 	}
-	Hands = Object{
-		In:         &GlobalObjects,
+	hands = Object{
+		In:         &globalObjects,
 		Synonyms:   []string{"pair", "hands", "hand"},
 		Adjectives: []string{"bare"},
 		Desc:       "pair of hands",
 		Flags:      FlgNoDesc | FlgTool,
 	}
-	Me = Object{
-		In:       &GlobalObjects,
+	me = Object{
+		In:       &globalObjects,
 		Synonyms: []string{"me", "myself", "self", "cretin"},
 		Desc:     "you",
 		Flags:    FlgPerson,
-		// Action:   CretinFcn,
+		// Action:   cretinFcn,
 	}
-	Adventurer = Object{
+	adventurer = Object{
 		Synonyms: []string{"adventurer"},
 		Desc:     "cretin",
 		Flags:    FlgNoDesc | FlgInvis | FlgSacred | FlgPerson,
 	}
-	Stairs = Object{
-		In:         &LocalGlobals,
+	stairs = Object{
+		In:         &localGlobals,
 		Synonyms:   []string{"stairs", "steps", "staircase", "stairway"},
 		Adjectives: []string{"stone", "dark", "marble", "forbidding", "steep"},
 		Desc:       "stairs",
 		Flags:      FlgNoDesc | FlgClimb,
-		Action:     StairsFcn,
+		Action:     stairsFcn,
 	}
-	Intnum = Object{
-		In:       &GlobalObjects,
+	intnum = Object{
+		In:       &globalObjects,
 		Synonyms: []string{"intnum"},
 		Desc:     "number",
 		Flags:    FlgTool,
 	}
-	Blessings = Object{
-		In:       &GlobalObjects,
+	blessings = Object{
+		In:       &globalObjects,
 		Synonyms: []string{"blessings", "graces"},
 		Desc:     "blessings",
 		Flags:    FlgNoDesc,
 	}
-	Sailor = Object{
-		In:       &GlobalObjects,
+	sailor = Object{
+		In:       &globalObjects,
 		Synonyms: []string{"sailor", "footpad", "aviator"},
 		Desc:     "sailor",
 		Flags:    FlgNoDesc,
-		Action:   SailorFcn,
+		Action:   sailorFcn,
 	}
-	Ground = Object{
-		In:       &GlobalObjects,
+	ground = Object{
+		In:       &globalObjects,
 		Synonyms: []string{"ground", "sand", "dirt", "floor"},
 		Desc:     "ground",
-		// Action:   GroundFunction,
+		// Action:   groundFunction,
 	}
-	Grue = Object{
-		In:         &GlobalObjects,
+	grue = Object{
+		In:         &globalObjects,
 		Synonyms:   []string{"grue"},
 		Adjectives: []string{"lurking", "sinister", "hungry", "silent"},
 		Desc:       "lurking grue",
-		Action:     GrueFunction,
+		Action:     grueFunction,
 	}
-	Lungs = Object{
-		In:       &GlobalObjects,
+	lungs = Object{
+		In:       &globalObjects,
 		Synonyms: []string{"lungs", "air", "mouth", "breath"},
 		Desc:     "blast of air",
 		Flags:    FlgNoDesc,
 	}
-	PathObj = Object{
-		In:         &GlobalObjects,
+	pathObj = Object{
+		In:         &globalObjects,
 		Synonyms:   []string{"trail", "path"},
 		Adjectives: []string{"forest", "narrow", "long", "winding"},
 		Desc:       "passage",
 		Flags:      FlgNoDesc,
-		Action:     PathObject,
+		Action:     pathObject,
 	}
-	Zorkmid = Object{
-		In:       &GlobalObjects,
+	zorkmid = Object{
+		In:       &globalObjects,
 		Synonyms: []string{"zorkmid"},
 		Desc:     "zorkmid",
-		Action:   ZorkmidFunction,
+		Action:   zorkmidFunction,
 	}
 )
 
-func NotHereObjectFcn(arg ActArg) bool {
-	if G.DirObj == &NotHereObject && G.IndirObj == &NotHereObject {
+func notHereObjectFcn(arg ActArg) bool {
+	if G.DirObj == &notHereObject && G.IndirObj == &notHereObject {
 		Printf("Those things aren't here!\n")
 		return true
 	}
 	G.Params.Continue = NumUndef
 	G.Params.InQuotes = false
-	isDir := G.DirObj == &NotHereObject
+	isDir := G.DirObj == &notHereObject
 	if G.Winner == G.Player {
 		Printf("You can't see any ")
-		NotHerePrint(isDir)
+		notHerePrint(isDir)
 		Printf(" here!\n")
 		return true
 	}
 	Printf("The %s seems confused. \"I don't see any ", G.Winner.Desc)
-	NotHerePrint(isDir)
+	notHerePrint(isDir)
 	Printf(" here!\"\n")
 	return true
 }
 
-func NotHerePrint(isDir bool) {
+func notHerePrint(isDir bool) {
 	if G.Params.ShldOrphan {
 		if G.NotHere.Adj.IsSet() {
 			Printf("%s", G.NotHere.Adj.Orig+" ")
@@ -162,7 +162,7 @@ func NotHerePrint(isDir bool) {
 	}
 }
 
-func SailorFcn(arg ActArg) bool {
+func sailorFcn(arg ActArg) bool {
 	if G.ActVerb.Norm == "tell" {
 		G.Params.Continue = NumUndef
 		G.Params.InQuotes = false
@@ -174,10 +174,10 @@ func SailorFcn(arg ActArg) bool {
 		return true
 	}
 	if G.ActVerb.Norm == "hello" {
-		GD().HelloSailor++
-		if GD().HelloSailor%20 == 0 {
+		gD().HelloSailor++
+		if gD().HelloSailor%20 == 0 {
 			Printf("You seem to be repeating yourself.\n")
-		} else if GD().HelloSailor%10 == 0 {
+		} else if gD().HelloSailor%10 == 0 {
 			Printf("I think that phrase is getting a bit worn out.\n")
 		} else {
 			Printf("Nothing happens here.\n")
@@ -187,13 +187,13 @@ func SailorFcn(arg ActArg) bool {
 	return false
 }
 
-func GroundFunction(arg ActArg) bool {
-	if (G.ActVerb.Norm == "put" || G.ActVerb.Norm == "put on") && G.IndirObj == &Ground {
+func groundFunction(arg ActArg) bool {
+	if (G.ActVerb.Norm == "put" || G.ActVerb.Norm == "put on") && G.IndirObj == &ground {
 		Perform(ActionVerb{Norm: "drop", Orig: "drop"}, G.DirObj, nil)
 		return true
 	}
-	if G.Here == &SandyCave {
-		return SandFunction(ActUnk)
+	if G.Here == &sandyCave {
+		return sandFunction(ActUnk)
 	}
 	if G.ActVerb.Norm == "dig" {
 		Printf("The ground is too hard for digging here.\n")
@@ -202,7 +202,7 @@ func GroundFunction(arg ActArg) bool {
 	return false
 }
 
-func GrueFunction(arg ActArg) bool {
+func grueFunction(arg ActArg) bool {
 	if G.ActVerb.Norm == "examine" {
 		Printf("The grue is a sinister, lurking presence in the dark places of the earth. Its favorite diet is adventurers, but its insatiable appetite is tempered by its fear of light. No grue has ever been seen by the light of day, and few have survived its fearsome jaws to tell the tale.\n")
 		return true
@@ -212,20 +212,20 @@ func GrueFunction(arg ActArg) bool {
 		return true
 	}
 	if G.ActVerb.Norm == "listen" {
-		Printf("It makes no sound but is always lurking in the darkness nearby.\n")
+		Printf("it makes no sound but is always lurking in the darkness nearby.\n")
 		return true
 	}
 	return false
 }
 
-func CretinFcn(arg ActArg) bool {
+func cretinFcn(arg ActArg) bool {
 	if G.ActVerb.Norm == "tell" {
 		G.Params.Continue = NumUndef
 		G.Params.InQuotes = false
 		Printf("Talking to yourself is said to be a sign of impending mental collapse.\n")
 		return true
 	}
-	if G.ActVerb.Norm == "give" && G.IndirObj == &Me {
+	if G.ActVerb.Norm == "give" && G.IndirObj == &me {
 		Perform(ActionVerb{Norm: "take", Orig: "take"}, G.DirObj, nil)
 		return true
 	}
@@ -243,12 +243,12 @@ func CretinFcn(arg ActArg) bool {
 	}
 	if G.ActVerb.Norm == "attack" || G.ActVerb.Norm == "mung" {
 		if G.IndirObj != nil && G.IndirObj.Has(FlgWeapon) {
-			return JigsUp("If you insist.... Poof, you're dead!", false)
+			return jigsUp("If you insist.... Poof, you're dead!", false)
 		}
 		Printf("Suicide is not the answer.\n")
 		return true
 	}
-	if G.ActVerb.Norm == "throw" && G.DirObj == &Me {
+	if G.ActVerb.Norm == "throw" && G.DirObj == &me {
 		Printf("Why don't you just walk like normal people?\n")
 		return true
 	}
@@ -257,7 +257,7 @@ func CretinFcn(arg ActArg) bool {
 		return true
 	}
 	if G.ActVerb.Norm == "examine" {
-		if G.Here == &MirrorRoom1 || G.Here == &MirrorRoom2 {
+		if G.Here == &mirrorRoom1 || G.Here == &mirrorRoom2 {
 			Printf("Your image in the mirror looks tired.\n")
 			return true
 		}
@@ -267,7 +267,7 @@ func CretinFcn(arg ActArg) bool {
 	return false
 }
 
-func PathObject(arg ActArg) bool {
+func pathObject(arg ActArg) bool {
 	if G.ActVerb.Norm == "take" || G.ActVerb.Norm == "follow" {
 		Printf("You must specify a direction to go.\n")
 		return true
@@ -283,7 +283,7 @@ func PathObject(arg ActArg) bool {
 	return false
 }
 
-func StairsFcn(arg ActArg) bool {
+func stairsFcn(arg ActArg) bool {
 	if G.ActVerb.Norm == "through" {
 		Printf("You should say whether you want to go up or down.\n")
 		return true
@@ -291,7 +291,7 @@ func StairsFcn(arg ActArg) bool {
 	return false
 }
 
-func ZorkmidFunction(arg ActArg) bool {
+func zorkmidFunction(arg ActArg) bool {
 	if G.ActVerb.Norm == "examine" {
 		Printf("The zorkmid is the unit of currency of the Great Underground Empire.\n")
 		return true

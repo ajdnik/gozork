@@ -59,8 +59,8 @@ type ZorkData struct {
 	Villains []*VillainEntry
 }
 
-// NewZorkData returns a fresh ZorkData with non-zero defaults.
-func NewZorkData() *ZorkData {
+// newZorkData returns a fresh ZorkData with non-zero defaults.
+func newZorkData() *ZorkData {
 	return &ZorkData{
 		FumbleNumber: 7,
 		FumbleProb:   8,
@@ -74,7 +74,7 @@ func NewZorkData() *ZorkData {
 	}
 }
 
-// GD returns the game-specific ZorkData from the engine's GameState.
-func GD() *ZorkData {
+// gD returns the game-specific ZorkData from the engine's GameState.
+func gD() *ZorkData {
 	return G.GameData.(*ZorkData)
 }

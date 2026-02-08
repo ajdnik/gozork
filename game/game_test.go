@@ -47,7 +47,7 @@ func runScript(t *testing.T, steps []Step) {
 
 	// Run the game — Quit() now sets G.QuitRequested instead of panicking.
 	InitGame()
-	VLook(ActUnk)
+	vLook(ActUnk)
 	MainLoop()
 
 	// Split output into segments aligned with commands.
@@ -195,7 +195,7 @@ func TestEnterHouse(t *testing.T) {
 		},
 		{
 			Command:  "in",
-			Contains: []string{"Kitchen"},
+			Contains: []string{"kitchen"},
 		},
 	})
 }
@@ -209,7 +209,7 @@ func TestKitchenContents(t *testing.T) {
 		{"in", nil, nil},
 		{
 			Command:  "look",
-			Contains: []string{"Kitchen", "table"},
+			Contains: []string{"kitchen", "table"},
 		},
 	})
 }

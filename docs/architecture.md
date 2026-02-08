@@ -15,7 +15,7 @@ game/            Zork I game data and logic (depends on engine)
 - **Single mutable state pointer.** All mutable state lives in `engine.GameState` (accessed via the global `engine.G`). This makes save/restore, restart, and test isolation straightforward — swap the pointer, reset the object tree, and you have a fresh game.
 - **Dot-import by design.** The `game` package dot-imports `engine` so that game code reads like the original ZIL — `G.Here`, `Printf(...)`, `Perform(...)` — with no package prefix.
 - **Engine is game-agnostic.** The engine knows nothing about Zork-specific objects, rooms, or verbs. It provides the parser, object model, action dispatch, clock system, and I/O. All game content is injected at init time through registries (`Commands`, `Vocabulary`, `G.AllObjects`, etc.).
-- **Game-specific state via interface field.** `GameState.GameData` is an `interface{}` that the game package fills with its own `*ZorkData` struct. The engine never touches it; the game accesses it through `GD()`.
+- **Game-specific state via interface field.** `GameState.GameData` is an `interface{}` that the game package fills with its own `*ZorkData` struct. The engine never touches it; the game accesses it through `gD()`.
 
 ## Startup Sequence
 
@@ -24,11 +24,11 @@ main.go
   └─ game.Run()
        └─ game.InitGame()
             ├─ engine.NewGameState()         // fresh engine state
-            ├─ game.NewZorkData()            // fresh Zork-specific state
+            ├─ game.newZorkData()            // fresh Zork-specific state
             ├─ registerWellKnownObjects()    // wire sentinel objects into engine
             ├─ engine.ResetGameState()       // snapshot + rebuild
             ├─ initClockFuncs()              // register timed event handlers
-            ├─ FinalizeGameObjects()         // link actions, set item data, etc.
+            ├─ finalizeGameObjects()         // link actions, set item data, etc.
             ├─ engine.BuildObjectTree()      // populate Children from In pointers
             ├─ engine.BuildVocabulary(...)   // build word → type map + action map
             ├─ engine.InitReader()           // set up buffered stdin reader
@@ -85,12 +85,12 @@ After the chain completes, the room's end handler (`ActEnd`) runs, followed by t
 engine (generic)                    game (Zork I)
 ─────────────────                   ──────────────
 GameState.GameData  ←── filled ───  *ZorkData
-G.AllObjects        ←── filled ───  Objects slice (items.go)
-G.RoomsObj          ←── filled ───  &Rooms (globals.go)
-G.Actions map       ←── built ────  GameCommands (syntax_data.go)
-G.PreActions map    ←── built ────  GameCommands (syntax_data.go)
+G.AllObjects        ←── filled ───  objects slice (items.go)
+G.RoomsObj          ←── filled ───  &rooms (globals.go)
+G.Actions map       ←── built ────  gameCommands (syntax_data.go)
+G.PreActions map    ←── built ────  gameCommands (syntax_data.go)
 Vocabulary map      ←── built ────  synonyms, objects, adjectives
-Commands slice      ←── set ──────  GameCommands (syntax_data.go)
+Commands slice      ←── set ──────  gameCommands (syntax_data.go)
 G.ClockFuncs map    ←── filled ───  initClockFuncs() (init.go)
 G.Save/Restore/     ←── wired ───  doSave/doRestore/doRestart (save.go)
   Restart hooks                     (return error, nil on success)

@@ -4,178 +4,178 @@ import . "github.com/ajdnik/gozork/engine"
 
 var (
 	// ================================================================
-	// ROOMS - Forest and Outside
+	// ROOMS - forest and Outside
 	// ================================================================
 
-	WestOfHouse = Object{
-		In:   &Rooms,
+	westOfHouse = Object{
+		In:   &rooms,
 		Desc: "West of House",
-		// Action set in FinalizeGameObjects to avoid init cycle
+		// Action set in finalizeGameObjects to avoid init cycle
 		Flags:  FlgLand | FlgOn | FlgSacred,
-		Global: []*Object{&WhiteHouse, &Board, &Forest},
+		Global: []*Object{&whiteHouse, &board, &forest},
 	}
-	StoneBarrow = Object{
-		In:       &Rooms,
+	stoneBarrow = Object{
+		In:       &rooms,
 		LongDesc: "You are standing in front of a massive barrow of stone. In the east face is a huge stone door which is open. You cannot see into the dark of the tomb.",
-		Desc:     "Stone Barrow",
+		Desc:     "Stone barrow",
 		Flags:    FlgLand | FlgOn | FlgSacred,
-		// Action set in FinalizeGameObjects to avoid init cycle
+		// Action set in finalizeGameObjects to avoid init cycle
 	}
-	NorthOfHouse = Object{
-		In:       &Rooms,
+	northOfHouse = Object{
+		In:       &rooms,
 		LongDesc: "You are facing the north side of a white house. There is no door here, and all the windows are boarded up. To the north a narrow path winds through the trees.",
 		Desc:     "North of House",
 		Flags:    FlgLand | FlgOn | FlgSacred,
-		Global:   []*Object{&BoardedWindow, &Board, &WhiteHouse, &Forest},
+		Global:   []*Object{&boardedWindow, &board, &whiteHouse, &forest},
 	}
-	SouthOfHouse = Object{
-		In:       &Rooms,
+	southOfHouse = Object{
+		In:       &rooms,
 		LongDesc: "You are facing the south side of a white house. There is no door here, and all the windows are boarded.",
 		Desc:     "South of House",
 		Flags:    FlgLand | FlgOn | FlgSacred,
-		Global:   []*Object{&BoardedWindow, &Board, &WhiteHouse, &Forest},
+		Global:   []*Object{&boardedWindow, &board, &whiteHouse, &forest},
 	}
-	EastOfHouse = Object{
-		In:   &Rooms,
+	eastOfHouse = Object{
+		In:   &rooms,
 		Desc: "Behind House",
-		// Action set in FinalizeGameObjects to avoid init cycle
+		// Action set in finalizeGameObjects to avoid init cycle
 		Flags:  FlgLand | FlgOn | FlgSacred,
-		Global: []*Object{&WhiteHouse, &KitchenWindow, &Forest},
+		Global: []*Object{&whiteHouse, &kitchenWindow, &forest},
 	}
-	Forest1 = Object{
-		In:       &Rooms,
+	forest1 = Object{
+		In:       &rooms,
 		LongDesc: "This is a forest, with trees in all directions. To the east, there appears to be sunlight.",
-		Desc:     "Forest",
-		// Action set in FinalizeGameObjects to avoid init cycle
+		Desc:     "forest",
+		// Action set in finalizeGameObjects to avoid init cycle
 		Flags:  FlgLand | FlgOn | FlgSacred,
-		Global: []*Object{&Tree, &Songbird, &WhiteHouse, &Forest},
+		Global: []*Object{&tree, &songbird, &whiteHouse, &forest},
 	}
-	Forest2 = Object{
-		In:       &Rooms,
+	forest2 = Object{
+		In:       &rooms,
 		LongDesc: "This is a dimly lit forest, with large trees all around.",
-		Desc:     "Forest",
-		// Action set in FinalizeGameObjects to avoid init cycle
+		Desc:     "forest",
+		// Action set in finalizeGameObjects to avoid init cycle
 		Flags:  FlgLand | FlgOn | FlgSacred,
-		Global: []*Object{&Tree, &Songbird, &WhiteHouse, &Forest},
+		Global: []*Object{&tree, &songbird, &whiteHouse, &forest},
 	}
-	Mountains = Object{
-		In:       &Rooms,
+	mountains = Object{
+		In:       &rooms,
 		LongDesc: "The forest thins out, revealing impassable mountains.",
-		Desc:     "Forest",
+		Desc:     "forest",
 		Flags:    FlgLand | FlgOn | FlgSacred,
-		Global:   []*Object{&Tree, &WhiteHouse},
+		Global:   []*Object{&tree, &whiteHouse},
 	}
-	Forest3 = Object{
-		In:       &Rooms,
+	forest3 = Object{
+		In:       &rooms,
 		LongDesc: "This is a dimly lit forest, with large trees all around.",
-		Desc:     "Forest",
-		// Action set in FinalizeGameObjects to avoid init cycle
+		Desc:     "forest",
+		// Action set in finalizeGameObjects to avoid init cycle
 		Flags:  FlgLand | FlgOn | FlgSacred,
-		Global: []*Object{&Tree, &Songbird, &WhiteHouse, &Forest},
+		Global: []*Object{&tree, &songbird, &whiteHouse, &forest},
 	}
-	Path = Object{
-		In:       &Rooms,
+	path = Object{
+		In:       &rooms,
 		LongDesc: "This is a path winding through a dimly lit forest. The path heads north-south here. One particularly large tree with some low branches stands at the edge of the path.",
-		Desc:     "Forest Path",
-		// Action set in FinalizeGameObjects to avoid init cycle
+		Desc:     "forest path",
+		// Action set in finalizeGameObjects to avoid init cycle
 		Flags:  FlgLand | FlgOn | FlgSacred,
-		Global: []*Object{&Tree, &Songbird, &WhiteHouse, &Forest},
+		Global: []*Object{&tree, &songbird, &whiteHouse, &forest},
 	}
-	UpATree = Object{
-		In:   &Rooms,
-		Desc: "Up a Tree",
-		// Action set in FinalizeGameObjects to avoid init cycle
+	upATree = Object{
+		In:   &rooms,
+		Desc: "Up a tree",
+		// Action set in finalizeGameObjects to avoid init cycle
 		Flags:  FlgLand | FlgOn | FlgSacred,
-		Global: []*Object{&Tree, &Forest, &Songbird, &WhiteHouse},
+		Global: []*Object{&tree, &forest, &songbird, &whiteHouse},
 	}
-	GratingClearing = Object{
-		In:     &Rooms,
-		Desc:   "Clearing",
+	gratingClearing = Object{
+		In:     &rooms,
+		Desc:   "clearing",
 		Flags:  FlgLand | FlgOn | FlgSacred,
-		Global: []*Object{&WhiteHouse, &Grate},
-		// Action set in FinalizeGameObjects to avoid init cycle
+		Global: []*Object{&whiteHouse, &grate},
+		// Action set in finalizeGameObjects to avoid init cycle
 	}
-	Clearing = Object{
-		In:       &Rooms,
+	clearing = Object{
+		In:       &rooms,
 		LongDesc: "You are in a small clearing in a well marked forest path that extends to the east and west.",
-		Desc:     "Clearing",
+		Desc:     "clearing",
 		Flags:    FlgLand | FlgOn | FlgSacred,
-		Global:   []*Object{&Tree, &Songbird, &WhiteHouse, &Forest},
-		// Action set in FinalizeGameObjects to avoid init cycle
+		Global:   []*Object{&tree, &songbird, &whiteHouse, &forest},
+		// Action set in finalizeGameObjects to avoid init cycle
 	}
 
 	// ================================================================
 	// ROOMS - House
 	// ================================================================
 
-	Kitchen = Object{
-		In:     &Rooms,
-		Desc:   "Kitchen",
+	kitchen = Object{
+		In:     &rooms,
+		Desc:   "kitchen",
 		Flags:  FlgLand | FlgOn | FlgSacred,
-		Global: []*Object{&KitchenWindow, &Chimney, &Stairs},
-		// Action set in FinalizeGameObjects to avoid init cycle
+		Global: []*Object{&kitchenWindow, &chimney, &stairs},
+		// Action set in finalizeGameObjects to avoid init cycle
 		Item: &ItemData{Value: 10},
 	}
-	Attic = Object{
-		In:       &Rooms,
+	attic = Object{
+		In:       &rooms,
 		LongDesc: "This is the attic. The only exit is a stairway leading down.",
-		Desc:     "Attic",
+		Desc:     "attic",
 		Flags:    FlgLand | FlgSacred,
-		Global:   []*Object{&Stairs},
+		Global:   []*Object{&stairs},
 	}
-	LivingRoom = Object{
-		In:     &Rooms,
+	livingRoom = Object{
+		In:     &rooms,
 		Desc:   "Living Room",
 		Flags:  FlgLand | FlgOn | FlgSacred,
-		Global: []*Object{&Stairs},
+		Global: []*Object{&stairs},
 		Pseudo: []PseudoObj{
-			{Synonym: "nails", Action: NailsPseudo},
-			{Synonym: "nail", Action: NailsPseudo},
+			{Synonym: "nails", Action: nailsPseudo},
+			{Synonym: "nail", Action: nailsPseudo},
 		},
-		// Action set in FinalizeGameObjects to avoid init cycle
+		// Action set in finalizeGameObjects to avoid init cycle
 	}
 
 	// ================================================================
-	// ROOMS - Cellar and Vicinity
+	// ROOMS - cellar and Vicinity
 	// ================================================================
 
-	Cellar = Object{
-		In:   &Rooms,
-		Desc: "Cellar",
-		// Action set in FinalizeGameObjects to avoid init cycle
+	cellar = Object{
+		In:   &rooms,
+		Desc: "cellar",
+		// Action set in finalizeGameObjects to avoid init cycle
 		Flags:  FlgLand,
-		Global: []*Object{&Slide, &Stairs},
+		Global: []*Object{&slide, &stairs},
 		Item:   &ItemData{Value: 25},
 	}
-	TrollRoom = Object{
-		In:       &Rooms,
+	trollRoom = Object{
+		In:       &rooms,
 		LongDesc: "This is a small room with passages to the east and south and a forbidding hole leading west. Bloodstains and deep scratches (perhaps made by an axe) mar the walls.",
-		Desc:     "The Troll Room",
+		Desc:     "The troll Room",
 		Flags:    FlgLand,
-		// Action set in FinalizeGameObjects to avoid init cycle
+		// Action set in finalizeGameObjects to avoid init cycle
 	}
-	EastOfChasm = Object{
-		In:       &Rooms,
+	eastOfChasm = Object{
+		In:       &rooms,
 		LongDesc: "You are on the east edge of a chasm, the bottom of which cannot be seen. A narrow passage goes north, and the path you are on continues to the east.",
 		Desc:     "East of Chasm",
 		Flags:    FlgLand,
-		Pseudo:   []PseudoObj{{Synonym: "chasm", Action: ChasmPseudo}},
+		Pseudo:   []PseudoObj{{Synonym: "chasm", Action: chasmPseudo}},
 	}
-	Gallery = Object{
-		In:       &Rooms,
+	gallery = Object{
+		In:       &rooms,
 		LongDesc: "This is an art gallery. Most of the paintings have been stolen by vandals with exceptional taste. The vandals left through either the north or west exits.",
-		Desc:     "Gallery",
+		Desc:     "gallery",
 		Flags:    FlgLand | FlgOn,
 	}
-	Studio = Object{
-		In:       &Rooms,
+	studio = Object{
+		In:       &rooms,
 		LongDesc: "This appears to have been an artist's studio. The walls and floors are splattered with paints of 69 different colors. Strangely enough, nothing of value is hanging here. At the south end of the room is an open door (also covered with paint). A dark and narrow chimney leads up from a fireplace; although you might be able to get up it, it seems unlikely you could get back down.",
-		Desc:     "Studio",
+		Desc:     "studio",
 		Flags:    FlgLand,
-		Global:   []*Object{&Chimney},
+		Global:   []*Object{&chimney},
 		Pseudo: []PseudoObj{
-			{Synonym: "door", Action: DoorPseudo},
-			{Synonym: "paint", Action: PaintPseudo},
+			{Synonym: "door", Action: doorPseudo},
+			{Synonym: "paint", Action: paintPseudo},
 		},
 	}
 )

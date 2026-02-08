@@ -4,37 +4,37 @@ import . "github.com/ajdnik/gozork/engine"
 
 func initClockFuncs() {
 	G.ClockFuncs = map[string]func() bool{
-		"IFight":        IFight,
-		"ISword":        ISword,
-		"IThief":        IThief,
-		"ICandles":      ICandles,
-		"ILantern":      ILantern,
-		"ICure":         ICure,
-		"ICyclops":      ICyclops,
-		"IForestRandom": IForestRandom,
-		"IMaintRoom":    IMaintRoom,
-		"IMatch":        IMatch,
-		"IRempty":       IRempty,
-		"IRfill":        IRfill,
-		"IRiver":        IRiver,
-		"IXb":           IXb,
-		"IXbh":          IXbh,
-		"IXc":           IXc,
+		"iFight":        iFight,
+		"iSword":        iSword,
+		"iThief":        iThief,
+		"iCandles":      iCandles,
+		"iLantern":      iLantern,
+		"iCure":         iCure,
+		"iCyclops":      iCyclops,
+		"iForestRandom": iForestRandom,
+		"iMaintRoom":    iMaintRoom,
+		"iMatch":        iMatch,
+		"iRempty":       iRempty,
+		"iRfill":        iRfill,
+		"iRiver":        iRiver,
+		"iXb":           iXb,
+		"iXbh":          iXbh,
+		"iXc":           iXc,
 	}
 }
 
 func registerWellKnownObjects() {
-	G.AllObjects = Objects
-	G.RoomsObj = &Rooms
-	G.GlobalObj = &GlobalObjects
-	G.LocalGlobalObj = &LocalGlobals
-	G.NotHereObj = &NotHereObject
-	G.PseudoObj = &PseudoObject
-	G.ItPronounObj = &It
-	G.MeObj = &Me
-	G.HandsObj = &Hands
-	// Set the NotHereObject's Action so the engine can call it
-	NotHereObject.Action = NotHereObjectFcn
+	G.AllObjects = objects
+	G.RoomsObj = &rooms
+	G.GlobalObj = &globalObjects
+	G.LocalGlobalObj = &localGlobals
+	G.NotHereObj = &notHereObject
+	G.PseudoObj = &pseudoObject
+	G.ItPronounObj = &it
+	G.MeObj = &me
+	G.HandsObj = &hands
+	// Set the notHereObject's Action so the engine can call it
+	notHereObject.Action = notHereObjectFcn
 }
 
 // InitGame sets up all game state for a fresh game. Call once before MainLoop.
@@ -43,34 +43,34 @@ func InitGame() {
 		G = NewGameState()
 	}
 	// Set up game-specific data
-	G.GameData = NewZorkData()
+	G.GameData = newZorkData()
 	registerWellKnownObjects()
-	G.ITakeFunc = ITake
+	G.ITakeFunc = iTake
 
 	ResetGameState()
 	initClockFuncs()
-	FinalizeGameObjects()
+	finalizeGameObjects()
 	BuildObjectTree()
-	BuildVocabulary(GameCommands, BuzzWords, Synonyms)
+	BuildVocabulary(gameCommands, buzzWords, synonyms)
 	InitReader()
 	initSaveSystem()
 
-	Queue("IFight", -1).Run = true
-	Queue("ISword", -1)
-	Queue("IThief", -1).Run = true
-	Queue("ICandles", 40)
-	Queue("ILantern", 200)
-	InflatedBoat.SetVehType(FlgNonLand)
-	Def1Res[1] = Def1[2]
-	Def1Res[2] = Def1[4]
-	Def2Res[2] = Def2B[2]
-	Def2Res[3] = Def2B[4]
-	Def3Res[1] = Def3A[2]
-	Def3Res[3] = Def3B[2]
-	G.Here = &WestOfHouse
-	ThisIsIt(&Mailbox)
+	Queue("iFight", -1).Run = true
+	Queue("iSword", -1)
+	Queue("iThief", -1).Run = true
+	Queue("iCandles", 40)
+	Queue("iLantern", 200)
+	inflatedBoat.SetVehType(FlgNonLand)
+	def1Res[1] = def1[2]
+	def1Res[2] = def1[4]
+	def2Res[2] = def2B[2]
+	def2Res[3] = def2B[4]
+	def3Res[1] = def3A[2]
+	def3Res[3] = def3B[2]
+	G.Here = &westOfHouse
+	thisIsIt(&mailbox)
 	G.Lit = true
-	G.Winner = &Adventurer
+	G.Winner = &adventurer
 	G.Player = G.Winner
 	G.Winner.MoveTo(G.Here)
 }
@@ -78,9 +78,9 @@ func InitGame() {
 func Run() {
 	InitGame()
 	if !G.Here.Has(FlgTouch) {
-		VVersion(ActUnk)
+		vVersion(ActUnk)
 		Printf("\n")
 	}
-	VLook(ActUnk)
+	vLook(ActUnk)
 	MainLoop()
 }

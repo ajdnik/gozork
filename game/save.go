@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-var SaveFile = "zork.sav"
+var saveFile = "zork.sav"
 
 type savedObject struct {
 	InIdx     int
@@ -104,7 +104,7 @@ type gameState struct {
 
 func captureState() *gameState {
 	BuildObjIndex()
-	gd := GD()
+	gd := gD()
 	s := &gameState{}
 
 	s.ObjStates = make([]savedObject, len(G.AllObjects))
@@ -200,7 +200,7 @@ func captureState() *gameState {
 
 func applyState(s *gameState) {
 	BuildObjIndex()
-	gd := GD()
+	gd := gD()
 
 	for _, obj := range G.AllObjects {
 		obj.Children = nil
@@ -302,17 +302,17 @@ func applyState(s *gameState) {
 }
 
 func promptFilename(action string) string {
-	fmt.Fprintf(G.GameOutput, "Enter a file name (default is \"%s\"): ", SaveFile)
+	fmt.Fprintf(G.GameOutput, "Enter a file name (default is \"%s\"): ", saveFile)
 	if G.Reader == nil {
 		InitReader()
 	}
 	txt, err := G.Reader.ReadString('\n')
 	if err != nil && len(txt) == 0 {
-		return SaveFile
+		return saveFile
 	}
 	txt = strings.TrimSpace(txt)
 	if txt == "" {
-		return SaveFile
+		return saveFile
 	}
 	return txt
 }
@@ -366,29 +366,29 @@ func doRestore() error {
 }
 
 func doRestart() error {
-	G.GameData = NewZorkData()
+	G.GameData = newZorkData()
 	registerWellKnownObjects()
-	G.ITakeFunc = ITake
+	G.ITakeFunc = iTake
 	ResetGameState()
-	FinalizeGameObjects()
+	finalizeGameObjects()
 	BuildObjectTree()
 
-	Queue("IFight", -1).Run = true
-	Queue("ISword", -1)
-	Queue("IThief", -1).Run = true
-	Queue("ICandles", 40)
-	Queue("ILantern", 200)
-	InflatedBoat.SetVehType(FlgNonLand)
-	Def1Res[1] = Def1[2]
-	Def1Res[2] = Def1[4]
-	Def2Res[2] = Def2B[2]
-	Def2Res[3] = Def2B[4]
-	Def3Res[1] = Def3A[2]
-	Def3Res[3] = Def3B[2]
-	G.Here = &WestOfHouse
-	ThisIsIt(&Mailbox)
+	Queue("iFight", -1).Run = true
+	Queue("iSword", -1)
+	Queue("iThief", -1).Run = true
+	Queue("iCandles", 40)
+	Queue("iLantern", 200)
+	inflatedBoat.SetVehType(FlgNonLand)
+	def1Res[1] = def1[2]
+	def1Res[2] = def1[4]
+	def2Res[2] = def2B[2]
+	def2Res[3] = def2B[4]
+	def3Res[1] = def3A[2]
+	def3Res[3] = def3B[2]
+	G.Here = &westOfHouse
+	thisIsIt(&mailbox)
 	G.Lit = true
-	G.Winner = &Adventurer
+	G.Winner = &adventurer
 	G.Player = G.Winner
 	G.Winner.MoveTo(G.Here)
 
