@@ -331,7 +331,7 @@ func Goto(rm *Object, isV bool) bool {
 	olit := G.Lit
 	ohere := G.Here
 	if wloc.Has(FlgVeh) {
-		av = wloc.VehType
+		av = wloc.GetVehType()
 	}
 	if !lb && av == FlgUnk {
 		NoGoTell(av, wloc)

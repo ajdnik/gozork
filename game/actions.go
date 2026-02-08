@@ -63,7 +63,7 @@ func TouchAll(obj *Object) {
 func OtvalFrob(o *Object) int {
 	score := 0
 	for _, child := range o.Children {
-		score += child.TValue
+		score += child.GetTValue()
 		if child.HasChildren() {
 			score += OtvalFrob(child)
 		}
@@ -160,7 +160,7 @@ func VScore(arg ActArg) bool {
 
 func VDiagnose(arg ActArg) bool {
 	ms := FightStrength(false)
-	wd := G.Winner.Strength
+	wd := G.Winner.GetStrength()
 	rs := ms + wd
 	// Check if healing is active
 	cureActive := false
@@ -269,12 +269,12 @@ func RandomizeObjects() {
 	if Coffin.IsIn(G.Winner) {
 		Coffin.MoveTo(&EgyptRoom)
 	}
-	Sword.TValue = 0
+	Sword.SetTValue(0)
 	// Copy children before iterating since MoveTo modifies the slice.
 	children := make([]*Object, len(G.Winner.Children))
 	copy(children, G.Winner.Children)
 	for _, child := range children {
-		if child.TValue <= 0 {
+		if child.GetTValue() <= 0 {
 			child.MoveTo(Random(AboveGround))
 			continue
 		}
@@ -831,7 +831,7 @@ func GrateFcn(arg ActArg) bool {
 		return true
 	}
 	if G.ActVerb.Norm == "put" && G.IndirObj == &Grate {
-		if G.DirObj.Size > 20 {
+		if G.DirObj.GetSize() > 20 {
 			Printf("It won't fit through the grating.\n")
 		} else {
 			G.DirObj.MoveTo(&GratingRoom)
@@ -1051,7 +1051,7 @@ func MirrorMirrorFcn(arg ActArg) bool {
 
 func PaintingFcn(arg ActArg) bool {
 	if G.ActVerb.Norm == "mung" {
-		G.DirObj.TValue = 0
+		G.DirObj.SetTValue(0)
 		G.DirObj.LongDesc = "There is a worthless piece of canvas here."
 		Printf("Congratulations! Unlike the other vandals, who merely stole the artist's masterpieces, you have destroyed one.\n")
 		return true
@@ -1414,7 +1414,7 @@ func SwordFcn(arg ActArg) bool {
 		return false
 	}
 	if G.ActVerb.Norm == "examine" {
-		g := Sword.TValue
+		g := Sword.GetTValue()
 		if g == 1 {
 			Printf("Your sword is glowing with a faint blue glow.\n")
 			return true
@@ -1900,7 +1900,7 @@ func RopeFcn(arg ActArg) bool {
 	}
 	if G.ActVerb.Norm == "tie up" && G.IndirObj == &Rope {
 		if G.DirObj.Has(FlgActor) {
-			if G.DirObj.Strength < 0 {
+			if G.DirObj.GetStrength() < 0 {
 				Printf("Your attempt to tie up the %s awakens him.", G.DirObj.Desc)
 				Awaken(G.DirObj)
 			} else {
@@ -2751,13 +2751,13 @@ func LightInt(obj *Object, tblIdx, tick int) {
 
 // ICure heals the player gradually
 func ICure() bool {
-	s := G.Winner.Strength
+	s := G.Winner.GetStrength()
 	if s > 0 {
 		s = 0
-		G.Winner.Strength = s
+		G.Winner.SetStrength(s)
 	} else if s < 0 {
 		s++
-		G.Winner.Strength = s
+		G.Winner.SetStrength(s)
 	}
 	if s < 0 {
 		if GD().LoadAllowed < GD().LoadMax {

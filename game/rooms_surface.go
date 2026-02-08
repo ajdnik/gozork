@@ -112,9 +112,9 @@ var (
 		In:     &Rooms,
 		Desc:   "Kitchen",
 		Flags:  FlgLand | FlgOn | FlgSacred,
-		Value:  10,
 		Global: []*Object{&KitchenWindow, &Chimney, &Stairs},
 		// Action set in FinalizeGameObjects to avoid init cycle
+		Item:    &ItemData{Value: 10},
 	}
 	Attic = Object{
 		In:       &Rooms,
@@ -144,8 +144,8 @@ var (
 		Desc:   "Cellar",
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Flags:  FlgLand,
-		Value:  25,
 		Global: []*Object{&Slide, &Stairs},
+		Item:    &ItemData{Value: 25},
 	}
 	TrollRoom = Object{
 		In:       &Rooms,

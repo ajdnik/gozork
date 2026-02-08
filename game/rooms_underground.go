@@ -26,8 +26,8 @@ var (
 		Desc:     "Treasure Room",
 		// Action set in FinalizeGameObjects to avoid init cycle
 		Flags:    FlgLand,
-		Value:    25,
 		Global:   []*Object{&Stairs},
+		Item:    &ItemData{Value: 25},
 	}
 
 	// ================================================================
@@ -150,8 +150,8 @@ var (
 		LongDesc: "This is a narrow east-west passageway. There is a narrow stairway leading down at the north end of the room.",
 		Desc:     "East-West Passage",
 		Flags:    FlgLand,
-		Value:    5,
 		Global:   []*Object{&Stairs},
+		Item:    &ItemData{Value: 5},
 	}
 	RoundRoom = Object{
 		In:       &Rooms,

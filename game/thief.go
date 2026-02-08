@@ -10,7 +10,7 @@ func Rob(what, where *Object, prob int) bool {
 		if x.Has(FlgInvis) || x.Has(FlgSacred) {
 			continue
 		}
-		if x.TValue <= 0 {
+		if x.GetTValue() <= 0 {
 			continue
 		}
 		if prob > 0 && !Prob(prob, false) {
@@ -57,7 +57,7 @@ func DepositBooty(rm *Object) bool {
 		if x == &Stiletto || x == &LargeBag {
 			continue
 		}
-		if x.TValue > 0 {
+		if x.GetTValue() > 0 {
 			toMove = append(toMove, x)
 			flg = true
 			if x == &Egg {
@@ -230,15 +230,15 @@ func RobberFcn(arg ActArg) bool {
 		return true
 	}
 	if (G.ActVerb.Norm == "throw" || G.ActVerb.Norm == "give") && G.DirObj != nil && G.DirObj != &Thief && G.IndirObj == &Thief {
-		if Thief.Strength < 0 {
-			Thief.Strength = -Thief.Strength
+		if Thief.GetStrength() < 0 {
+			Thief.SetStrength(-Thief.GetStrength())
 			Queue("IThief", -1).Run = true
 			RecoverStiletto()
 			Thief.LongDesc = RobberCDesc
 			Printf("Your proposed victim suddenly recovers consciousness.\n")
 		}
 		G.DirObj.MoveTo(&Thief)
-		if G.DirObj.TValue > 0 {
+		if G.DirObj.GetTValue() > 0 {
 			GD().ThiefEngrossed = true
 			Printf("The thief is taken aback by your unexpected generosity, but accepts the %s and stops to admire its beauty.\n", G.DirObj.Desc)
 		} else {
@@ -393,7 +393,7 @@ func DropJunk(rm *Object) bool {
 		if x == &Stiletto || x == &LargeBag {
 			continue
 		}
-		if x.TValue == 0 && Prob(30, true) {
+		if x.GetTValue() == 0 && Prob(30, true) {
 			x.Take(FlgInvis)
 			x.MoveTo(rm)
 			if !flg && rm == G.Here {
@@ -411,7 +411,7 @@ func StealJunk(rm *Object) bool {
 		return false
 	}
 	for _, x := range rm.Children {
-		if x.TValue == 0 && x.Has(FlgTake) && !x.Has(FlgSacred) && !x.Has(FlgInvis) {
+		if x.GetTValue() == 0 && x.Has(FlgTake) && !x.Has(FlgSacred) && !x.Has(FlgInvis) {
 			if x == &Stiletto || Prob(10, true) {
 				x.MoveTo(&Thief)
 				x.Give(FlgTouch)

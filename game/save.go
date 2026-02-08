@@ -112,9 +112,9 @@ func captureState() *gameState {
 		s.ObjStates[i] = savedObject{
 			InIdx:     ObjToIdx(obj.In),
 			Flags:     obj.Flags,
-			Strength:  obj.Strength,
-			Value:     obj.Value,
-			TValue:    obj.TValue,
+			Strength:  obj.GetStrength(),
+			Value:     obj.GetValue(),
+			TValue:    obj.GetTValue(),
 			Text:      obj.Text,
 			LongDesc:  obj.LongDesc,
 			FirstDesc: obj.FirstDesc,
@@ -209,9 +209,9 @@ func applyState(s *gameState) {
 		so := s.ObjStates[i]
 		obj.In = IdxToObj(so.InIdx)
 		obj.Flags = so.Flags
-		obj.Strength = so.Strength
-		obj.Value = so.Value
-		obj.TValue = so.TValue
+		obj.SetStrength(so.Strength)
+		obj.SetValue(so.Value)
+		obj.SetTValue(so.TValue)
 		obj.Text = so.Text
 		obj.LongDesc = so.LongDesc
 		obj.FirstDesc = so.FirstDesc
@@ -378,7 +378,7 @@ func doRestart() bool {
 	Queue("IThief", -1).Run = true
 	Queue("ICandles", 40)
 	Queue("ILantern", 200)
-	InflatedBoat.VehType = FlgNonLand
+	InflatedBoat.SetVehType(FlgNonLand)
 	Def1Res[1] = Def1[2]
 	Def1Res[2] = Def1[4]
 	Def2Res[2] = Def2B[2]

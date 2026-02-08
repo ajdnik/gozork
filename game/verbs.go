@@ -60,7 +60,7 @@ func VAlarm(arg ActArg) bool {
 		Printf("The %s isn't sleeping.\n", G.DirObj.Desc)
 		return true
 	}
-	if G.DirObj.Strength <= 0 {
+	if G.DirObj.GetStrength() <= 0 {
 		Printf("He's wide awake, or haven't you noticed...\n")
 		return true
 	}
@@ -165,7 +165,7 @@ func VClose(arg ActArg) bool {
 		Printf("You must tell me how to do that to a %s.\n", G.DirObj.Desc)
 		return true
 	}
-	if !G.DirObj.Has(FlgSurf) && G.DirObj.Capacity != 0 {
+	if !G.DirObj.Has(FlgSurf) && G.DirObj.GetCapacity() != 0 {
 		if G.DirObj.Has(FlgOpen) {
 			G.DirObj.Take(FlgOpen)
 			Printf("Closed.\n")
@@ -744,7 +744,7 @@ func VOil(arg ActArg) bool {
 }
 
 func VOpen(arg ActArg) bool {
-	if !G.DirObj.Has(FlgCont) || G.DirObj.Capacity == 0 {
+	if !G.DirObj.Has(FlgCont) || G.DirObj.GetCapacity() == 0 {
 		if G.DirObj.Has(FlgDoor) {
 			if G.DirObj.Has(FlgOpen) {
 				Printf("It is already open.\n")
@@ -891,7 +891,7 @@ func VPut(arg ActArg) bool {
 		Printf("The %s is already in the %s.\n", G.DirObj.Desc, G.IndirObj.Desc)
 		return true
 	}
-	if Weight(G.IndirObj)+Weight(G.DirObj)-G.IndirObj.Size > G.IndirObj.Capacity {
+	if Weight(G.IndirObj)+Weight(G.DirObj)-G.IndirObj.GetSize() > G.IndirObj.GetCapacity() {
 		Printf("There's no room.\n")
 		return true
 	}
@@ -1589,11 +1589,11 @@ func ScoreUpd(num int) bool {
 }
 
 func ScoreObj(obj *Object) {
-	if obj.Value <= 0 {
+	if obj.GetValue() <= 0 {
 		return
 	}
-	ScoreUpd(obj.Value)
-	obj.Value = 0
+	ScoreUpd(obj.GetValue())
+	obj.SetValue(0)
 }
 
 func CCount(obj *Object) int {
@@ -1615,7 +1615,7 @@ func Weight(obj *Object) int {
 			wt += Weight(child)
 		}
 	}
-	return wt + obj.Size
+	return wt + obj.GetSize()
 }
 
 func ITake(vb bool) bool {

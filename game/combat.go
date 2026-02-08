@@ -338,7 +338,7 @@ func FightStrength(adjust bool) int {
 	}
 	s := StrengthMin + G.Score/(ScoreMax/(StrengthMax-StrengthMin))
 	if adjust {
-		s += G.Winner.Strength
+		s += G.Winner.GetStrength()
 	}
 	return s
 }
@@ -353,7 +353,7 @@ func FindWeapon(o *Object) *Object {
 }
 
 func Winning(v *Object) bool {
-	vs := v.Strength
+	vs := v.GetStrength()
 	ps := vs - FightStrength(true)
 	if ps > 3 {
 		return Prob(90, false)
@@ -371,9 +371,9 @@ func Winning(v *Object) bool {
 }
 
 func Awaken(o *Object) bool {
-	s := o.Strength
+	s := o.GetStrength()
 	if s < 0 {
-		o.Strength = -s
+		o.SetStrength(-s)
 		if o.Action != nil {
 			o.Action(ActArg(FConscious))
 		}
@@ -393,7 +393,7 @@ func IFight() bool {
 		if o.IsIn(G.Here) && !o.Has(FlgInvis) {
 			if o == &Thief && GD().ThiefEngrossed {
 				GD().ThiefEngrossed = false
-			} else if o.Strength < 0 {
+			} else if o.GetStrength() < 0 {
 				p := oo.Prob
 				if p != 0 && Prob(p, false) {
 					oo.Prob = 0
@@ -442,7 +442,7 @@ func ISword() bool {
 				}
 			}
 		}
-		g := Sword.TValue
+		g := Sword.GetTValue()
 		if ng == g {
 			return false
 		}
@@ -453,7 +453,7 @@ func ISword() bool {
 		} else if ng == 0 {
 			Printf("Your sword is no longer glowing.\n")
 		}
-		Sword.TValue = ng
+		Sword.SetTValue(ng)
 		return true
 	}
 	// Sword not held - disable the interrupt
@@ -490,7 +490,7 @@ func RandomMeleeMsg(set MeleeSet) MeleeMsg {
 
 // VillainStrength calculates a villain's effective combat strength
 func VillainStrength(oo *VillainEntry) int {
-	od := oo.Villain.Strength
+	od := oo.Villain.GetStrength()
 	if od >= 0 {
 		if oo.Villain == &Thief && GD().ThiefEngrossed {
 			if od > 2 {
@@ -511,7 +511,7 @@ func VillainStrength(oo *VillainEntry) int {
 
 // VillainResult applies the combat result to a villain
 func VillainResult(villain *Object, def int, res BlowRes) BlowRes {
-	villain.Strength = def
+	villain.SetStrength(def)
 	if def == 0 {
 		villain.Take(FlgFight)
 		Printf("Almost as soon as the %s breathes his last breath, a cloud of sinister black fog envelops him, and when the fog lifts, the carcass has disappeared.\n", villain.Desc)
@@ -533,15 +533,15 @@ func VillainResult(villain *Object, def int, res BlowRes) BlowRes {
 // WinnerResult applies the combat result to the player
 func WinnerResult(def int, res BlowRes, od int) {
 	if def == 0 {
-		G.Winner.Strength = -10000
+		G.Winner.SetStrength(-10000)
 	} else {
-		G.Winner.Strength = def - od
+		G.Winner.SetStrength(def - od)
 	}
 	if def-od < 0 {
 		Queue("ICure", CureWait).Run = true
 	}
 	if FightStrength(true) <= 0 {
-		G.Winner.Strength = 1 - FightStrength(false)
+		G.Winner.SetStrength(1 - FightStrength(false))
 		JigsUp("It appears that that last blow was too much for you. I'm afraid you are dead.", false)
 	}
 }

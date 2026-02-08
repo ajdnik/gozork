@@ -234,29 +234,56 @@ func (dp DirProps) IsSet() bool {
 		(dp.DExit != nil && dp.RExit != nil)
 }
 
+// ItemData holds properties specific to takeable items and containers.
+// Only objects that can be picked up, scored, or hold other objects need this.
+type ItemData struct {
+	Size     int // weight / bulk of the object
+	Value    int // base point value (awarded on first take)
+	TValue   int // remaining point value (zeroed after scoring)
+	Capacity int // how many child objects this container can hold
+}
+
+// CombatData holds properties specific to NPCs that participate in combat.
+type CombatData struct {
+	Strength int // combat strength (higher = tougher)
+}
+
+// VehicleData holds properties specific to vehicles the player can ride.
+type VehicleData struct {
+	Type Flags // e.g. FlgNonLand for boats
+}
+
 // Object represents a game object which can be a character, room, vehicle etc.
+// Role-specific data is stored in optional facet pointers that are nil when
+// not applicable, keeping the core struct lean.
 type Object struct {
+	// ---- Core identity (all objects) ----
 	Flags      Flags
 	In         *Object
 	Children   []*Object
 	Synonyms   []string
 	Adjectives []string
-	Action     Action
-	Global     []*Object
-	Pseudo     []PseudoObj
-	ContFcn    Action
-	DescFcn    Action
-	VehType    Flags
-	Capacity   int
-	Size       int
-	Value      int
-	TValue     int
-	Strength   int
-	Text       string
 	Desc       string
 	LongDesc   string
 	FirstDesc  string
-	Exits      map[Direction]DirProps
+	Text       string
+
+	// ---- Behavior ----
+	Action  Action
+	ContFcn Action
+	DescFcn Action
+
+	// ---- Scope / parser hints ----
+	Global []*Object
+	Pseudo []PseudoObj
+
+	// ---- Room data ----
+	Exits map[Direction]DirProps
+
+	// ---- Optional facets (nil when not applicable) ----
+	Item    *ItemData    // non-nil for takeable items / containers
+	Combat  *CombatData  // non-nil for NPCs that fight
+	Vehicle *VehicleData // non-nil for vehicles
 }
 
 // HasChildren checks if the game object has any children
@@ -377,6 +404,104 @@ type objectSnapshot struct {
 	Text     string
 }
 
+// ---- Nil-safe accessors for facet fields ----
+
+// GetSize returns the item size, or 0 if the object has no ItemData.
+func (o *Object) GetSize() int {
+	if o.Item == nil {
+		return 0
+	}
+	return o.Item.Size
+}
+
+// SetSize sets the item size, allocating ItemData if needed.
+func (o *Object) SetSize(v int) {
+	if o.Item == nil {
+		o.Item = &ItemData{}
+	}
+	o.Item.Size = v
+}
+
+// GetValue returns the scoring value, or 0 if the object has no ItemData.
+func (o *Object) GetValue() int {
+	if o.Item == nil {
+		return 0
+	}
+	return o.Item.Value
+}
+
+// SetValue sets the scoring value, allocating ItemData if needed.
+func (o *Object) SetValue(v int) {
+	if o.Item == nil {
+		o.Item = &ItemData{}
+	}
+	o.Item.Value = v
+}
+
+// GetTValue returns the treasure value, or 0 if the object has no ItemData.
+func (o *Object) GetTValue() int {
+	if o.Item == nil {
+		return 0
+	}
+	return o.Item.TValue
+}
+
+// SetTValue sets the treasure value, allocating ItemData if needed.
+func (o *Object) SetTValue(v int) {
+	if o.Item == nil {
+		o.Item = &ItemData{}
+	}
+	o.Item.TValue = v
+}
+
+// GetCapacity returns the container capacity, or 0 if the object has no ItemData.
+func (o *Object) GetCapacity() int {
+	if o.Item == nil {
+		return 0
+	}
+	return o.Item.Capacity
+}
+
+// SetCapacity sets the container capacity, allocating ItemData if needed.
+func (o *Object) SetCapacity(v int) {
+	if o.Item == nil {
+		o.Item = &ItemData{}
+	}
+	o.Item.Capacity = v
+}
+
+// GetStrength returns the combat strength, or 0 if the object has no CombatData.
+func (o *Object) GetStrength() int {
+	if o.Combat == nil {
+		return 0
+	}
+	return o.Combat.Strength
+}
+
+// SetStrength sets the combat strength, allocating CombatData if needed.
+func (o *Object) SetStrength(v int) {
+	if o.Combat == nil {
+		o.Combat = &CombatData{}
+	}
+	o.Combat.Strength = v
+}
+
+// GetVehType returns the vehicle type flags, or 0 if the object has no VehicleData.
+func (o *Object) GetVehType() Flags {
+	if o.Vehicle == nil {
+		return 0
+	}
+	return o.Vehicle.Type
+}
+
+// SetVehType sets the vehicle type flags, allocating VehicleData if needed.
+func (o *Object) SetVehType(v Flags) {
+	if o.Vehicle == nil {
+		o.Vehicle = &VehicleData{}
+	}
+	o.Vehicle.Type = v
+}
+
 var originalState map[*Object]objectSnapshot
 
 // BuildObjectTree populates each object's children from G.AllObjects.
@@ -390,9 +515,9 @@ func BuildObjectTree() {
 			originalState[obj] = objectSnapshot{
 				In:       obj.In,
 				Flags:    obj.Flags,
-				Strength: obj.Strength,
-				Value:    obj.Value,
-				TValue:   obj.TValue,
+				Strength: obj.GetStrength(),
+				Value:    obj.GetValue(),
+				TValue:   obj.GetTValue(),
 				Text:     obj.Text,
 			}
 		}
@@ -414,10 +539,10 @@ func ResetObjectTree() {
 	for obj, snap := range originalState {
 		obj.In = snap.In
 		obj.Flags = snap.Flags
-		obj.Strength = snap.Strength
-		obj.Value = snap.Value
-		obj.TValue = snap.TValue
 		obj.Text = snap.Text
+		obj.SetStrength(snap.Strength)
+		obj.SetValue(snap.Value)
+		obj.SetTValue(snap.TValue)
 	}
 	for _, obj := range G.AllObjects {
 		if obj.Location() != nil {
