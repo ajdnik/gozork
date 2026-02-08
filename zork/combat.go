@@ -321,13 +321,9 @@ func WeaponFunction(w, v *Object) bool {
 	}
 	if G.ActVerb.Norm == "take" {
 		if w.IsIn(v) {
-			Print("The ", NoNewline)
-			PrintObject(v)
-			Print(" swings it out of your reach.", Newline)
+			Printf("The %s swings it out of your reach.\n", v.Desc)
 		} else {
-			Print("The ", NoNewline)
-			PrintObject(w)
-			Print(" seems white-hot. You can't hold on to it.", Newline)
+			Printf("The %s seems white-hot. You can't hold on to it.\n", w.Desc)
 		}
 		return true
 	}
@@ -449,11 +445,11 @@ func ISword() bool {
 			return false
 		}
 		if ng == 2 {
-			Print("Your sword has begun to glow very brightly.", Newline)
+			Printf("Your sword has begun to glow very brightly.\n")
 		} else if ng == 1 {
-			Print("Your sword is glowing with a faint blue glow.", Newline)
+			Printf("Your sword is glowing with a faint blue glow.\n")
 		} else if ng == 0 {
-			Print("Your sword is no longer glowing.", Newline)
+			Printf("Your sword is no longer glowing.\n")
 		}
 		Sword.TValue = ng
 		return true
@@ -469,17 +465,17 @@ func Remark(msg MeleeMsg, defender, weapon *Object) {
 		switch part.Marker {
 		case FWep:
 			if weapon != nil {
-				PrintObject(weapon)
+				Printf("%s", weapon.Desc)
 			}
 		case FDef:
 			if defender != nil {
-				PrintObject(defender)
+				Printf("%s", defender.Desc)
 			}
 		default:
-			Print(part.Text, NoNewline)
+			Printf("%s", part.Text)
 		}
 	}
-	NewLine()
+	Printf("\n")
 }
 
 // RandomMeleeMsg picks a random message from a MeleeSet
@@ -516,9 +512,7 @@ func VillainResult(villain *Object, def int, res BlowRes) BlowRes {
 	villain.Strength = def
 	if def == 0 {
 		villain.Take(FlgFight)
-		Print("Almost as soon as the ", NoNewline)
-		PrintObject(villain)
-		Print(" breathes his last breath, a cloud of sinister black fog envelops him, and when the fog lifts, the carcass has disappeared.", Newline)
+		Printf("Almost as soon as the %s breathes his last breath, a cloud of sinister black fog envelops him, and when the fog lifts, the carcass has disappeared.\n", villain.Desc)
 		RemoveCarefully(villain)
 		if villain.Action != nil {
 			villain.Action(ActArg(FDead))
@@ -557,9 +551,7 @@ func VillainBlow(oo *VillainEntry, out bool) BlowRes {
 
 	G.Winner.Take(FlgStagg)
 	if villain.Has(FlgStagg) {
-		Print("The ", NoNewline)
-		PrintObject(villain)
-		Print(" slowly regains his feet.", Newline)
+		Printf("The %s slowly regains his feet.\n", villain.Desc)
 		villain.Take(FlgStagg)
 		return BlowMissed
 	}
@@ -683,9 +675,7 @@ func VillainBlow(oo *VillainEntry, out bool) BlowRes {
 			dweapon.MoveTo(G.Here)
 			nweapon := FindWeapon(G.Winner)
 			if nweapon != nil {
-				Print("Fortunately, you still have a ", NoNewline)
-				PrintObject(nweapon)
-				Print(".", Newline)
+				Printf("Fortunately, you still have a %s.\n", nweapon.Desc)
 			}
 		}
 	}
@@ -744,7 +734,7 @@ func HeroBlow() bool {
 	}
 	G.DirObj.Give(FlgFight)
 	if G.Winner.Has(FlgStagg) {
-		Print("You are still recovering from that last blow, so your attack is ineffective.", Newline)
+		Printf("You are still recovering from that last blow, so your attack is ineffective.\n")
 		G.Winner.Take(FlgStagg)
 		return true
 	}
@@ -765,23 +755,19 @@ func HeroBlow() bool {
 			JigsUp("Well, you really did it that time. Is suicide painless?", false)
 			return true
 		}
-		Print("Attacking the ", NoNewline)
-		PrintObject(villain)
-		Print(" is pointless.", Newline)
+		Printf("Attacking the %s is pointless.\n", villain.Desc)
 		return true
 	}
 	dweapon := FindWeapon(villain)
 	var res BlowRes
 	if dweapon == nil || def < 0 {
-		Print("The ", NoNewline)
+		Printf("The ")
 		if def < 0 {
-			Print("unconscious", NoNewline)
+			Printf("unconscious")
 		} else {
-			Print("unarmed", NoNewline)
+			Printf("unarmed")
 		}
-		Print(" ", NoNewline)
-		PrintObject(villain)
-		Print(" cannot defend himself: He dies.", Newline)
+		Printf(" %s cannot defend himself: He dies.\n", villain.Desc)
 		res = BlowKill
 	} else {
 		if def == 1 {

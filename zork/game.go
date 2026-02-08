@@ -99,7 +99,7 @@ func Run() {
 	InitGame()
 	if !G.Here.Has(FlgTouch) {
 		VVersion(ActUnk)
-		NewLine()
+		Printf("\n")
 	}
 	VLook(ActUnk)
 	MainLoop()
@@ -163,10 +163,10 @@ func MainLoop() {
 				res = Perform(G.ActVerb, nil, nil)
 				G.DirObj = nil
 			} else if !G.Lit {
-				Print("It's too dark to see.", Newline)
+				Printf("It's too dark to see.\n")
 				res = PerfNotHndld
 			} else {
-				Print("It's not clear what you're referring to.", Newline)
+				Printf("It's not clear what you're referring to.\n")
 				res = PerfNotHndld
 			}
 		} else {
@@ -206,11 +206,11 @@ func MainLoop() {
 						continue
 					}
 					if obj1 == &It {
-						PrintObject(G.Params.ItObj)
+						Printf("%s", G.Params.ItObj.Desc)
 					} else {
-						PrintObject(obj1)
+						Printf("%s", obj1.Desc)
 					}
-					Print(": ", NoNewline)
+					Printf(": ")
 				}
 				G.DirObj, G.IndirObj = dir, indir
 				tmp = true
@@ -220,23 +220,23 @@ func MainLoop() {
 				}
 			}
 			if notHere > 0 {
-				Print("The ", NoNewline)
+				Printf("The ")
 				if notHere != numObj {
-					Print("other ", NoNewline)
+					Printf("other ")
 				}
-				Print("object", NoNewline)
+				Printf("object")
 				if notHere != 1 {
-					Print("s", NoNewline)
+					Printf("s")
 				}
-				Print(" that you mentioned ", NoNewline)
+				Printf(" that you mentioned ")
 				if notHere != 1 {
-					Print("are", NoNewline)
+					Printf("are")
 				} else {
-					Print("is", NoNewline)
+					Printf("is")
 				}
-				Print("n't here.", Newline)
+				Printf("n't here.\n")
 			} else if !tmp {
-				Print("There's nothing here you can take.", Newline)
+				Printf("There's nothing here you can take.\n")
 			}
 		}
 		if l := G.Winner.Location(); res != PerfFatal && l != nil && l.Action != nil {
@@ -286,7 +286,7 @@ func Perform(a ActionVerb, o, i *Object) PerfRet {
 	// Clear any stale fatal flag (e.g. from parser's ITake call).
 	G.PerformFatal = false
 	if (o == &It || i == &It) && !IsAccessible(G.Params.ItObj) {
-		Print("I don't see what you are referring to.", Newline)
+		Printf("I don't see what you are referring to.\n")
 		return PerfFatal
 	}
 	if o == &It {

@@ -3,7 +3,7 @@ package zork
 
 
 func FixBoat() {
-	Print("Well done. The boat is repaired.", Newline)
+	Printf("Well done. The boat is repaired.\n")
 	InflatableBoat.MoveTo(PuncturedBoat.Location())
 	RemoveCarefully(&PuncturedBoat)
 }
@@ -11,7 +11,7 @@ func FixBoat() {
 func FixMaintLeak() {
 	G.WaterLevel = -1
 	QueueInt("IMaintRoom", false).Run = false
-	Print("By some miracle of Zorkian technology, you have managed to stop the leak in the dam.", Newline)
+	Printf("By some miracle of Zorkian technology, you have managed to stop the leak in the dam.\n")
 }
 
 func WaterFcn(arg ActArg) bool {
@@ -19,7 +19,7 @@ func WaterFcn(arg ActArg) bool {
 		return false
 	}
 	if G.ActVerb.Norm == "through" || G.ActVerb.Norm == "board" {
-		Print(PickOne(SwimYuks), Newline)
+		Printf("%s\n", PickOne(SwimYuks))
 		return true
 	}
 	// Simplified water handling
@@ -30,46 +30,44 @@ func WaterFcn(arg ActArg) bool {
 		}
 		if G.ActVerb.Norm == "take" {
 			if w.IsIn(&Bottle) && G.IndirObj == nil {
-				Print("It's in the bottle. Perhaps you should take that instead.", Newline)
+				Printf("It's in the bottle. Perhaps you should take that instead.\n")
 				return true
 			}
 			if Bottle.IsIn(G.Winner) {
 				if !Bottle.Has(FlgOpen) {
-					Print("The bottle is closed.", Newline)
+					Printf("The bottle is closed.\n")
 					ThisIsIt(&Bottle)
 					return true
 				}
 				if !Bottle.HasChildren() {
 					Water.MoveTo(&Bottle)
-					Print("The bottle is now full of water.", Newline)
+					Printf("The bottle is now full of water.\n")
 					return true
 				}
-				Print("The water slips through your fingers.", Newline)
+				Printf("The water slips through your fingers.\n")
 				return true
 			}
-			Print("The water slips through your fingers.", Newline)
+			Printf("The water slips through your fingers.\n")
 			return true
 		}
 	}
 	if G.ActVerb.Norm == "drop" || G.ActVerb.Norm == "give" {
 		if G.ActVerb.Norm == "drop" && Water.IsIn(&Bottle) && !Bottle.Has(FlgOpen) {
-			Print("The bottle is closed.", Newline)
+			Printf("The bottle is closed.\n")
 			return true
 		}
 		RemoveCarefully(&Water)
 		av := G.Winner.Location()
 		if av.Has(FlgVeh) {
-			Print("There is now a puddle in the bottom of the ", NoNewline)
-			PrintObject(av)
-			Print(".", Newline)
+			Printf("There is now a puddle in the bottom of the %s.\n", av.Desc)
 			Water.MoveTo(av)
 		} else {
-			Print("The water spills to the floor and evaporates immediately.", Newline)
+			Printf("The water spills to the floor and evaporates immediately.\n")
 		}
 		return true
 	}
 	if G.ActVerb.Norm == "throw" {
-		Print("The water splashes on the walls and evaporates immediately.", Newline)
+		Printf("The water splashes on the walls and evaporates immediately.\n")
 		RemoveCarefully(&Water)
 		return true
 	}
@@ -84,22 +82,20 @@ func BoltFcn(arg ActArg) bool {
 				if G.GatesOpen {
 					G.GatesOpen = false
 					LoudRoom.Take(FlgTouch)
-					Print("The sluice gates close and water starts to collect behind the dam.", Newline)
+					Printf("The sluice gates close and water starts to collect behind the dam.\n")
 					Queue("IRfill", 8).Run = true
 					QueueInt("IRempty", false).Run = false
 				} else {
 					G.GatesOpen = true
-					Print("The sluice gates open and water pours through the dam.", Newline)
+					Printf("The sluice gates open and water pours through the dam.\n")
 					Queue("IRempty", 8).Run = true
 					QueueInt("IRfill", false).Run = false
 				}
 			} else {
-				Print("The bolt won't turn with your best effort.", Newline)
+				Printf("The bolt won't turn with your best effort.\n")
 			}
 		} else {
-			Print("The bolt won't turn using the ", NoNewline)
-			PrintObject(G.IndirObj)
-			Print(".", Newline)
+			Printf("The bolt won't turn using the %s.\n", G.IndirObj.Desc)
 		}
 		return true
 	}
@@ -108,7 +104,7 @@ func BoltFcn(arg ActArg) bool {
 		return true
 	}
 	if G.ActVerb.Norm == "oil" {
-		Print("Hmm. It appears the tube contained glue, not oil. Turning the bolt won't get any easier....", Newline)
+		Printf("Hmm. It appears the tube contained glue, not oil. Turning the bolt won't get any easier....\n")
 		return true
 	}
 	return false
@@ -124,16 +120,14 @@ func BubbleFcn(arg ActArg) bool {
 
 func DamFunction(arg ActArg) bool {
 	if G.ActVerb.Norm == "open" || G.ActVerb.Norm == "close" {
-		Print("Sounds reasonable, but this isn't how.", Newline)
+		Printf("Sounds reasonable, but this isn't how.\n")
 		return true
 	}
 	if G.ActVerb.Norm == "plug" {
 		if G.IndirObj == &Hands {
-			Print("Are you the little Dutch boy, then? Sorry, this is a big dam.", Newline)
+			Printf("Are you the little Dutch boy, then? Sorry, this is a big dam.\n")
 		} else {
-			Print("With a ", NoNewline)
-			PrintObject(G.IndirObj)
-			Print("? Do you know how big this dam is? You could only stop a tiny leak with that.", Newline)
+			Printf("With a %s? Do you know how big this dam is? You could only stop a tiny leak with that.\n", G.IndirObj.Desc)
 		}
 		return true
 	}
@@ -146,7 +140,7 @@ func PuncturedBoatFcn(arg ActArg) bool {
 		return true
 	}
 	if G.ActVerb.Norm == "inflate" || G.ActVerb.Norm == "fill" {
-		Print("No chance. Some moron punctured it.", Newline)
+		Printf("No chance. Some moron punctured it.\n")
 		return true
 	}
 	if G.ActVerb.Norm == "plug" {
@@ -163,13 +157,13 @@ func PuncturedBoatFcn(arg ActArg) bool {
 func InflatableBoatFcn(arg ActArg) bool {
 	if G.ActVerb.Norm == "inflate" || G.ActVerb.Norm == "fill" {
 		if !InflatableBoat.IsIn(G.Here) {
-			Print("The boat must be on the ground to be inflated.", Newline)
+			Printf("The boat must be on the ground to be inflated.\n")
 			return true
 		}
 		if G.IndirObj == &Pump {
-			Print("The boat inflates and appears seaworthy.", Newline)
+			Printf("The boat inflates and appears seaworthy.\n")
 			if !BoatLabel.Has(FlgTouch) {
-				Print("A tan label is lying inside the boat.", Newline)
+				Printf("A tan label is lying inside the boat.\n")
 			}
 			G.Deflate = false
 			RemoveCarefully(&InflatableBoat)
@@ -178,12 +172,10 @@ func InflatableBoatFcn(arg ActArg) bool {
 			return true
 		}
 		if G.IndirObj == &Lungs {
-			Print("You don't have enough lung power to inflate it.", Newline)
+			Printf("You don't have enough lung power to inflate it.\n")
 			return true
 		}
-		Print("With a ", NoNewline)
-		PrintObject(G.IndirObj)
-		Print("? Surely you jest!", Newline)
+		Printf("With a %s? Surely you jest!\n", G.IndirObj.Desc)
 		return true
 	}
 	return false
@@ -196,24 +188,20 @@ func RiverFcn(arg ActArg) bool {
 			return true
 		}
 		if G.DirObj == &InflatedBoat {
-			Print("You should get in the boat then launch it.", Newline)
+			Printf("You should get in the boat then launch it.\n")
 			return true
 		}
 		if G.DirObj.Has(FlgBurn) {
 			RemoveCarefully(G.DirObj)
-			Print("The ", NoNewline)
-			PrintObject(G.DirObj)
-			Print(" floats for a moment, then sinks.", Newline)
+			Printf("The %s floats for a moment, then sinks.\n", G.DirObj.Desc)
 			return true
 		}
 		RemoveCarefully(G.DirObj)
-		Print("The ", NoNewline)
-		PrintObject(G.DirObj)
-		Print(" splashes into the water and is gone forever.", Newline)
+		Printf("The %s splashes into the water and is gone forever.\n", G.DirObj.Desc)
 		return true
 	}
 	if G.ActVerb.Norm == "leap" || G.ActVerb.Norm == "through" {
-		Print("A look before leaping reveals that the river is wide and dangerous, with swift currents and large, half-hidden rocks. You decide to forgo your swim.", Newline)
+		Printf("A look before leaping reveals that the river is wide and dangerous, with swift currents and large, half-hidden rocks. You decide to forgo your swim.\n")
 		return true
 	}
 	return false
@@ -221,21 +209,21 @@ func RiverFcn(arg ActArg) bool {
 
 func DamRoomFcn(arg ActArg) bool {
 	if arg == ActLook {
-		Print("You are standing on the top of the Flood Control Dam #3, which was quite a tourist attraction in times far distant. There are paths to the north, south, and west, and a scramble down.", Newline)
+		Printf("You are standing on the top of the Flood Control Dam #3, which was quite a tourist attraction in times far distant. There are paths to the north, south, and west, and a scramble down.\n")
 		if G.LowTide && G.GatesOpen {
-			Print("The water level behind the dam is low: The sluice gates have been opened. Water rushes through the dam and downstream.", Newline)
+			Printf("The water level behind the dam is low: The sluice gates have been opened. Water rushes through the dam and downstream.\n")
 		} else if G.GatesOpen {
-			Print("The sluice gates are open, and water rushes through the dam. The water level behind the dam is still high.", Newline)
+			Printf("The sluice gates are open, and water rushes through the dam. The water level behind the dam is still high.\n")
 		} else if G.LowTide {
-			Print("The sluice gates are closed. The water level in the reservoir is quite low, but the level is rising quickly.", Newline)
+			Printf("The sluice gates are closed. The water level in the reservoir is quite low, but the level is rising quickly.\n")
 		} else {
-			Print("The sluice gates on the dam are closed. Behind the dam, there can be seen a wide reservoir. Water is pouring over the top of the now abandoned dam.", Newline)
+			Printf("The sluice gates on the dam are closed. Behind the dam, there can be seen a wide reservoir. Water is pouring over the top of the now abandoned dam.\n")
 		}
-		Print("There is a control panel here, on which a large metal bolt is mounted. Directly above the bolt is a small green plastic bubble", NoNewline)
+		Printf("There is a control panel here, on which a large metal bolt is mounted. Directly above the bolt is a small green plastic bubble")
 		if G.GateFlag {
-			Print(" which is glowing serenely", NoNewline)
+			Printf(" which is glowing serenely")
 		}
-		Print(".", Newline)
+		Printf(".\n")
 		return true
 	}
 	return false
@@ -254,11 +242,11 @@ func WhiteCliffsFcn(arg ActArg) bool {
 
 func FallsRoomFcn(arg ActArg) bool {
 	if arg == ActLook {
-		Print("You are at the top of Aragain Falls, an enormous waterfall with a drop of about 450 feet. The only path here is on the north end.", Newline)
+		Printf("You are at the top of Aragain Falls, an enormous waterfall with a drop of about 450 feet. The only path here is on the north end.\n")
 		if G.RainbowFlag {
-			Print("A solid rainbow spans the falls.", Newline)
+			Printf("A solid rainbow spans the falls.\n")
 		} else {
-			Print("A beautiful rainbow can be seen over the falls and to the west.", Newline)
+			Printf("A beautiful rainbow can be seen over the falls and to the west.\n")
 		}
 		return true
 	}
@@ -268,7 +256,7 @@ func FallsRoomFcn(arg ActArg) bool {
 func Rivr4RoomFcn(arg ActArg) bool {
 	if arg == ActEnd {
 		if Buoy.IsIn(G.Winner) && G.BuoyFlag {
-			Print("You notice something funny about the feel of the buoy.", Newline)
+			Printf("You notice something funny about the feel of the buoy.\n")
 			G.BuoyFlag = false
 		}
 	}
@@ -290,20 +278,20 @@ func RBoatFcn(arg ActArg) bool {
 			if G.Here == &InStream && G.Params.WalkDir == South {
 				return false
 			}
-			Print("Read the label for the boat's instructions.", Newline)
+			Printf("Read the label for the boat's instructions.\n")
 			return true
 		}
 		if G.ActVerb.Norm == "launch" {
 			if G.Here == &River1 || G.Here == &River2 || G.Here == &River3 || G.Here == &River4 || G.Here == &Reservoir || G.Here == &InStream {
-				Print("You are on the ", NoNewline)
+				Printf("You are on the ")
 				if G.Here == &Reservoir {
-					Print("reservoir", NoNewline)
+					Printf("reservoir")
 				} else if G.Here == &InStream {
-					Print("stream", NoNewline)
+					Printf("stream")
 				} else {
-					Print("river", NoNewline)
+					Printf("river")
 				}
-				Print(", or have you forgotten?", Newline)
+				Printf(", or have you forgotten?\n")
 				return true
 			}
 			tmp := GoNext(RiverLaunch)
@@ -316,7 +304,7 @@ func RBoatFcn(arg ActArg) bool {
 				return true
 			}
 			if tmp != 2 {
-				Print("You can't launch it here.", Newline)
+				Printf("You can't launch it here.\n")
 				return true
 			}
 			return true
@@ -328,15 +316,15 @@ func RBoatFcn(arg ActArg) bool {
 			PuncturedBoat.MoveTo(G.Here)
 			Rob(&InflatedBoat, G.Here, 0)
 			G.Winner.MoveTo(G.Here)
-			Print("It seems that the ", NoNewline)
+			Printf("It seems that the ")
 			if G.ActVerb.Norm == "drop" || G.ActVerb.Norm == "put" {
-				PrintObject(G.DirObj)
+				Printf("%s", G.DirObj.Desc)
 			} else {
-				PrintObject(G.IndirObj)
+				Printf("%s", G.IndirObj.Desc)
 			}
-			Print(" didn't agree with the boat, as evidenced by the loud hissing noise issuing therefrom. With a pathetic sputter, the boat deflates, leaving you without.", Newline)
+			Printf(" didn't agree with the boat, as evidenced by the loud hissing noise issuing therefrom. With a pathetic sputter, the boat deflates, leaving you without.\n")
 			if G.Here.Has(FlgNonLand) {
-				NewLine()
+				Printf("\n")
 				if G.Here == &Reservoir || G.Here == &InStream {
 					JigsUp("Another pathetic sputter, this time from you, heralds your drowning.", false)
 				} else {
@@ -349,7 +337,7 @@ func RBoatFcn(arg ActArg) bool {
 	}
 	if G.ActVerb.Norm == "board" {
 		if Sceptre.IsIn(G.Winner) || Knife.IsIn(G.Winner) || Sword.IsIn(G.Winner) || RustyKnife.IsIn(G.Winner) || Axe.IsIn(G.Winner) || Stiletto.IsIn(G.Winner) {
-			Print("Oops! Something sharp seems to have slipped and punctured the boat. The boat deflates to the sounds of hissing, sputtering, and cursing.", Newline)
+			Printf("Oops! Something sharp seems to have slipped and punctured the boat. The boat deflates to the sounds of hissing, sputtering, and cursing.\n")
 			RemoveCarefully(&InflatedBoat)
 			PuncturedBoat.MoveTo(G.Here)
 			ThisIsIt(&PuncturedBoat)
@@ -358,19 +346,19 @@ func RBoatFcn(arg ActArg) bool {
 		return false
 	}
 	if G.ActVerb.Norm == "inflate" || G.ActVerb.Norm == "fill" {
-		Print("Inflating it further would probably burst it.", Newline)
+		Printf("Inflating it further would probably burst it.\n")
 		return true
 	}
 	if G.ActVerb.Norm == "deflate" {
 		if G.Winner.Location() == &InflatedBoat {
-			Print("You can't deflate the boat while you're in it.", Newline)
+			Printf("You can't deflate the boat while you're in it.\n")
 			return true
 		}
 		if !InflatedBoat.IsIn(G.Here) {
-			Print("The boat must be on the ground to be deflated.", Newline)
+			Printf("The boat must be on the ground to be deflated.\n")
 			return true
 		}
-		Print("The boat deflates.", Newline)
+		Printf("The boat deflates.\n")
 		G.Deflate = true
 		RemoveCarefully(&InflatedBoat)
 		InflatableBoat.MoveTo(G.Here)
@@ -391,18 +379,18 @@ func IRfill() bool {
 	G.LowTide = false
 	if G.Here == &Reservoir {
 		if G.Winner.Location().Has(FlgVeh) {
-			Print("The boat lifts gently out of the mud and is now floating on the reservoir.", Newline)
+			Printf("The boat lifts gently out of the mud and is now floating on the reservoir.\n")
 		} else {
 			JigsUp("You are lifted up by the rising river! You try to swim, but the currents are too strong. You come closer, closer to the awesome structure of Flood Control Dam #3. The dam beckons to you. The roar of the water nearly deafens you, but you remain conscious as you tumble over the dam toward your certain doom among the rocks at its base.", false)
 		}
 	} else if G.Here == &DeepCanyon {
-		Print("A sound, like that of flowing water, starts to come from below.", Newline)
+		Printf("A sound, like that of flowing water, starts to come from below.\n")
 	} else if G.Here == &LoudRoom {
-		Print("All of a sudden, an alarmingly loud roaring sound fills the room. Filled with fear, you scramble away.", Newline)
+		Printf("All of a sudden, an alarmingly loud roaring sound fills the room. Filled with fear, you scramble away.\n")
 		dest := LoudRuns[G.Rand.Intn(len(LoudRuns))]
 		Goto(dest, true)
 	} else if G.Here == &ReservoirNorth || G.Here == &ReservoirSouth {
-		Print("You notice that the water level has risen to the point that it is impossible to cross.", Newline)
+		Printf("You notice that the water level has risen to the point that it is impossible to cross.\n")
 	}
 	return true
 }
@@ -415,11 +403,11 @@ func IRempty() bool {
 	Trunk.Take(FlgInvis)
 	G.LowTide = true
 	if G.Here == &Reservoir && G.Winner.Location().Has(FlgVeh) {
-		Print("The water level has dropped to the point at which the boat can no longer stay afloat. It sinks into the mud.", Newline)
+		Printf("The water level has dropped to the point at which the boat can no longer stay afloat. It sinks into the mud.\n")
 	} else if G.Here == &DeepCanyon {
-		Print("The roar of rushing water is quieter now.", Newline)
+		Printf("The roar of rushing water is quieter now.\n")
 	} else if G.Here == &ReservoirNorth || G.Here == &ReservoirSouth {
-		Print("The water level is now quite low here and you could easily cross over to the other side.", Newline)
+		Printf("The water level is now quite low here and you could easily cross over to the other side.\n")
 	}
 	return true
 }
@@ -427,12 +415,12 @@ func IRempty() bool {
 func IMaintRoom() bool {
 	hereQ := G.Here == &MaintenanceRoom
 	if hereQ {
-		Print("The water level here is now ", NoNewline)
+		Printf("The water level here is now ")
 		idx := G.WaterLevel / 2
 		if idx >= 0 && idx < len(Drownings) {
-			Print(Drownings[idx], NoNewline)
+			Printf("%s", Drownings[idx])
 		}
-		NewLine()
+		Printf("\n")
 	}
 	G.WaterLevel++
 	if G.WaterLevel >= 14 {
@@ -454,8 +442,7 @@ func IRiver() bool {
 	}
 	rm, ok := RiverNext[G.Here]
 	if ok {
-		Print("The flow of the river carries you downstream.", Newline)
-		NewLine()
+		Printf("The flow of the river carries you downstream.\n\n")
 		Goto(rm, true)
 		// ZIL: <ENABLE <QUEUE I-RIVER <LKP ,HERE ,RIVER-SPEEDS>>>
 		// After Goto, HERE is the new room. Use its speed for the next leg.

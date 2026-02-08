@@ -6,20 +6,20 @@ import "encoding/binary"
 func VVerbose(arg ActArg) bool {
 	G.Verbose = true
 	G.SuperBrief = false
-	Print("Maximum verbosity.", Newline)
+	Printf("Maximum verbosity.\n")
 	return true
 }
 
 func VBrief(arg ActArg) bool {
 	G.Verbose = false
 	G.SuperBrief = false
-	Print("Brief descriptions.", Newline)
+	Printf("Brief descriptions.\n")
 	return true
 }
 
 func VSuperBrief(arg ActArg) bool {
 	G.SuperBrief = true
-	Print("Superbrief descriptions.", Newline)
+	Printf("Superbrief descriptions.\n")
 	return true
 }
 
@@ -27,22 +27,22 @@ func VInventory(arg ActArg) bool {
 	if G.Winner.HasChildren() {
 		return PrintCont(G.Winner, false, 0)
 	}
-	Print("You are empty-handed.", Newline)
+	Printf("You are empty-handed.\n")
 	return true
 }
 
 func VRestart(arg ActArg) bool {
 	VScore(ActUnk)
-	Print("Do you wish to restart? (Y is affirmative): ", NoNewline)
+	Printf("Do you wish to restart? (Y is affirmative): ")
 	if IsYes() {
-		Print("Restarting.", Newline)
+		Printf("Restarting.\n")
 		if G.Restart() {
 			VVersion(ActUnk)
-			NewLine()
+			Printf("\n")
 			VFirstLook(ActUnk)
 			return true
 		}
-		Print("Failed.", Newline)
+		Printf("Failed.\n")
 		return true
 	}
 	return false
@@ -50,19 +50,19 @@ func VRestart(arg ActArg) bool {
 
 func VRestore(arg ActArg) bool {
 	if G.Restore() {
-		Print("Ok.", Newline)
+		Printf("Ok.\n")
 		return VFirstLook(ActUnk)
 	}
-	Print("Failed.", Newline)
+	Printf("Failed.\n")
 	return true
 }
 
 func VSave(arg ActArg) bool {
 	if G.Save() {
-		Print("Ok.", Newline)
+		Printf("Ok.\n")
 		return true
 	}
-	Print("Failed.", Newline)
+	Printf("Failed.\n")
 	return true
 }
 
@@ -70,13 +70,13 @@ func VScript(arg ActArg) bool {
 	// This code turns on the first bit in the 8th word from the beginning
 	// Put(0, 8, Bor(Get(0, 8), 1))
 	G.Script = true
-	Print("Here begins a transcript of interaction with", Newline)
+	Printf("Here begins a transcript of interaction with\n")
 	VVersion(ActUnk)
 	return true
 }
 
 func VUnscript(arg ActArg) bool {
-	Print("Here ends a transcript of interaction with", Newline)
+	Printf("Here ends a transcript of interaction with\n")
 	VVersion(ActUnk)
 	// This code turns off the first bit in the 8th word from the beginning
 	// Put(0, 8, Band(Get(0, 8), -2))
@@ -85,13 +85,12 @@ func VUnscript(arg ActArg) bool {
 }
 
 func VVerify(arg ActArg) bool {
-	Print("Verifying disk...", Newline)
+	Printf("Verifying disk...\n")
 	if Verify() {
-		Print("The disk is correct.", Newline)
+		Printf("The disk is correct.\n")
 		return true
 	}
-	NewLine()
-	Print("** Disk Failure **", Newline)
+	Printf("\n** Disk Failure **\n")
 	return true
 }
 
@@ -104,7 +103,7 @@ func VCommandFile(arg ActArg) bool {
 // VRandom reseeds the random number generator. In the original Z-machine
 // this uses the RANDOM opcode with a negative argument to set the seed.
 func VRandom(arg ActArg) bool {
-	Print("Illegal call to #RND.", Newline)
+	Printf("Illegal call to #RND.\n")
 	return true
 }
 
@@ -121,35 +120,29 @@ func VUnrecord(arg ActArg) bool {
 }
 
 func VVersion(arg ActArg) bool {
-	Print("ZORK I: The Great Underground Empire", Newline)
-	Print("Infocom interactive fiction - a fantasy story", Newline)
-	Print("Copyright (c) 1981, 1982, 1983, 1984, 1985, 1986", NoNewline)
-	Print(" Infocom, Inc. All rights reserved.", Newline)
-	Print("ZORK is a registered trademark of Infocom, Inc.", Newline)
-	Print("Release ", NoNewline)
+	Printf("ZORK I: The Great Underground Empire\nInfocom interactive fiction - a fantasy story\nCopyright (c) 1981, 1982, 1983, 1984, 1985, 1986 Infocom, Inc. All rights reserved.\nZORK is a registered trademark of Infocom, Inc.\nRelease ")
 	num := binary.LittleEndian.Uint16(Version[4:6])
-	PrintNumber(int(num & 2047))
-	Print(" / Serial number ", NoNewline)
+	Printf("%d / Serial number ", int(num & 2047))
 	for offset := 18; offset <= 23; offset++ {
-		Print(string(Version[offset]), NoNewline)
+		Printf("%s", string(Version[offset]))
 	}
-	NewLine()
+	Printf("\n")
 	return true
 }
 
 func VQuit(arg ActArg) bool {
 	VScore(arg)
-	Print("Do you wish to leave the game? (Y is affirmative): ", NoNewline)
+	Printf("Do you wish to leave the game? (Y is affirmative): ")
 	if IsYes() {
 		Quit()
 	} else {
-		Print("Ok.", Newline)
+		Printf("Ok.\n")
 	}
 	return true
 }
 
 func VBug(arg ActArg) bool {
-	Print("Bug? Not in a flawless program like this! (Cough, cough).", Newline)
+	Printf("Bug? Not in a flawless program like this! (Cough, cough).\n")
 	return true
 }
 
@@ -158,7 +151,7 @@ func VWait(arg ActArg) bool {
 }
 
 func Wait(num int) bool {
-	Print("Time passes...", Newline)
+	Printf("Time passes...\n")
 	for i := num; i > 0; i-- {
 		Clocker()
 	}
@@ -167,22 +160,22 @@ func Wait(num int) bool {
 }
 
 func VWin(arg ActArg) bool {
-	Print("Naturally!", Newline)
+	Printf("Naturally!\n")
 	return true
 }
 
 func VWish(arg ActArg) bool {
-	Print("With luck, your wish will come true.", Newline)
+	Printf("With luck, your wish will come true.\n")
 	return true
 }
 
 func VZork(arg ActArg) bool {
-	Print("At your service!", Newline)
+	Printf("At your service!\n")
 	return true
 }
 
 func IsYes() bool {
-	Print(">", NoNewline)
+	Printf(">")
 	_, lex := Read()
 	if len(lex) > 0 && lex[0].IsAny("yes", "y") {
 		return true
@@ -193,10 +186,7 @@ func IsYes() bool {
 func Finish() bool {
 	VScore(ActUnk)
 	for {
-		NewLine()
-		Print("Would you like to restart the game from the beginning, restore a saved game position, or end this session of the game?", Newline)
-		Print("(Type RESTART, RESTORE, or QUIT):", Newline)
-		Print(">", NoNewline)
+		Printf("\nWould you like to restart the game from the beginning, restore a saved game position, or end this session of the game?\n(Type RESTART, RESTORE, or QUIT):\n>")
 		_, lex := Read()
 		if len(lex) == 0 {
 			continue
@@ -204,16 +194,16 @@ func Finish() bool {
 		wrd := lex[0]
 		if wrd.Norm == "restart" {
 			if !G.Restart() {
-				Print("Failed.", Newline)
+				Printf("Failed.\n")
 			}
 			return true
 		}
 		if wrd.Norm == "restore" {
 			if G.Restore() {
-				Print("Ok.", Newline)
+				Printf("Ok.\n")
 				return true
 			}
-			Print("Failed.", Newline)
+			Printf("Failed.\n")
 			return true
 		}
 		if wrd.Norm == "quit" {
@@ -223,6 +213,6 @@ func Finish() bool {
 }
 
 func VAdvent(arg ActArg) bool {
-	Print("A hollow voice says \"Fool.\"", Newline)
+	Printf("A hollow voice says \"Fool.\"\n")
 	return true
 }

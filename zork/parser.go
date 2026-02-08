@@ -146,7 +146,7 @@ func Parse() bool {
 		beg = G.Reserv.Idx
 		G.LexRes = append([]LexItm{}, G.Reserv.Buf...)
 		if !G.SuperBrief && G.Player == G.Winner {
-			NewLine()
+			Printf("\n")
 		}
 		G.Reserv.IdxSet = false
 		G.Reserv.Buf = nil
@@ -154,7 +154,7 @@ func Parse() bool {
 	} else if G.Params.Continue != NumUndef {
 		beg = G.Params.Continue
 		if !G.SuperBrief && G.Player == G.Winner && G.ActVerb.Norm != "say" {
-			NewLine()
+			Printf("\n")
 		}
 		G.Params.Continue = NumUndef
 	} else {
@@ -165,14 +165,14 @@ func Parse() bool {
 		}
 		G.Lit = IsLit(G.Here, true)
 		if !G.SuperBrief {
-			NewLine()
+			Printf("\n")
 		}
-		Print(">", NoNewline)
+		Printf(">")
 		_, G.LexRes = Read()
 	}
 	G.Params.BufLen = len(G.LexRes)
 	if G.Params.BufLen == 0 {
-		Print("I beg your pardon?", Newline)
+		Printf("I beg your pardon?\n")
 		return false
 	}
 	if G.LexRes[beg].Is("oops") {
@@ -181,16 +181,16 @@ func Parse() bool {
 			G.Params.BufLen--
 		}
 		if G.Params.BufLen <= 1 {
-			Print("I can't help your clumsiness.", Newline)
+			Printf("I can't help your clumsiness.\n")
 			return false
 		}
 		if G.Oops.UnkSet {
 			if G.Params.BufLen > beg+1 && G.LexRes[beg+1].Is("\"") {
-				Print("Sorry, you can't correct mistakes in quoted text.", Newline)
+				Printf("Sorry, you can't correct mistakes in quoted text.\n")
 				return false
 			}
 			if G.Params.BufLen > beg+2 {
-				Print("Warning: only the first word after OOPS is used.", Newline)
+				Printf("Warning: only the first word after OOPS is used.\n")
 			}
 			G.Again.Buf[G.Oops.Unk].Set(G.LexRes[beg+1])
 			G.Winner = bakWin
@@ -198,7 +198,7 @@ func Parse() bool {
 			G.Params.BufLen = len(G.LexRes)
 			beg = G.Oops.Idx
 		} else {
-			Print("There was no word to replace!", Newline)
+			Printf("There was no word to replace!\n")
 			return false
 		}
 	} else if !G.LexRes[beg].IsAny("again", "g") {
@@ -208,21 +208,21 @@ func Parse() bool {
 	hasDir := false
 	if G.LexRes[beg].IsAny("again", "g") {
 		if len(G.Again.Buf) == 0 {
-			Print("Beg pardon?", Newline)
+			Printf("Beg pardon?\n")
 			return false
 		}
 		if G.Params.ShldOrphan {
-			Print("It's difficult to repeat fragments.", Newline)
+			Printf("It's difficult to repeat fragments.\n")
 			return false
 		}
 		if !G.ParserOk {
-			Print("That would just repeat a mistake.", Newline)
+			Printf("That would just repeat a mistake.\n")
 			return false
 		}
 		tmpLen := len(G.LexRes)
 		if G.Params.BufLen > beg+1 {
 			if !G.LexRes[beg+1].IsAny(".", ",", "then", "and") {
-				Print("I couldn't understand that sentence.", Newline)
+				Printf("I couldn't understand that sentence.\n")
 				return false
 			}
 			beg += 2
@@ -315,7 +315,7 @@ func Parse() bool {
 						G.ParsedSyntx.Prep1.Set(wrd)
 					}
 				} else if G.Params.ObjOrClauseCnt == 2 {
-					Print("There were too many nouns in that sentence.", Newline)
+					Printf("There were too many nouns in that sentence.\n")
 					return false
 				} else {
 					G.Params.ObjOrClauseCnt++
@@ -338,7 +338,7 @@ func Parse() bool {
 				lw.Set(wrd)
 				continue
 			} else if vrb == "tell" && wrd.Types.Has(WordVerb) && G.Winner == G.Player {
-				Print("Please consult your manual for the correct way to talk to other people or creatures.", Newline)
+				Printf("Please consult your manual for the correct way to talk to other people or creatures.\n")
 				return false
 			} else {
 				CantUse(i)
@@ -493,24 +493,20 @@ func UnknownWord(idx int) {
 	G.Oops.UnkSet = true
 	G.Oops.Unk = idx
 	if G.ActVerb.Norm == "say" {
-		Print("Nothing happens.", Newline)
+		Printf("Nothing happens.\n")
 		return
 	}
-	Print("I don't know the word \"", NoNewline)
-	Print(G.LexRes[idx].Orig, NoNewline)
-	Print("\".", Newline)
+	Printf("I don't know the word \"%s\".\n", G.LexRes[idx].Orig)
 	G.Params.InQuotes = false
 	G.Params.ShldOrphan = false
 }
 
 func CantUse(idx int) {
 	if G.ActVerb.Norm == "say" {
-		Print("Nothing happens.", Newline)
+		Printf("Nothing happens.\n")
 		return
 	}
-	Print("You used the word \"", NoNewline)
-	Print(G.LexRes[idx].Orig, NoNewline)
-	Print("\" in a way that I don't understand.", Newline)
+	Printf("You used the word \"%s\" in a way that I don't understand.\n", G.LexRes[idx].Orig)
 	G.Params.InQuotes = false
 	G.Params.ShldOrphan = false
 }
@@ -689,7 +685,7 @@ func ITakeCheck(tbl []*Object, ibits LocFlags) bool {
 	for _, obj := range tbl {
 		if obj == &It {
 			if !IsAccessible(G.Params.ItObj) {
-				Print("I don't see what you're referring to.", Newline)
+				Printf("I don't see what you're referring to.\n")
 				return false
 			}
 			obj = G.Params.ItObj
@@ -708,16 +704,14 @@ func ITakeCheck(tbl []*Object, ibits LocFlags) bool {
 			}
 			if taken && LocHave.In(ibits) && G.Winner == &Adventurer {
 				if obj == &NotHereObject {
-					Print("You don't have that!", Newline)
+					Printf("You don't have that!\n")
 					return false
 				}
-				Print("You don't have the ", NoNewline)
-				PrintObject(obj)
-				Print(".", Newline)
+				Printf("You don't have the %s.\n", obj.Desc)
 				return false
 			}
 			if !taken && G.Winner == &Adventurer {
-				Print("(Taken)", Newline)
+				Printf("(Taken)\n")
 			}
 		}
 	}
@@ -734,19 +728,19 @@ func ManyCheck() bool {
 	if loss == 0 {
 		return true
 	}
-	Print("You can't use multiple ", NoNewline)
+	Printf("You can't use multiple ")
 	if loss == 2 {
-		Print("in", NoNewline)
+		Printf("in")
 	}
-	Print("direct objects with \"", NoNewline)
+	Printf("direct objects with \"")
 	if !G.ParsedSyntx.Verb.IsSet() {
-		Print("tell", NoNewline)
+		Printf("tell")
 	} else if G.Params.ShldOrphan || G.Params.HasMerged {
-		Print(G.ParsedSyntx.Verb.Norm, NoNewline)
+		Printf("%s", G.ParsedSyntx.Verb.Norm)
 	} else {
-		Print(G.ParsedSyntx.Verb.Orig, NoNewline)
+		Printf("%s", G.ParsedSyntx.Verb.Orig)
 	}
-	Print("\".", Newline)
+	Printf("\".\n")
 	return false
 }
 
@@ -892,7 +886,7 @@ func Snarfem(isDirect bool, wrds []LexItm) []*Object {
 // the parsed syntax.
 func SyntaxCheck() bool {
 	if !G.ParsedSyntx.Verb.IsSet() {
-		Print("There was no verb in that sentence!", Newline)
+		Printf("There was no verb in that sentence!\n")
 		return false
 	}
 	var findFirst, findSecond *Syntx
@@ -917,7 +911,7 @@ func SyntaxCheck() bool {
 		}
 	}
 	if findFirst == nil && findSecond == nil {
-		Print("That sentence isn't one I recognize.", Newline)
+		Printf("That sentence isn't one I recognize.\n")
 		return false
 	}
 	found := false
@@ -942,7 +936,7 @@ func SyntaxCheck() bool {
 		}
 	}
 	if G.ParsedSyntx.Verb.Is("find") && !found {
-		Print("That question can't be answered.", Newline)
+		Printf("That question can't be answered.\n")
 		return false
 	}
 	if G.Winner != G.Player && !found {
@@ -951,22 +945,22 @@ func SyntaxCheck() bool {
 	}
 	if !found {
 		Orphan(findFirst, findSecond)
-		Print("What do you want to ", NoNewline)
+		Printf("What do you want to ")
 		if !G.OrphanedSyntx.Verb.IsSet() {
-			Print("tell", NoNewline)
+			Printf("tell")
 		} else {
-			Print(G.OrphanedSyntx.Verb.Orig, NoNewline)
+			Printf("%s", G.OrphanedSyntx.Verb.Orig)
 		}
 		if findSecond != nil {
-			Print(" ", NoNewline)
+			Printf(" ")
 			ThingPrint(true, true)
 		}
 		if findFirst != nil {
-			Print(" "+findFirst.VrbPrep, NoNewline)
+			Printf(" %s", findFirst.VrbPrep)
 		} else if findSecond != nil {
-			Print(" "+findSecond.ObjPrep, NoNewline)
+			Printf(" %s", findSecond.ObjPrep)
 		}
-		Print("?", Newline)
+		Printf("?\n")
 		return false
 	}
 	return true
@@ -994,7 +988,7 @@ func Orphan(first, second *Syntx) {
 }
 
 func CanNotOrphan() {
-	Print("\"I don't understand! What are you referring to?\"", Newline)
+	Printf("\"I don't understand! What are you referring to?\"\n")
 }
 
 func FindWhatIMean(objFlags Flags, locFlags LocFlags, prep string) *Object {
@@ -1008,23 +1002,21 @@ func FindWhatIMean(objFlags Flags, locFlags LocFlags, prep string) *Object {
 	if len(res) != 1 {
 		return nil
 	}
-	Print("(", NoNewline)
+	Printf("(")
 	if len(prep) == 0 || G.Params.EndOnPrep {
-		PrintObject(res[0])
-		Print(")", Newline)
+		Printf("%s)\n", res[0].Desc)
 		return res[0]
 	}
-	Print(prep, NoNewline)
+	Printf("%s", prep)
 	if prep == "out" {
-		Print(" of", NoNewline)
+		Printf(" of")
 	}
 	if res[0] == &Hands {
-		Print(" your hands", NoNewline)
+		Printf(" your hands")
 	} else {
-		Print(" the ", NoNewline)
-		PrintObject(res[0])
+		Printf(" the %s", res[0].Desc)
 	}
-	Print(")", Newline)
+	Printf(")\n")
 	return res[0]
 }
 
@@ -1038,7 +1030,7 @@ func GetObject(isDirect, vrb bool) []*Object {
 	}
 	if !G.Search.Syn.IsSet() && !G.Search.Adj.IsSet() && G.Params.GetType != GetAll && G.Search.ObjFlags == 0 {
 		if vrb {
-			Print("There seems to be a noun missing in that sentence!", Newline)
+			Printf("There seems to be a noun missing in that sentence!\n")
 		}
 		return nil
 	}
@@ -1072,9 +1064,7 @@ func GetObject(isDirect, vrb bool) []*Object {
 		if G.Params.GetType == GetOne && ln != 0 {
 			if ln > 1 {
 				res = []*Object{res[G.Rand.Intn(len(res))]}
-				Print("(How about the ", NoNewline)
-				PrintObject(res[0])
-				Print("?)", Newline)
+				Printf("(How about the %s?)\n", res[0].Desc)
 			}
 		} else if ln > 1 || (ln == 0 && G.Search.LocFlags.HasAll()) {
 			if G.Search.LocFlags.HasAll() {
@@ -1102,7 +1092,7 @@ func GetObject(isDirect, vrb bool) []*Object {
 				Orphan(nil, nil)
 				G.Params.ShldOrphan = true
 			} else if vrb {
-				Print("There seems to be a noun missing in that sentence!", Newline)
+				Printf("There seems to be a noun missing in that sentence!\n")
 			}
 			G.Search.Syn.Clear()
 			G.Search.Adj.Clear()
@@ -1119,7 +1109,7 @@ func GetObject(isDirect, vrb bool) []*Object {
 					G.Search.Adj.Clear()
 					return res
 				}
-				Print("It's too dark to see!", Newline)
+				Printf("It's too dark to see!\n")
 			}
 			G.Search.Syn.Clear()
 			G.Search.Adj.Clear()
@@ -1139,34 +1129,33 @@ func GetObject(isDirect, vrb bool) []*Object {
 // WhichPrint outputs all of the possible matches
 // when the game parser matches multiple game objects.
 func WhichPrint(isDirect bool, tbl []*Object) {
-	Print("Which ", NoNewline)
+	Printf("Which ")
 	if G.Params.ShldOrphan || G.Params.HasMerged || G.Params.HasAnd {
 		if G.Search.Syn.IsSet() {
-			Print(G.Search.Syn.Norm, NoNewline)
+			Printf("%s", G.Search.Syn.Norm)
 		} else if G.Search.Adj.IsSet() {
-			Print(G.Search.Adj.Norm, NoNewline)
+			Printf("%s", G.Search.Adj.Norm)
 		} else {
-			Print("one", NoNewline)
+			Printf("one")
 		}
 	} else {
 		ThingPrint(isDirect, false)
 	}
-	Print(" do you mean, ", NoNewline)
+	Printf(" do you mean, ")
 	ln := len(tbl)
 	for _, obj := range tbl {
-		Print("the ", NoNewline)
-		PrintObject(obj)
+		Printf("the %s", obj.Desc)
 		if ln == 2 {
 			if len(tbl) != 2 {
-				Print(",", NoNewline)
+				Printf(",")
 			}
-			Print(" or ", NoNewline)
+			Printf(" or ")
 		} else if ln > 2 {
-			Print(", ", NoNewline)
+			Printf(", ")
 		}
 		ln--
 		if ln < 1 {
-			Print("?", Newline)
+			Printf("?\n")
 		}
 	}
 }
@@ -1215,30 +1204,30 @@ func ThingPrint(isDirect, isThe bool) {
 	}
 	for _, wrd := range *search {
 		if wrd.Is(",") {
-			Print(", ", NoNewline)
+			Printf(", ")
 		} else if nsp {
 			nsp = false
 		} else {
-			Print(" ", NoNewline)
+			Printf(" ")
 		}
 		if wrd.IsAny(".", ",") {
 			nsp = true
 		} else if wrd.Is("me") {
-			PrintObject(&Me)
+			Printf("%s", Me.Desc)
 			pn = true
 		} else if wrd.Is("intnum") {
-			PrintNumber(G.Params.Number)
+			Printf("%d", G.Params.Number)
 			pn = true
 		} else {
 			if isFirst && !pn && isThe {
-				Print("the ", NoNewline)
+				Printf("the ")
 			}
 			if G.Params.ShldOrphan || G.Params.HasMerged {
-				Print(wrd.Norm, NoNewline)
+				Printf("%s", wrd.Norm)
 			} else if wrd.Is("it") && IsAccessible(G.Params.ItObj) {
-				PrintObject(G.Params.ItObj)
+				Printf("%s", G.Params.ItObj.Desc)
 			} else {
-				Print(wrd.Orig, NoNewline)
+				Printf("%s", wrd.Orig)
 			}
 			isFirst = false
 		}
