@@ -163,17 +163,16 @@ func notHerePrint(isDir bool) {
 }
 
 func sailorFcn(arg ActionArg) bool {
-	if G.ActVerb.Norm == "tell" {
+	switch G.ActVerb.Norm {
+	case "tell":
 		G.Params.Continue = NumUndef
 		G.Params.InQuotes = false
 		Printf("You can't talk to the sailor that way.\n")
 		return true
-	}
-	if G.ActVerb.Norm == "examine" {
+	case "examine":
 		Printf("There is no sailor to be seen.\n")
 		return true
-	}
-	if G.ActVerb.Norm == "hello" {
+	case "hello":
 		gD().HelloSailor++
 		if gD().HelloSailor%20 == 0 {
 			Printf("You seem to be repeating yourself.\n")
@@ -188,14 +187,18 @@ func sailorFcn(arg ActionArg) bool {
 }
 
 func groundFunction(arg ActionArg) bool {
-	if (G.ActVerb.Norm == "put" || G.ActVerb.Norm == "put on") && G.IndirObj == &ground {
-		Perform(ActionVerb{Norm: "drop", Orig: "drop"}, G.DirObj, nil)
-		return true
+	switch G.ActVerb.Norm {
+	case "put", "put on":
+		if G.IndirObj == &ground {
+			Perform(ActionVerb{Norm: "drop", Orig: "drop"}, G.DirObj, nil)
+			return true
+		}
 	}
 	if G.Here == &sandyCave {
 		return sandFunction(ActUnk)
 	}
-	if G.ActVerb.Norm == "dig" {
+	switch G.ActVerb.Norm {
+	case "dig":
 		Printf("The ground is too hard for digging here.\n")
 		return true
 	}
@@ -203,15 +206,14 @@ func groundFunction(arg ActionArg) bool {
 }
 
 func grueFunction(arg ActionArg) bool {
-	if G.ActVerb.Norm == "examine" {
+	switch G.ActVerb.Norm {
+	case "examine":
 		Printf("The grue is a sinister, lurking presence in the dark places of the earth. Its favorite diet is adventurers, but its insatiable appetite is tempered by its fear of light. No grue has ever been seen by the light of day, and few have survived its fearsome jaws to tell the tale.\n")
 		return true
-	}
-	if G.ActVerb.Norm == "find" {
+	case "find":
 		Printf("There is no grue here, but I'm sure there is at least one lurking in the darkness nearby. I wouldn't let my light go out if I were you!\n")
 		return true
-	}
-	if G.ActVerb.Norm == "listen" {
+	case "listen":
 		Printf("it makes no sound but is always lurking in the darkness nearby.\n")
 		return true
 	}
@@ -219,44 +221,41 @@ func grueFunction(arg ActionArg) bool {
 }
 
 func cretinFcn(arg ActionArg) bool {
-	if G.ActVerb.Norm == "tell" {
+	switch G.ActVerb.Norm {
+	case "tell":
 		G.Params.Continue = NumUndef
 		G.Params.InQuotes = false
 		Printf("Talking to yourself is said to be a sign of impending mental collapse.\n")
 		return true
-	}
-	if G.ActVerb.Norm == "give" && G.IndirObj == &me {
-		Perform(ActionVerb{Norm: "take", Orig: "take"}, G.DirObj, nil)
-		return true
-	}
-	if G.ActVerb.Norm == "make" {
+	case "give":
+		if G.IndirObj == &me {
+			Perform(ActionVerb{Norm: "take", Orig: "take"}, G.DirObj, nil)
+			return true
+		}
+	case "make":
 		Printf("Only you can do that.\n")
 		return true
-	}
-	if G.ActVerb.Norm == "disembark" {
+	case "disembark":
 		Printf("You'll have to do that on your own.\n")
 		return true
-	}
-	if G.ActVerb.Norm == "eat" {
+	case "eat":
 		Printf("Auto-cannibalism is not the answer.\n")
 		return true
-	}
-	if G.ActVerb.Norm == "attack" || G.ActVerb.Norm == "mung" {
+	case "attack", "mung":
 		if G.IndirObj != nil && G.IndirObj.Has(FlgWeapon) {
 			return jigsUp("If you insist.... Poof, you're dead!", false)
 		}
 		Printf("Suicide is not the answer.\n")
 		return true
-	}
-	if G.ActVerb.Norm == "throw" && G.DirObj == &me {
-		Printf("Why don't you just walk like normal people?\n")
-		return true
-	}
-	if G.ActVerb.Norm == "take" {
+	case "throw":
+		if G.DirObj == &me {
+			Printf("Why don't you just walk like normal people?\n")
+			return true
+		}
+	case "take":
 		Printf("How romantic!\n")
 		return true
-	}
-	if G.ActVerb.Norm == "examine" {
+	case "examine":
 		if G.Here == &mirrorRoom1 || G.Here == &mirrorRoom2 {
 			Printf("Your image in the mirror looks tired.\n")
 			return true
@@ -268,15 +267,14 @@ func cretinFcn(arg ActionArg) bool {
 }
 
 func pathObject(arg ActionArg) bool {
-	if G.ActVerb.Norm == "take" || G.ActVerb.Norm == "follow" {
+	switch G.ActVerb.Norm {
+	case "take", "follow":
 		Printf("You must specify a direction to go.\n")
 		return true
-	}
-	if G.ActVerb.Norm == "find" {
+	case "find":
 		Printf("I can't help you there....\n")
 		return true
-	}
-	if G.ActVerb.Norm == "dig" {
+	case "dig":
 		Printf("Not a chance.\n")
 		return true
 	}
@@ -284,7 +282,8 @@ func pathObject(arg ActionArg) bool {
 }
 
 func stairsFcn(arg ActionArg) bool {
-	if G.ActVerb.Norm == "through" {
+	switch G.ActVerb.Norm {
+	case "through":
 		Printf("You should say whether you want to go up or down.\n")
 		return true
 	}
@@ -292,11 +291,11 @@ func stairsFcn(arg ActionArg) bool {
 }
 
 func zorkmidFunction(arg ActionArg) bool {
-	if G.ActVerb.Norm == "examine" {
+	switch G.ActVerb.Norm {
+	case "examine":
 		Printf("The zorkmid is the unit of currency of the Great Underground Empire.\n")
 		return true
-	}
-	if G.ActVerb.Norm == "find" {
+	case "find":
 		Printf("The best way to find zorkmids is to go out and look for them.\n")
 		return true
 	}

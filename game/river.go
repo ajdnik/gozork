@@ -15,43 +15,41 @@ func fixMaintLeak() {
 }
 
 func waterFcn(arg ActionArg) bool {
-	if G.ActVerb.Norm == "sgive" {
+	switch G.ActVerb.Norm {
+	case "sgive":
 		return false
-	}
-	if G.ActVerb.Norm == "through" || G.ActVerb.Norm == "board" {
+	case "through", "board":
 		Printf("%s\n", PickOne(swimYuks))
 		return true
-	}
-	// Simplified water handling
-	if G.ActVerb.Norm == "take" || G.ActVerb.Norm == "put" {
+	case "take":
+		// Simplified water handling
 		w := G.DirObj
 		if w == &globalWater {
 			w = &water
 		}
-		if G.ActVerb.Norm == "take" {
-			if w.IsIn(&bottle) && G.IndirObj == nil {
-				Printf("it's in the bottle. Perhaps you should take that instead.\n")
+		if w.IsIn(&bottle) && G.IndirObj == nil {
+			Printf("it's in the bottle. Perhaps you should take that instead.\n")
+			return true
+		}
+		if bottle.IsIn(G.Winner) {
+			if !bottle.Has(FlgOpen) {
+				Printf("The bottle is closed.\n")
+				thisIsIt(&bottle)
 				return true
 			}
-			if bottle.IsIn(G.Winner) {
-				if !bottle.Has(FlgOpen) {
-					Printf("The bottle is closed.\n")
-					thisIsIt(&bottle)
-					return true
-				}
-				if !bottle.HasChildren() {
-					water.MoveTo(&bottle)
-					Printf("The bottle is now full of water.\n")
-					return true
-				}
-				Printf("The water slips through your fingers.\n")
+			if !bottle.HasChildren() {
+				water.MoveTo(&bottle)
+				Printf("The bottle is now full of water.\n")
 				return true
 			}
 			Printf("The water slips through your fingers.\n")
 			return true
 		}
-	}
-	if G.ActVerb.Norm == "drop" || G.ActVerb.Norm == "give" {
+		Printf("The water slips through your fingers.\n")
+		return true
+	case "put":
+		return false
+	case "drop", "give":
 		if G.ActVerb.Norm == "drop" && water.IsIn(&bottle) && !bottle.Has(FlgOpen) {
 			Printf("The bottle is closed.\n")
 			return true
@@ -65,8 +63,7 @@ func waterFcn(arg ActionArg) bool {
 			Printf("The water spills to the floor and evaporates immediately.\n")
 		}
 		return true
-	}
-	if G.ActVerb.Norm == "throw" {
+	case "throw":
 		Printf("The water splashes on the walls and evaporates immediately.\n")
 		removeCarefully(&water)
 		return true
@@ -75,7 +72,8 @@ func waterFcn(arg ActionArg) bool {
 }
 
 func boltFcn(arg ActionArg) bool {
-	if G.ActVerb.Norm == "turn" {
+	switch G.ActVerb.Norm {
+	case "turn":
 		if G.IndirObj == &wrench {
 			if gD().GateFlag {
 				reservoirSouth.Take(FlgTouch)
@@ -98,12 +96,10 @@ func boltFcn(arg ActionArg) bool {
 			Printf("The bolt won't turn using the %s.\n", G.IndirObj.Desc)
 		}
 		return true
-	}
-	if G.ActVerb.Norm == "take" {
+	case "take":
 		integralPart()
 		return true
-	}
-	if G.ActVerb.Norm == "oil" {
+	case "oil":
 		Printf("Hmm. it appears the tube contained glue, not oil. Turning the bolt won't get any easier....\n")
 		return true
 	}
@@ -111,7 +107,8 @@ func boltFcn(arg ActionArg) bool {
 }
 
 func bubbleFcn(arg ActionArg) bool {
-	if G.ActVerb.Norm == "take" {
+	switch G.ActVerb.Norm {
+	case "take":
 		integralPart()
 		return true
 	}
@@ -119,11 +116,11 @@ func bubbleFcn(arg ActionArg) bool {
 }
 
 func damFunction(arg ActionArg) bool {
-	if G.ActVerb.Norm == "open" || G.ActVerb.Norm == "close" {
+	switch G.ActVerb.Norm {
+	case "open", "close":
 		Printf("Sounds reasonable, but this isn't how.\n")
 		return true
-	}
-	if G.ActVerb.Norm == "plug" {
+	case "plug":
 		if G.IndirObj == &hands {
 			Printf("Are you the little Dutch boy, then? Sorry, this is a big dam.\n")
 		} else {
@@ -135,15 +132,16 @@ func damFunction(arg ActionArg) bool {
 }
 
 func puncturedBoatFcn(arg ActionArg) bool {
-	if (G.ActVerb.Norm == "put" || G.ActVerb.Norm == "put on") && G.DirObj == &putty {
-		fixBoat()
-		return true
-	}
-	if G.ActVerb.Norm == "inflate" || G.ActVerb.Norm == "fill" {
+	switch G.ActVerb.Norm {
+	case "put", "put on":
+		if G.DirObj == &putty {
+			fixBoat()
+			return true
+		}
+	case "inflate", "fill":
 		Printf("No chance. Some moron punctured it.\n")
 		return true
-	}
-	if G.ActVerb.Norm == "plug" {
+	case "plug":
 		if G.IndirObj == &putty {
 			fixBoat()
 			return true
@@ -155,7 +153,8 @@ func puncturedBoatFcn(arg ActionArg) bool {
 }
 
 func inflatableBoatFcn(arg ActionArg) bool {
-	if G.ActVerb.Norm == "inflate" || G.ActVerb.Norm == "fill" {
+	switch G.ActVerb.Norm {
+	case "inflate", "fill":
 		if !inflatableBoat.IsIn(G.Here) {
 			Printf("The boat must be on the ground to be inflated.\n")
 			return true
@@ -182,25 +181,27 @@ func inflatableBoatFcn(arg ActionArg) bool {
 }
 
 func riverFcn(arg ActionArg) bool {
-	if G.ActVerb.Norm == "put" && G.IndirObj == &river {
-		if G.DirObj == &me {
-			jigsUp("You splash around for a while, fighting the current, then you drown.", false)
-			return true
-		}
-		if G.DirObj == &inflatedBoat {
-			Printf("You should get in the boat then launch it.\n")
-			return true
-		}
-		if G.DirObj.Has(FlgBurn) {
+	switch G.ActVerb.Norm {
+	case "put":
+		if G.IndirObj == &river {
+			if G.DirObj == &me {
+				jigsUp("You splash around for a while, fighting the current, then you drown.", false)
+				return true
+			}
+			if G.DirObj == &inflatedBoat {
+				Printf("You should get in the boat then launch it.\n")
+				return true
+			}
+			if G.DirObj.Has(FlgBurn) {
+				removeCarefully(G.DirObj)
+				Printf("The %s floats for a moment, then sinks.\n", G.DirObj.Desc)
+				return true
+			}
 			removeCarefully(G.DirObj)
-			Printf("The %s floats for a moment, then sinks.\n", G.DirObj.Desc)
+			Printf("The %s splashes into the water and is gone forever.\n", G.DirObj.Desc)
 			return true
 		}
-		removeCarefully(G.DirObj)
-		Printf("The %s splashes into the water and is gone forever.\n", G.DirObj.Desc)
-		return true
-	}
-	if G.ActVerb.Norm == "leap" || G.ActVerb.Norm == "through" {
+	case "leap", "through":
 		Printf("A look before leaping reveals that the river is wide and dangerous, with swift currents and large, half-hidden rocks. You decide to forgo your swim.\n")
 		return true
 	}
@@ -268,20 +269,22 @@ func rBoatFcn(arg ActionArg) bool {
 		return false
 	}
 	if arg == ActBegin {
-		if G.ActVerb.Norm == "walk" && G.Params.HasWalkDir {
-			if G.Params.WalkDir == Land || G.Params.WalkDir == East || G.Params.WalkDir == West {
-				return false
+		switch G.ActVerb.Norm {
+		case "walk":
+			if G.Params.HasWalkDir {
+				if G.Params.WalkDir == Land || G.Params.WalkDir == East || G.Params.WalkDir == West {
+					return false
+				}
+				if G.Here == &reservoir && (G.Params.WalkDir == North || G.Params.WalkDir == South) {
+					return false
+				}
+				if G.Here == &inStream && G.Params.WalkDir == South {
+					return false
+				}
+				Printf("Read the label for the boat's instructions.\n")
+				return true
 			}
-			if G.Here == &reservoir && (G.Params.WalkDir == North || G.Params.WalkDir == South) {
-				return false
-			}
-			if G.Here == &inStream && G.Params.WalkDir == South {
-				return false
-			}
-			Printf("Read the label for the boat's instructions.\n")
-			return true
-		}
-		if G.ActVerb.Norm == "launch" {
+		case "launch":
 			if G.Here == &river1 || G.Here == &river2 || G.Here == &river3 || G.Here == &river4 || G.Here == &reservoir || G.Here == &inStream {
 				Printf("You are on the ")
 				if G.Here == &reservoir {
@@ -308,34 +311,36 @@ func rBoatFcn(arg ActionArg) bool {
 				return true
 			}
 			return true
-		}
-		if (G.ActVerb.Norm == "drop" && G.DirObj.Has(FlgWeapon)) ||
-			(G.ActVerb.Norm == "put" && G.DirObj.Has(FlgWeapon) && G.IndirObj == &inflatedBoat) ||
-			((G.ActVerb.Norm == "attack" || G.ActVerb.Norm == "mung") && G.IndirObj != nil && G.IndirObj.Has(FlgWeapon)) {
-			removeCarefully(&inflatedBoat)
-			puncturedBoat.MoveTo(G.Here)
-			rob(&inflatedBoat, G.Here, 0)
-			G.Winner.MoveTo(G.Here)
-			Printf("it seems that the ")
-			if G.ActVerb.Norm == "drop" || G.ActVerb.Norm == "put" {
-				Printf("%s", G.DirObj.Desc)
-			} else {
-				Printf("%s", G.IndirObj.Desc)
-			}
-			Printf(" didn't agree with the boat, as evidenced by the loud hissing noise issuing therefrom. With a pathetic sputter, the boat deflates, leaving you without.\n")
-			if G.Here.Has(FlgNonLand) {
-				Printf("\n")
-				if G.Here == &reservoir || G.Here == &inStream {
-					jigsUp("Another pathetic sputter, this time from you, heralds your drowning.", false)
+		case "drop", "put", "attack", "mung":
+			if (G.ActVerb.Norm == "drop" && G.DirObj.Has(FlgWeapon)) ||
+				(G.ActVerb.Norm == "put" && G.DirObj.Has(FlgWeapon) && G.IndirObj == &inflatedBoat) ||
+				((G.ActVerb.Norm == "attack" || G.ActVerb.Norm == "mung") && G.IndirObj != nil && G.IndirObj.Has(FlgWeapon)) {
+				removeCarefully(&inflatedBoat)
+				puncturedBoat.MoveTo(G.Here)
+				rob(&inflatedBoat, G.Here, 0)
+				G.Winner.MoveTo(G.Here)
+				Printf("it seems that the ")
+				if G.ActVerb.Norm == "drop" || G.ActVerb.Norm == "put" {
+					Printf("%s", G.DirObj.Desc)
 				} else {
-					jigsUp("In other words, fighting the fierce currents of the Frigid river. You manage to hold your own for a bit, but then you are carried over a waterfall and into some nasty rocks. Ouch!", false)
+					Printf("%s", G.IndirObj.Desc)
 				}
+				Printf(" didn't agree with the boat, as evidenced by the loud hissing noise issuing therefrom. With a pathetic sputter, the boat deflates, leaving you without.\n")
+				if G.Here.Has(FlgNonLand) {
+					Printf("\n")
+					if G.Here == &reservoir || G.Here == &inStream {
+						jigsUp("Another pathetic sputter, this time from you, heralds your drowning.", false)
+					} else {
+						jigsUp("In other words, fighting the fierce currents of the Frigid river. You manage to hold your own for a bit, but then you are carried over a waterfall and into some nasty rocks. Ouch!", false)
+					}
+				}
+				return true
 			}
-			return true
 		}
 		return false
 	}
-	if G.ActVerb.Norm == "board" {
+	switch G.ActVerb.Norm {
+	case "board":
 		if sceptre.IsIn(G.Winner) || knife.IsIn(G.Winner) || sword.IsIn(G.Winner) || rustyKnife.IsIn(G.Winner) || axe.IsIn(G.Winner) || stiletto.IsIn(G.Winner) {
 			Printf("Oops! Something sharp seems to have slipped and punctured the boat. The boat deflates to the sounds of hissing, sputtering, and cursing.\n")
 			removeCarefully(&inflatedBoat)
@@ -344,12 +349,10 @@ func rBoatFcn(arg ActionArg) bool {
 			return true
 		}
 		return false
-	}
-	if G.ActVerb.Norm == "inflate" || G.ActVerb.Norm == "fill" {
+	case "inflate", "fill":
 		Printf("Inflating it further would probably burst it.\n")
 		return true
-	}
-	if G.ActVerb.Norm == "deflate" {
+	case "deflate":
 		if G.Winner.Location() == &inflatedBoat {
 			Printf("You can't deflate the boat while you're in it.\n")
 			return true

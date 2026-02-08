@@ -105,7 +105,8 @@ func infested(r *Object) bool {
 }
 
 func robberFcn(arg ActionArg) bool {
-	if G.ActVerb.Norm == "tell" {
+	switch G.ActVerb.Norm {
+	case "tell":
 		Printf("The thief is a strong, silent type.\n")
 		G.Params.Continue = NumUndef
 		return true
@@ -183,64 +184,67 @@ func robberFcn(arg ActionArg) bool {
 	}
 
 	// Default (no special mode)
-	if G.ActVerb.Norm == "hello" && thief.LongDesc == robberUDesc {
-		Printf("The thief, being temporarily incapacitated, is unable to acknowledge your greeting with his usual graciousness.\n")
-		return true
-	}
-	if G.DirObj == &knife && G.ActVerb.Norm == "throw" && !thief.Has(FlgFight) {
-		G.DirObj.MoveTo(G.Here)
-		if Prob(10, false) {
-			Printf("You evidently frightened the robber, though you didn't hit him. He flees")
-			largeBag.Remove()
-			hasStiletto := false
-			if stiletto.IsIn(&thief) {
-				stiletto.Remove()
-				hasStiletto = true
-			}
-			if thief.HasChildren() {
-				moveAll(&thief, G.Here)
-				Printf(", but the contents of his bag fall on the floor.")
+	switch G.ActVerb.Norm {
+	case "hello":
+		if thief.LongDesc == robberUDesc {
+			Printf("The thief, being temporarily incapacitated, is unable to acknowledge your greeting with his usual graciousness.\n")
+			return true
+		}
+	case "throw":
+		if G.DirObj == &knife && !thief.Has(FlgFight) {
+			G.DirObj.MoveTo(G.Here)
+			if Prob(10, false) {
+				Printf("You evidently frightened the robber, though you didn't hit him. He flees")
+				largeBag.Remove()
+				hasStiletto := false
+				if stiletto.IsIn(&thief) {
+					stiletto.Remove()
+					hasStiletto = true
+				}
+				if thief.HasChildren() {
+					moveAll(&thief, G.Here)
+					Printf(", but the contents of his bag fall on the floor.")
+				} else {
+					Printf(".")
+				}
+				largeBag.MoveTo(&thief)
+				if hasStiletto {
+					stiletto.MoveTo(&thief)
+				}
+				Printf("\n")
+				thief.Give(FlgInvis)
 			} else {
-				Printf(".")
+				Printf("You missed. The thief makes no attempt to take the knife, though it would be a fine addition to the collection in his bag. He does seem angered by your attempt.\n")
+				thief.Give(FlgFight)
 			}
-			largeBag.MoveTo(&thief)
-			if hasStiletto {
-				stiletto.MoveTo(&thief)
+			return true
+		}
+		fallthrough
+	case "give":
+		if G.DirObj != nil && G.DirObj != &thief && G.IndirObj == &thief {
+			if thief.GetStrength() < 0 {
+				thief.SetStrength(-thief.GetStrength())
+				Queue("iThief", -1).Run = true
+				recoverStiletto()
+				thief.LongDesc = robberCDesc
+				Printf("Your proposed victim suddenly recovers consciousness.\n")
 			}
-			Printf("\n")
-			thief.Give(FlgInvis)
-		} else {
-			Printf("You missed. The thief makes no attempt to take the knife, though it would be a fine addition to the collection in his bag. He does seem angered by your attempt.\n")
-			thief.Give(FlgFight)
+			G.DirObj.MoveTo(&thief)
+			if G.DirObj.GetTValue() > 0 {
+				gD().ThiefEngrossed = true
+				Printf("The thief is taken aback by your unexpected generosity, but accepts the %s and stops to admire its beauty.\n", G.DirObj.Desc)
+			} else {
+				Printf("The thief places the %s in his bag and thanks you politely.\n", G.DirObj.Desc)
+			}
+			return true
 		}
-		return true
-	}
-	if (G.ActVerb.Norm == "throw" || G.ActVerb.Norm == "give") && G.DirObj != nil && G.DirObj != &thief && G.IndirObj == &thief {
-		if thief.GetStrength() < 0 {
-			thief.SetStrength(-thief.GetStrength())
-			Queue("iThief", -1).Run = true
-			recoverStiletto()
-			thief.LongDesc = robberCDesc
-			Printf("Your proposed victim suddenly recovers consciousness.\n")
-		}
-		G.DirObj.MoveTo(&thief)
-		if G.DirObj.GetTValue() > 0 {
-			gD().ThiefEngrossed = true
-			Printf("The thief is taken aback by your unexpected generosity, but accepts the %s and stops to admire its beauty.\n", G.DirObj.Desc)
-		} else {
-			Printf("The thief places the %s in his bag and thanks you politely.\n", G.DirObj.Desc)
-		}
-		return true
-	}
-	if G.ActVerb.Norm == "take" {
+	case "take":
 		Printf("Once you got him, what would you do with him?\n")
 		return true
-	}
-	if G.ActVerb.Norm == "examine" || G.ActVerb.Norm == "look inside" {
+	case "examine", "look inside":
 		Printf("The thief is a slippery character with beady eyes that flit back and forth. He carries, along with an unmistakable arrogance, a large bag over his shoulder and a vicious stiletto, whose blade is aimed menacingly in your direction. I'd watch out if I were you.\n")
 		return true
-	}
-	if G.ActVerb.Norm == "listen" {
+	case "listen":
 		Printf("The thief says nothing, as you have not been formally introduced.\n")
 		return true
 	}
@@ -248,23 +252,23 @@ func robberFcn(arg ActionArg) bool {
 }
 
 func largeBagFcn(arg ActionArg) bool {
-	if G.ActVerb.Norm == "take" {
+	switch G.ActVerb.Norm {
+	case "take":
 		if thief.LongDesc == robberUDesc {
 			Printf("Sadly for you, the robber collapsed on top of the bag. Trying to take it would wake him.\n")
 		} else {
 			Printf("The bag will be taken over his dead body.\n")
 		}
 		return true
-	}
-	if G.ActVerb.Norm == "put" && G.IndirObj == &largeBag {
-		Printf("it would be a good trick.\n")
-		return true
-	}
-	if G.ActVerb.Norm == "open" || G.ActVerb.Norm == "close" {
+	case "put":
+		if G.IndirObj == &largeBag {
+			Printf("it would be a good trick.\n")
+			return true
+		}
+	case "open", "close":
 		Printf("Getting close enough would be a good trick.\n")
 		return true
-	}
-	if G.ActVerb.Norm == "examine" || G.ActVerb.Norm == "look inside" {
+	case "examine", "look inside":
 		Printf("The bag is underneath the thief, so one can't say what, if anything, is inside.\n")
 		return true
 	}
