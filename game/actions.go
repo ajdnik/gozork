@@ -109,20 +109,6 @@ func forestRoomQ() bool {
 
 // stealJunk and dropJunk are defined in the iThief section below
 
-func minInt(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
-}
-
-func absInt(a int) int {
-	if a < 0 {
-		return -a
-	}
-	return a
-}
-
 // ================================================================
 // SCORE
 // ================================================================
@@ -1653,7 +1639,7 @@ func cyclopsFcn(arg ActionArg) bool {
 			if count >= 0 {
 				removeCarefully(&lunch)
 				Printf("The cyclops says \"Mmm Mmm. I love hot peppers! But oh, could I use a drink. Perhaps I could drink the blood of that thing.\"  From the gleam in his eye, it could be surmised that you are \"that thing\".\n")
-				gD().CycloWrath = minInt(-1, -count)
+				gD().CycloWrath = min(-1, -count)
 			}
 			Queue("iCyclops", -1).Run = true
 			return true
@@ -2800,7 +2786,7 @@ func iCyclops() bool {
 		QueueInt("iCyclops", false).Run = false
 		return false
 	}
-	if absInt(gD().CycloWrath) > 5 {
+	if gD().CycloWrath < -5 || gD().CycloWrath > 5 {
 		QueueInt("iCyclops", false).Run = false
 		jigsUp("The cyclops, tired of all of your games and trickery, grabs you firmly. As he licks his chops, he says \"Mmm. Just like Mom used to make 'em.\" it's nice to be appreciated.", false)
 		return true
@@ -2811,7 +2797,11 @@ func iCyclops() bool {
 		gD().CycloWrath++
 	}
 	if !gD().CyclopsFlag {
-		idx := absInt(gD().CycloWrath) - 2
+		idx := gD().CycloWrath
+		if idx < 0 {
+			idx = -idx
+		}
+		idx -= 2
 		if idx >= 0 && idx < len(cyclomad) {
 			Printf("%s\n", cyclomad[idx])
 		}
