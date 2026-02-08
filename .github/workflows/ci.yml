@@ -1,0 +1,201 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master, "feature/**"]
+  pull_request:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Install golangci-lint
+        run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+
+      - name: Run golangci-lint
+        run: |
+          set +e
+          golangci-lint run ./... --out-format tab > lint-output.txt 2>&1
+          echo "$?" > lint-exit-code.txt
+
+      - name: Write lint summary
+        if: always()
+        run: |
+          EXIT_CODE=$(cat lint-exit-code.txt 2>/dev/null || echo 1)
+          {
+            echo "## Lint"
+            echo ""
+            if [ "$EXIT_CODE" = "0" ]; then
+              echo ":white_check_mark: **golangci-lint passed** — no issues found."
+            else
+              echo ":x: **golangci-lint found issues:**"
+              echo ""
+              echo '```'
+              head -100 lint-output.txt
+              echo '```'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit "$EXIT_CODE"
+
+  vet:
+    name: Vet
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Run go vet
+        run: |
+          set +e
+          go vet ./... > vet-output.txt 2>&1
+          echo "$?" > vet-exit-code.txt
+
+      - name: Write vet summary
+        if: always()
+        run: |
+          EXIT_CODE=$(cat vet-exit-code.txt 2>/dev/null || echo 1)
+          {
+            echo "## Vet"
+            echo ""
+            if [ "$EXIT_CODE" = "0" ]; then
+              echo ":white_check_mark: **go vet passed** — no issues found."
+            else
+              echo ":x: **go vet found issues:**"
+              echo ""
+              echo '```'
+              cat vet-output.txt
+              echo '```'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit "$EXIT_CODE"
+
+  test:
+    name: Test & Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Run tests with coverage
+        run: |
+          set +e
+          go test -v -count=1 -timeout 300s -coverprofile=coverage.out ./... > test-output.txt 2>&1
+          echo "$?" > test-exit-code.txt
+
+      - name: Generate coverage report
+        if: always()
+        run: |
+          if [ -f coverage.out ]; then
+            go tool cover -func=coverage.out > coverage-func.txt 2>&1
+            awk '/^total:/ { print $NF }' coverage-func.txt > coverage-total.txt
+          else
+            echo "N/A" > coverage-total.txt
+            echo "No coverage profile generated." > coverage-func.txt
+          fi
+
+      - name: Write test & coverage summary
+        if: always()
+        run: |
+          TEST_EXIT=$(cat test-exit-code.txt 2>/dev/null || echo 1)
+          {
+            echo "## Tests"
+            echo ""
+
+            # --- Count results ---
+            PASSED=$(grep -c '--- PASS:' test-output.txt 2>/dev/null || echo 0)
+            FAILED=$(grep -c '--- FAIL:' test-output.txt 2>/dev/null || echo 0)
+            SKIPPED=$(grep -c '--- SKIP:' test-output.txt 2>/dev/null || echo 0)
+
+            if [ "$TEST_EXIT" = "0" ]; then
+              echo ":white_check_mark: **All tests passed**"
+            else
+              echo ":x: **Some tests failed**"
+            fi
+            echo ""
+            echo "| Result | Count |"
+            echo "|--------|------:|"
+            echo "| :white_check_mark: Passed  | $PASSED |"
+            echo "| :x: Failed  | $FAILED |"
+            echo "| :fast_forward: Skipped | $SKIPPED |"
+            echo ""
+
+            # --- Failed test details ---
+            if [ "$FAILED" -gt 0 ] 2>/dev/null; then
+              echo "<details>"
+              echo "<summary>:x: Failed test output</summary>"
+              echo ""
+              echo '```'
+              awk '/--- FAIL:/{found=1} found' test-output.txt | head -80
+              echo '```'
+              echo ""
+              echo "</details>"
+              echo ""
+            fi
+
+            # --- Package results ---
+            echo "<details>"
+            echo "<summary>Package results</summary>"
+            echo ""
+            echo "| Package | Status | Duration | Coverage |"
+            echo "|---------|--------|----------|----------|"
+            grep -E '^ok |^FAIL\s' test-output.txt | while IFS= read -r line; do
+              if echo "$line" | grep -q '^ok'; then
+                PKG=$(echo "$line" | awk '{print $2}')
+                DUR=$(echo "$line" | awk '{print $3}')
+                COV=$(echo "$line" | grep -oP 'coverage: \K[0-9.]+%' || echo "—")
+                echo "| \`$PKG\` | :white_check_mark: ok | $DUR | $COV |"
+              else
+                PKG=$(echo "$line" | awk '{print $2}')
+                DUR=$(echo "$line" | awk '{for(i=1;i<=NF;i++) if($i ~ /^[0-9.]+s$/) print $i}')
+                [ -z "$DUR" ] && DUR="—"
+                echo "| \`$PKG\` | :x: FAIL | $DUR | — |"
+              fi
+            done
+            echo ""
+            echo "</details>"
+            echo ""
+
+            # --- Coverage ---
+            echo "## Coverage"
+            echo ""
+            TOTAL=$(cat coverage-total.txt 2>/dev/null || echo "N/A")
+            if [ -z "$TOTAL" ] || [ "$TOTAL" = "N/A" ]; then
+              echo ":warning: No coverage data available."
+            else
+              NUM=$(echo "$TOTAL" | tr -d '%')
+              if awk "BEGIN {exit !($NUM >= 80)}"; then
+                echo ":green_circle: **Total coverage: $TOTAL**"
+              elif awk "BEGIN {exit !($NUM >= 50)}"; then
+                echo ":yellow_circle: **Total coverage: $TOTAL**"
+              else
+                echo ":red_circle: **Total coverage: $TOTAL**"
+              fi
+              echo ""
+              echo "<details>"
+              echo "<summary>Per-function coverage</summary>"
+              echo ""
+              echo '```'
+              cat coverage-func.txt
+              echo '```'
+              echo ""
+              echo "</details>"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit "$TEST_EXIT"
