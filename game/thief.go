@@ -5,6 +5,9 @@ import . "github.com/ajdnik/gozork/engine"
 func rob(what, where *Object, prob int) bool {
 	robbed := false
 	for _, x := range what.Children {
+		if x == nil {
+			continue
+		}
 		if x.Has(FlgInvis) || x.Has(FlgSacred) {
 			continue
 		}

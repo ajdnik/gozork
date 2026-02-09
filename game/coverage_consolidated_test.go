@@ -1,6 +1,7 @@
 package game
 
 import (
+	"bytes"
 	"os"
 	"strings"
 	"testing"
@@ -272,7 +273,7 @@ func TestRiverHelpersAndActions(t *testing.T) {
 	buoy.MoveTo(G.Winner)
 	gD().BuoyFlag = true
 	if rivr4RoomFcn(ActEnd) {
-		// no-op
+		t.Fatalf("expected rivr4RoomFcn to return false")
 	}
 	if gD().BuoyFlag {
 		t.Fatalf("expected buoy flag cleared")
@@ -1073,6 +1074,191 @@ func TestLowCoverageTargets(t *testing.T) {
 	whiteHouseFcn(ActUnk)
 }
 
+func TestAdditionalLowCoverageBranches(t *testing.T) {
+	out := setupTestGame(t, "")
+
+	// touchAll recursion
+	bottle.Take(FlgTouch)
+	sandwichBag.Take(FlgTouch)
+	touchAll(&kitchenTable)
+	if !bottle.Has(FlgTouch) || !sandwichBag.Has(FlgTouch) {
+		t.Fatalf("expected touchAll to mark children as touched")
+	}
+
+	// rustyKnifeFcn branches
+	out.Reset()
+	sword.MoveTo(G.Winner)
+	G.ActVerb = ActionVerb{Norm: "take"}
+	rustyKnifeFcn(ActUnk)
+	out.Reset()
+	G.ActVerb = ActionVerb{Norm: "attack"}
+	G.IndirObj = &rustyKnife
+	rustyLoc := rustyKnife.Location()
+	rustyInvis := rustyKnife.Has(FlgInvis)
+	rustyKnifeFcn(ActUnk)
+	if rustyLoc == nil {
+		rustyKnife.MoveTo(&atticTable)
+	} else {
+		rustyKnife.MoveTo(rustyLoc)
+	}
+	if rustyInvis {
+		rustyKnife.Give(FlgInvis)
+	} else {
+		rustyKnife.Take(FlgInvis)
+	}
+	gD().Dead = false
+
+	// deadFunction branches
+	out.Reset()
+	G.ActVerb = ActionVerb{Norm: "wait"}
+	deadFunction(ActUnk)
+	out.Reset()
+	G.ActVerb = ActionVerb{Norm: "attack"}
+	deadFunction(ActUnk)
+	out.Reset()
+	G.ActVerb = ActionVerb{Norm: "look"}
+	G.Here = &forest1
+	deadFunction(ActUnk)
+
+	// chasm/chain pseudos
+	out.Reset()
+	G.ActVerb = ActionVerb{Norm: "leap"}
+	chasmPseudo(ActUnk)
+	out.Reset()
+	G.ActVerb = ActionVerb{Norm: "examine"}
+	chainPseudo(ActUnk)
+
+	// notHerePrint + cretinFcn
+	out.Reset()
+	G.Params.ShldOrphan = true
+	G.NotHere.Adj = LexItem{Orig: "green"}
+	G.NotHere.Syn = LexItem{Orig: "door"}
+	notHerePrint(false)
+	G.Params.ShldOrphan = false
+	out.Reset()
+	G.ActVerb = ActionVerb{Norm: "eat"}
+	cretinFcn(ActUnk)
+
+	// vAlarm with a person
+	out.Reset()
+	G.DirObj = &troll
+	troll.Give(FlgPerson)
+	troll.SetStrength(10)
+	vAlarm(ActUnk)
+
+	// vBurn branches
+	out.Reset()
+	advLoc := advertisement.Location()
+	advInvis := advertisement.Has(FlgInvis)
+	G.DirObj = &advertisement
+	vBurn(ActUnk)
+	if advLoc == nil {
+		advertisement.MoveTo(&mailbox)
+	} else {
+		advertisement.MoveTo(advLoc)
+	}
+	if advInvis {
+		advertisement.Give(FlgInvis)
+	} else {
+		advertisement.Take(FlgInvis)
+	}
+	out.Reset()
+	G.DirObj = &lamp
+	vBurn(ActUnk)
+
+	// vFind branches
+	out.Reset()
+	G.DirObj = &hands
+	vFind(ActUnk)
+	out.Reset()
+	G.DirObj = &me
+	vFind(ActUnk)
+	out.Reset()
+	lamp.MoveTo(G.Winner)
+	G.DirObj = &lamp
+	vFind(ActUnk)
+	out.Reset()
+	G.Here = &kitchen
+	bottle.MoveTo(&kitchenTable)
+	G.DirObj = &bottle
+	vFind(ActUnk)
+
+	// vPutOn non-surface branch
+	out.Reset()
+	G.DirObj = &advertisement
+	G.IndirObj = &lamp
+	vPutOn(ActUnk)
+
+	// vSSpray without recursion (force spray to vSpray)
+	out.Reset()
+	oldSpray := G.Actions["spray"]
+	G.Actions["spray"] = vSpray
+	G.DirObj = &lamp
+	G.IndirObj = &advertisement
+	vSSpray(ActUnk)
+	G.Actions["spray"] = oldSpray
+}
+
+func TestVerbRestartBranches(t *testing.T) {
+	out := setupTestGame(t, "n\n")
+	out.Reset()
+	vRestart(ActUnk)
+	if out.Len() == 0 {
+		t.Fatalf("expected restart prompt output")
+	}
+}
+
+func TestMoreActionBranches(t *testing.T) {
+	setupTestGame(t, "")
+
+	// Troll branches
+	G.Here = &trollRoom
+	troll.MoveTo(G.Here)
+	axe.MoveTo(G.Here)
+	G.ActVerb = ActionVerb{Norm: "listen"}
+	trollFcn(ActUnk)
+	trollFcn(ActDead)
+	trollFcn(ActUnconscious)
+	trollFcn(ActConscious)
+	trollFcn(ActFirst)
+
+	// Cyclops branches
+	G.Here = &cyclopsRoom
+	cyclops.MoveTo(G.Here)
+	gD().CycloWrath = 0
+	gD().CyclopsFlag = true
+	G.ActVerb = ActionVerb{Norm: "examine"}
+	cyclopsFcn(ActUnk)
+	G.ActVerb = ActionVerb{Norm: "alarm"}
+	cyclopsFcn(ActUnk)
+	gD().CyclopsFlag = false
+	lunch.MoveTo(G.Winner)
+	G.ActVerb = ActionVerb{Norm: "give"}
+	G.DirObj = &lunch
+	G.IndirObj = &cyclops
+	cyclopsFcn(ActUnk)
+
+	// Cyclops as winner
+	G.Winner = &cyclops
+	G.ActVerb = ActionVerb{Norm: "odysseus"}
+	cyclopsFcn(ActUnk)
+	G.Winner = &adventurer
+}
+
+func TestRunFunction(t *testing.T) {
+	oldG := G
+	defer func() { G = oldG }()
+
+	G = NewGameState()
+	var out bytes.Buffer
+	G.GameOutput = &out
+	G.GameInput = strings.NewReader("quit\ny\n")
+	G.Rand = newSeededRNG(1)
+	G.Reader = nil
+
+	Run()
+}
+
 func TestObjectActionVerbSweep(t *testing.T) {
 	setupTestGame(t, "")
 
@@ -1199,7 +1385,9 @@ func TestThiefHelpersCoverage(t *testing.T) {
 	stiletteFcn(ActUnk)
 
 	// treasureInsideFcn
-	treasureInsideFcn(ActUnk)
+	if treasureInsideFcn(ActUnk) {
+		t.Fatalf("expected treasureInsideFcn to return false")
+	}
 
 	// stealJunk (use stiletto to force)
 	stiletto.MoveTo(&maze5)
