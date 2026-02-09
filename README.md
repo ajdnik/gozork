@@ -3,7 +3,7 @@
 </p>
 <p align="center">A Zork I game ported from <a href="https://github.com/historicalsource/zork1" target="_blank">ZIL source</a> to Golang.</p>
 <p align="center">
-  <a href="https://goreportcard.com/report/github.com/ajdnik/gozork" target="_blank"><img src="https://goreportcard.com/badge/github.com/ajdnik/gozork" alt="Go Report" /></a>
+  <a href="https://goreportcard.com/report/github.com/ajdnik/gozork" target="_blank"><img src="https://goreportcard.com/badge/github.com/ajdnik/gozork?v=2" alt="Go Report" /></a>
 </p>
 
 ## Description
