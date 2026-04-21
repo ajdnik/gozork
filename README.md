@@ -10,40 +10,66 @@
 
 Zork I is a 1980 interactive fiction game written by Marc Blank, Dave Lebling, Bruce Daniels and Tim Anderson and published by Infocom. To learn more about the history of the game feel free to read [Zork I: The Great Underground Empire](https://medium.com/@r.ajdnik/zork-the-great-underground-empire-cda94623861c) on Medium.
 
-## Prerequisites
+## Install
 
-- **Go 1.25+** &mdash; <https://go.dev/dl/>
-- **golangci-lint v2** (optional, for linting) &mdash; <https://golangci-lint.run/welcome/install/>
+### Pre-built binary
 
-## Quick start
+Download the latest release for your platform from the [releases page](https://github.com/ajdnik/gozork/releases):
+
+| Platform        | Archive                          |
+|-----------------|----------------------------------|
+| Linux amd64     | `gozork-linux-amd64.tar.gz`      |
+| Linux arm64     | `gozork-linux-arm64.tar.gz`      |
+| macOS amd64     | `gozork-darwin-amd64.tar.gz`     |
+| macOS arm64     | `gozork-darwin-arm64.tar.gz`     |
+| Windows amd64   | `gozork-windows-amd64.tar.gz`    |
+| Windows arm64   | `gozork-windows-arm64.tar.gz`    |
+
+Verify the checksum against `checksums-sha256.txt` included in the release.
+
+**Linux / macOS:**
+
+```bash
+sha256sum -c checksums-sha256.txt --ignore-missing
+```
+
+**macOS (if `sha256sum` unavailable):**
+
+```bash
+shasum -a 256 -c checksums-sha256.txt --ignore-missing
+```
+
+**Windows (PowerShell):**
+
+```powershell
+$file = "gozork-windows-amd64.tar.gz"
+$expected = (Select-String $file checksums-sha256.txt).Line.Split(" ")[0]
+$actual = (Get-FileHash $file -Algorithm SHA256).Hash.ToLower()
+if ($actual -eq $expected) { "OK" } else { "MISMATCH" }
+```
+
+Extract and run:
+
+```bash
+tar -xzf gozork-<os>-<arch>.tar.gz
+./gozork
+```
+
+### go install
+
+Requires Go 1.25+:
+
+```bash
+go install github.com/ajdnik/gozork@latest
+gozork
+```
+
+### Build from source
 
 ```bash
 git clone https://github.com/ajdnik/gozork.git
 cd gozork
 make run
-```
-
-## Makefile targets
-
-| Target       | Description                                       |
-|--------------|---------------------------------------------------|
-| `make build` | Compile the `gozork` binary                       |
-| `make run`   | Build and launch the game                          |
-| `make test`  | Run all tests (verbose, no cache)                  |
-| `make vet`   | Run `go vet` static analysis                       |
-| `make lint`  | Run `golangci-lint v2` (requires installation)     |
-| `make fmt`   | Format all Go source files with `gofmt`            |
-| `make cover` | Run tests and print per-package coverage summary   |
-| `make check` | Run fmt, vet, lint, and test in sequence            |
-| `make clean` | Remove build artifacts                             |
-
-## Project structure
-
-```
-gozork/
-  engine/   # Reusable text-adventure engine (parser, objects, clock, I/O)
-  game/     # Zork I game content (rooms, items, NPCs, action handlers)
-  main.go   # Entry point
 ```
 
 ## Usage
@@ -62,3 +88,7 @@ There is a small mailbox here.
 
 >
 ```
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
