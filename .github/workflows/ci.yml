@@ -14,14 +14,14 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
         with:
           go-version-file: go.mod
 
       - name: Install golangci-lint
-        run: go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest
+        run: go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.9.0
 
       - name: Run golangci-lint
         run: |
@@ -52,9 +52,9 @@ jobs:
     name: Vet
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
         with:
           go-version-file: go.mod
 
@@ -87,9 +87,9 @@ jobs:
     name: Test & Coverage
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
         with:
           go-version-file: go.mod
 
@@ -260,3 +260,29 @@ jobs:
             fi
           } >> "$GITHUB_STEP_SUMMARY"
           exit "$TEST_EXIT"
+
+  fuzz:
+    name: Fuzz
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
+        with:
+          go-version-file: go.mod
+
+      - name: Run fuzz tests
+        run: go test -fuzz=FuzzTokenize -fuzztime=30s ./engine/
+
+      - name: Write fuzz summary
+        if: always()
+        run: |
+          {
+            echo "## Fuzz"
+            echo ""
+            if [ "${{ job.status }}" = "success" ]; then
+              echo ":white_check_mark: **Fuzz tests passed** — no issues found in 30s run."
+            else
+              echo ":x: **Fuzz tests found issues.**"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
