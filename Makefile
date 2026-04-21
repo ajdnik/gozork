@@ -1,4 +1,4 @@
-.PHONY: build run test cover vet lint clean fmt
+.PHONY: build run test cover vet lint clean fmt fuzz
 
 # Build the game binary
 build:
@@ -36,6 +36,10 @@ fmt:
 # Remove build artifacts
 clean:
 	rm -f gozork coverage.out
+
+# Run fuzz tests for 30 seconds
+fuzz:
+	go test -fuzz=FuzzTokenize -fuzztime=30s ./engine/
 
 # Run all checks (format, vet, lint, test)
 check: fmt vet lint test
