@@ -38,6 +38,7 @@ var (
 		"describe":   "examine",
 		"what":       "examine",
 		"whats":      "examine",
+		"x":          "examine",
 		"go":         "walk",
 		"run":        "walk",
 		"step":       "walk",
