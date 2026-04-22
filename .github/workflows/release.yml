@@ -27,6 +27,8 @@ jobs:
     needs: release-please
     if: needs.release-please.outputs.release_created == 'true'
     runs-on: ubuntu-latest
+    outputs:
+      hashes: ${{ steps.hash.outputs.hashes }}
     permissions:
       contents: write
       id-token: write
@@ -59,21 +61,37 @@ jobs:
             output="gozork${ext}"
             echo "Building ${os}/${arch}..."
             GOOS="$os" GOARCH="$arch" go build -trimpath -ldflags "-X main.version=${TAG}" -o "$output" .
-            tar -czf "gozork-${os}-${arch}.tar.gz" "$output"
+            tar --sort=name --mtime='1970-01-01' --owner=0 --group=0 --numeric-owner -czf "gozork-${os}-${arch}.tar.gz" "$output"
             rm "$output"
           done
 
       - name: Generate checksums
         run: sha256sum gozork-*.tar.gz > checksums-sha256.txt
 
-      - name: Sign artifacts
+      - name: Generate SLSA subject hashes
+        id: hash
         run: |
-          for f in gozork-*.tar.gz checksums-sha256.txt; do
-            cosign sign-blob --yes "$f" --bundle "${f}.sigstore"
-          done
+          echo "hashes=$(cat checksums-sha256.txt | base64 -w0)" >> "$GITHUB_OUTPUT"
+
+      - name: Sign checksums
+        run: cosign sign-blob --yes checksums-sha256.txt --bundle checksums-sha256.txt.sigstore
 
       - name: Upload release artifacts
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ needs.release-please.outputs.tag_name }}
-        run: gh release upload "$TAG" gozork-*.tar.gz checksums-sha256.txt *.sigstore --clobber
+        run: gh release upload "$TAG" gozork-*.tar.gz checksums-sha256.txt checksums-sha256.txt.sigstore
+
+  provenance:
+    name: SLSA Provenance
+    needs: [release-please, build-and-upload]
+    if: needs.release-please.outputs.release_created == 'true'
+    permissions:
+      actions: read
+      id-token: write
+      contents: write
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0
+    with:
+      base64-subjects: "${{ needs.build-and-upload.outputs.hashes }}"
+      upload-assets: true
+      upload-tag-name: ${{ needs.release-please.outputs.tag_name }}
