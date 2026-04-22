@@ -48,6 +48,27 @@ $actual = (Get-FileHash $file -Algorithm SHA256).Hash.ToLower()
 if ($actual -eq $expected) { "OK" } else { "MISMATCH" }
 ```
 
+#### Verify signature (sigstore)
+
+Releases are signed with [sigstore](https://www.sigstore.dev/) keyless signing. To verify:
+
+```bash
+cosign verify-blob checksums-sha256.txt \
+  --bundle checksums-sha256.txt.sigstore \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+  --certificate-identity-regexp '^https://github\.com/ajdnik/gozork/'
+```
+
+#### Verify SLSA provenance
+
+Releases include [SLSA L3](https://slsa.dev/) provenance attestations. To verify:
+
+```bash
+slsa-verifier verify-artifact gozork-<os>-<arch>.tar.gz \
+  --provenance-path multiple.intoto.jsonl \
+  --source-uri github.com/ajdnik/gozork
+```
+
 Extract and run:
 
 ```bash
