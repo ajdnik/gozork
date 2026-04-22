@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/ajdnik/gozork/compare/v1.1.0...v1.1.1) (2026-04-22)
+
+
+### Bug Fixes
+
+* **syntax:** add missing x synonym ([#11](https://github.com/ajdnik/gozork/issues/11)) ([03699cf](https://github.com/ajdnik/gozork/commit/03699cf304f55a8b4c49532bdde24676d360fc05))
+
 ## [1.1.0](https://github.com/ajdnik/gozork/compare/v1.0.0...v1.1.0) (2026-04-21)
 
 
